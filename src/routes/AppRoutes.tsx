@@ -13,6 +13,7 @@ import Pembelian from "../pages/Pembelian";
 import Laporan from "../pages/Laporan";
 import Pengaturan from "../pages/Pengaturan";
 import Login from "../pages/Login";
+import User from "../pages/User";
 
 const AppRoutes = () => {
   return (
@@ -33,6 +34,8 @@ const AppRoutes = () => {
         <Route path="/supplier" element={<Supplier />} />
 
         <Route path="/pelanggan" element={<Pelanggan />} />
+
+        <Route path="/user" element={<User />} />
 
         <Route path="/penjualan" element={<Penjualan />} />
 

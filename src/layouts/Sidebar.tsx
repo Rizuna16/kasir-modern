@@ -18,6 +18,8 @@ const Sidebar = () => {
 
         <SidebarItem to="/pelanggan" label="Pelanggan" />
 
+        <SidebarItem to="/user" label="User" />
+
         <SidebarItem to="/penjualan" label="Penjualan" />
 
         <SidebarItem to="/pembelian" label="Pembelian" />
