@@ -1,13 +1,33 @@
-export interface Pembelian {
-  id: number;
+export interface DetailPembelian {
+  barangId: string;
 
-  nomor_faktur: string;
+  namaBarang: string;
+
+  qty: number;
+
+  hargaBeli: number;
+
+  subtotal: number;
+}
+
+export interface Pembelian {
+  id: string;
+
+  nomorFaktur: string;
 
   tanggal: string;
 
-  supplier: string;
+  supplierId: string;
+
+  supplierNama: string;
+
+  detail: DetailPembelian[];
 
   total: number;
 
   status: "LUNAS" | "BELUM LUNAS";
+
+  createdAt: string;
+
+  updatedAt: string;
 }

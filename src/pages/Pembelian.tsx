@@ -1,60 +1,55 @@
+import { useState } from "react";
+
+import PembelianTable from "../components/pembelian/PembelianTable";
+import PembelianModal from "../components/pembelian/PembelianModal";
+
 import usePembelian from "../hooks/usePembelian";
 
 export default function Pembelian() {
-  const { pembelian, hapus } = usePembelian();
+  const {
+    pembelian,
+
+    loadData,
+  } = usePembelian();
+
+  const [isTambahOpen, setIsTambahOpen] = useState(false);
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-5">Transaksi Pembelian</h1>
+      <div className="flex justify-between mb-5">
+        <h1 className="text-2xl font-bold">Transaksi Pembelian</h1>
 
-      <div className="bg-white rounded shadow">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b">
-              <th className="p-3">No</th>
-
-              <th>Faktur</th>
-
-              <th>Tanggal</th>
-
-              <th>Supplier</th>
-
-              <th>Total</th>
-
-              <th>Status</th>
-
-              <th>Aksi</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {pembelian.map((item, index) => (
-              <tr key={item.id} className="border-b">
-                <td className="p-3">{index + 1}</td>
-
-                <td>{item.nomor_faktur}</td>
-
-                <td>{item.tanggal}</td>
-
-                <td>{item.supplier}</td>
-
-                <td>Rp {item.total.toLocaleString()}</td>
-
-                <td>{item.status}</td>
-
-                <td>
-                  <button
-                    onClick={() => hapus(item.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded"
-                  >
-                    Hapus
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <button
+          onClick={() => {
+            setIsTambahOpen(true);
+          }}
+          className="
+          bg-blue-600
+          text-white
+          px-4
+          py-2
+          rounded-lg
+          "
+        >
+          Tambah Pembelian
+        </button>
       </div>
+
+      <div className="bg-white rounded shadow p-4">
+        <PembelianTable data={pembelian} />
+      </div>
+
+      <PembelianModal
+        isOpen={isTambahOpen}
+        onClose={() => {
+          setIsTambahOpen(false);
+        }}
+        onSave={() => {
+          setIsTambahOpen(false);
+
+          loadData();
+        }}
+      />
     </div>
   );
 }

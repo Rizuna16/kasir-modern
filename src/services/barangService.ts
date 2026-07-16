@@ -18,20 +18,21 @@ export const addBarang = (
 ): Barang => {
   const newBarang: Barang = {
     id: crypto.randomUUID(),
-
     ...data,
-
     createdAt: new Date().toISOString(),
-
     updatedAt: new Date().toISOString(),
   };
 
   barangData.push(newBarang);
 
+  console.log("=== Barang Baru Ditambahkan ===");
+  console.log(newBarang);
+  console.log("Isi barangData:", barangData);
+
   return newBarang;
 };
 
-// Update barang
+// Update data barang
 export const updateBarang = (
   id: string,
   data: Omit<Barang, "id" | "createdAt" | "updatedAt">,
@@ -44,15 +45,39 @@ export const updateBarang = (
 
   barangData[index] = {
     ...barangData[index],
-
     ...data,
-
     id,
-
     createdAt: barangData[index].createdAt,
-
     updatedAt: new Date().toISOString(),
   };
+
+  return barangData[index];
+};
+
+// Update stok barang
+export const updateStokBarang = (id: string, jumlah: number): Barang | null => {
+  console.log("========== UPDATE STOK ==========");
+  console.log("ID dicari:", id);
+  console.log("Jumlah tambah:", jumlah);
+  console.log("Isi barangData sebelum update:", barangData);
+
+  const index = barangData.findIndex((item) => item.id === id);
+
+  console.log("Index ditemukan:", index);
+
+  if (index === -1) {
+    console.warn("Barang tidak ditemukan!");
+    return null;
+  }
+
+  barangData[index] = {
+    ...barangData[index],
+    stok: barangData[index].stok + jumlah,
+    updatedAt: new Date().toISOString(),
+  };
+
+  console.log("Barang setelah update:", barangData[index]);
+  console.log("Isi barangData sesudah update:", barangData);
 
   return barangData[index];
 };

@@ -13,7 +13,7 @@ export default function usePembelian() {
     setPembelian(data);
   }
 
-  async function hapus(id: number) {
+  async function hapus(id: string) {
     await deletePembelian(id);
 
     loadData();
@@ -27,5 +27,7 @@ export default function usePembelian() {
     pembelian,
 
     hapus,
+
+    loadData,
   };
 }

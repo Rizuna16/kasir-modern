@@ -1,37 +1,45 @@
+import { updateStokBarang } from "./barangService";
+
 import type { Pembelian } from "../types/pembelian";
 
-let dataPembelian: Pembelian[] = [
-  {
-    id: 1,
-    nomor_faktur: "PB-001",
-    tanggal: "2026-07-16",
-    supplier: "PT Sumber Makmur",
-    total: 750000,
-    status: "LUNAS",
-  },
+let pembelianData: Pembelian[] = [];
 
-  {
-    id: 2,
-    nomor_faktur: "PB-002",
-    tanggal: "2026-07-17",
-    supplier: "CV Maju Jaya",
-    total: 1250000,
-    status: "BELUM LUNAS",
-  },
-];
+// Ambil semua pembelian
+export const getPembelian = (): Pembelian[] => {
+  return [...pembelianData];
+};
 
-export function getPembelian() {
-  return Promise.resolve(dataPembelian);
-}
+// Ambil berdasarkan id
+export const getPembelianById = (id: string): Pembelian | undefined => {
+  return pembelianData.find((item) => item.id === id);
+};
 
-export function addPembelian(pembelian: Pembelian) {
-  dataPembelian.push(pembelian);
+// Tambah pembelian
+export const addPembelian = (
+  data: Omit<Pembelian, "id" | "createdAt" | "updatedAt">,
+): Pembelian => {
+  const newPembelian: Pembelian = {
+    id: crypto.randomUUID(),
 
-  return Promise.resolve(pembelian);
-}
+    ...data,
 
-export function deletePembelian(id: number) {
-  dataPembelian = dataPembelian.filter((item) => item.id !== id);
+    createdAt: new Date().toISOString(),
 
-  return Promise.resolve(true);
-}
+    updatedAt: new Date().toISOString(),
+  };
+
+  // Simpan transaksi pembelian
+  pembelianData.push(newPembelian);
+
+  // Tambahkan stok setiap barang yang dibeli
+  newPembelian.detail.forEach((item) => {
+    updateStokBarang(item.barangId, item.qty);
+  });
+
+  return newPembelian;
+};
+
+// Hapus pembelian
+export const deletePembelian = (id: string): void => {
+  pembelianData = pembelianData.filter((item) => item.id !== id);
+};
