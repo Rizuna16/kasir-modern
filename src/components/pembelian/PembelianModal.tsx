@@ -66,6 +66,8 @@ export default function PembelianModal({
     const subtotal = qty * hargaBeli;
 
     const newDetail: DetailPembelian = {
+      id: crypto.randomUUID(),
+
       barangId: dataBarang.id,
 
       namaBarang: dataBarang.nama,

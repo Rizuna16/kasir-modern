@@ -1,4 +1,6 @@
 export interface DetailPembelian {
+  id: string;
+
   barangId: string;
 
   namaBarang: string;

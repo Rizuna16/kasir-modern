@@ -2,7 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 
 import SupplierModal from "./SupplierModal";
 
-import type { Supplier } from "../../types/supplier";
+import type { SupplierFormData } from "../../types/supplierForm";
 
 interface SupplierEditModalProps {
   isOpen: boolean;
@@ -11,16 +11,20 @@ interface SupplierEditModalProps {
 
   onSave: () => void;
 
-  form: Supplier;
+  form: SupplierFormData;
 
-  setForm: Dispatch<SetStateAction<Supplier>>;
+  setForm: Dispatch<SetStateAction<SupplierFormData>>;
 }
 
 export default function SupplierEditModal({
   isOpen,
+
   onClose,
+
   onSave,
+
   form,
+
   setForm,
 }: SupplierEditModalProps) {
   return (

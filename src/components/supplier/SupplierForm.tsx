@@ -2,21 +2,17 @@ import type { Dispatch, SetStateAction } from "react";
 
 import Input from "../ui/Input";
 
-import type { Supplier } from "../../types/supplier";
+import type { SupplierFormData } from "../../types/supplierForm";
 
 interface SupplierFormProps {
-  form: Supplier;
+  form: SupplierFormData;
 
-  setForm: Dispatch<SetStateAction<Supplier>>;
+  setForm: Dispatch<SetStateAction<SupplierFormData>>;
 }
 
 export default function SupplierForm({ form, setForm }: SupplierFormProps) {
   return (
     <div className="space-y-6">
-      {/* ========================= */}
-      {/* INFORMASI SUPPLIER */}
-      {/* ========================= */}
-
       <section>
         <h3 className="text-lg font-semibold mb-3">Informasi Supplier</h3>
 
@@ -97,6 +93,7 @@ export default function SupplierForm({ form, setForm }: SupplierFormProps) {
               }
             >
               <option value="Aktif">Aktif</option>
+
               <option value="Nonaktif">Nonaktif</option>
             </select>
           </div>

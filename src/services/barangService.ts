@@ -25,10 +25,6 @@ export const addBarang = (
 
   barangData.push(newBarang);
 
-  console.log("=== Barang Baru Ditambahkan ===");
-  console.log(newBarang);
-  console.log("Isi barangData:", barangData);
-
   return newBarang;
 };
 
@@ -54,19 +50,11 @@ export const updateBarang = (
   return barangData[index];
 };
 
-// Update stok barang
+// Tambah stok barang
 export const updateStokBarang = (id: string, jumlah: number): Barang | null => {
-  console.log("========== UPDATE STOK ==========");
-  console.log("ID dicari:", id);
-  console.log("Jumlah tambah:", jumlah);
-  console.log("Isi barangData sebelum update:", barangData);
-
   const index = barangData.findIndex((item) => item.id === id);
 
-  console.log("Index ditemukan:", index);
-
   if (index === -1) {
-    console.warn("Barang tidak ditemukan!");
     return null;
   }
 
@@ -76,8 +64,25 @@ export const updateStokBarang = (id: string, jumlah: number): Barang | null => {
     updatedAt: new Date().toISOString(),
   };
 
-  console.log("Barang setelah update:", barangData[index]);
-  console.log("Isi barangData sesudah update:", barangData);
+  return barangData[index];
+};
+
+// Kurangi stok barang
+export const kurangiStokBarang = (
+  id: string,
+  jumlah: number,
+): Barang | null => {
+  const index = barangData.findIndex((item) => item.id === id);
+
+  if (index === -1) {
+    return null;
+  }
+
+  barangData[index] = {
+    ...barangData[index],
+    stok: barangData[index].stok - jumlah,
+    updatedAt: new Date().toISOString(),
+  };
 
   return barangData[index];
 };

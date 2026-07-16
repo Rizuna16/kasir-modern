@@ -11,6 +11,8 @@ export const initialBarangForm: BarangFormData = {
 
   satuanId: "",
 
+  supplierId: "",
+
   hargaBeli: 0,
 
   hargaGrosir: 0,
@@ -22,4 +24,6 @@ export const initialBarangForm: BarangFormData = {
   stok: 0,
 
   minimalStok: 0,
+
+  status: "Aktif",
 };

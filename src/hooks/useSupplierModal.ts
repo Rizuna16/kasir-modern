@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import type { Supplier } from "../types/supplier";
+import type { SupplierFormData } from "../types/supplierForm";
 
 import { initialSupplierForm } from "../constants/supplier";
 
@@ -15,7 +16,7 @@ export default function useSupplierModal() {
 
   const [editId, setEditId] = useState<string | null>(null);
 
-  const [form, setForm] = useState<Supplier>(initialSupplierForm);
+  const [form, setForm] = useState<SupplierFormData>(initialSupplierForm);
 
   const bukaTambah = () => {
     setForm(initialSupplierForm);
@@ -32,7 +33,19 @@ export default function useSupplierModal() {
   const bukaEdit = (id: string, data: Supplier) => {
     setEditId(id);
 
-    setForm(data);
+    setForm({
+      kode: data.kode,
+
+      nama: data.nama,
+
+      alamat: data.alamat,
+
+      telepon: data.telepon,
+
+      email: data.email,
+
+      status: data.status,
+    });
 
     setOpenEdit(true);
   };

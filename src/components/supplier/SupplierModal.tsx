@@ -5,7 +5,7 @@ import Button from "../ui/Button";
 
 import SupplierForm from "./SupplierForm";
 
-import type { Supplier } from "../../types/supplier";
+import type { SupplierFormData } from "../../types/supplierForm";
 
 interface SupplierModalProps {
   isOpen: boolean;
@@ -16,9 +16,9 @@ interface SupplierModalProps {
 
   onSave: () => void;
 
-  form: Supplier;
+  form: SupplierFormData;
 
-  setForm: Dispatch<SetStateAction<Supplier>>;
+  setForm: Dispatch<SetStateAction<SupplierFormData>>;
 }
 
 export default function SupplierModal({

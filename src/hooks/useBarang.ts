@@ -22,13 +22,10 @@ export default function useBarang() {
   const tambahBarang = (form: BarangFormData) => {
     if (form.nama.trim() === "") {
       toast.error("Nama barang wajib diisi!");
-
       return false;
     }
 
     addBarang({
-      id: crypto.randomUUID(),
-
       kode: form.kode,
 
       barcode: form.barcode,
@@ -39,7 +36,7 @@ export default function useBarang() {
 
       satuanId: form.satuanId,
 
-      supplierId: "",
+      supplierId: form.supplierId,
 
       hargaBeli: form.hargaBeli,
 
@@ -53,11 +50,7 @@ export default function useBarang() {
 
       minimalStok: form.minimalStok,
 
-      status: "Aktif",
-
-      createdAt: new Date().toISOString(),
-
-      updatedAt: new Date().toISOString(),
+      status: form.status,
     });
 
     refreshBarang();
@@ -79,48 +72,34 @@ export default function useBarang() {
     return getBarangById(id);
   };
 
-  const editBarang = (
-    id: string,
+  const editBarang = (id: string, form: BarangFormData) => {
+    updateBarang(id, {
+      kode: form.kode,
 
-    form: BarangFormData,
-  ) => {
-    const lama = getBarangById(id);
+      barcode: form.barcode,
 
-    if (!lama) return;
+      nama: form.nama,
 
-    updateBarang(
-      id,
+      kategoriId: form.kategoriId,
 
-      {
-        kode: form.kode,
+      satuanId: form.satuanId,
 
-        barcode: form.barcode,
+      supplierId: form.supplierId,
 
-        nama: form.nama,
+      hargaBeli: form.hargaBeli,
 
-        kategoriId: form.kategoriId,
+      hargaGrosir: form.hargaGrosir,
 
-        satuanId: form.satuanId,
+      hargaSemiGrosir: form.hargaSemiGrosir,
 
-        supplierId: lama.supplierId,
+      hargaEcer: form.hargaEcer,
 
-        hargaBeli: form.hargaBeli,
+      stok: form.stok,
 
-        hargaGrosir: form.hargaGrosir,
+      minimalStok: form.minimalStok,
 
-        hargaSemiGrosir: form.hargaSemiGrosir,
-
-        hargaEcer: form.hargaEcer,
-
-        stok: form.stok,
-
-        minimalStok: form.minimalStok,
-
-        status: lama.status,
-
-        updatedAt: new Date().toISOString(),
-      },
-    );
+      status: form.status,
+    });
 
     refreshBarang();
 

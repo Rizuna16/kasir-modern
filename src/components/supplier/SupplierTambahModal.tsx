@@ -2,7 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 
 import SupplierModal from "./SupplierModal";
 
-import type { Supplier } from "../../types/supplier";
+import type { SupplierFormData } from "../../types/supplierForm";
 
 interface SupplierTambahModalProps {
   isOpen: boolean;
@@ -11,9 +11,9 @@ interface SupplierTambahModalProps {
 
   onSave: () => void;
 
-  form: Supplier;
+  form: SupplierFormData;
 
-  setForm: Dispatch<SetStateAction<Supplier>>;
+  setForm: Dispatch<SetStateAction<SupplierFormData>>;
 }
 
 export default function SupplierTambahModal({

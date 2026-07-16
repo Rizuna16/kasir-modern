@@ -1,38 +1,69 @@
 import { useState } from "react";
-import type { Barang } from "../../types/barang";
+
+import type { BarangFormData } from "../../types/barangForm";
 
 interface Props {
   isOpen: boolean;
+
   onClose: () => void;
-  onSave: (data: Barang) => void;
+
+  onSave: (data: BarangFormData) => void;
 }
 
+const initialForm: BarangFormData = {
+  kode: "",
+
+  barcode: "",
+
+  nama: "",
+
+  kategoriId: "",
+
+  satuanId: "",
+
+  supplierId: "",
+
+  hargaBeli: 0,
+
+  hargaGrosir: 0,
+
+  hargaSemiGrosir: 0,
+
+  hargaEcer: 0,
+
+  stok: 0,
+
+  minimalStok: 0,
+
+  status: "Aktif",
+};
+
 export default function TambahBarangModal({ isOpen, onClose, onSave }: Props) {
-  const [form, setForm] = useState<Barang>({
-    kode: "",
-    nama: "",
-    harga: "",
-    stok: 0,
-  });
+  const [form, setForm] = useState<BarangFormData>(initialForm);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
     setForm({
       ...form,
-      [name]: name === "stok" ? Number(value) : value,
+
+      [name]: [
+        "hargaBeli",
+        "hargaGrosir",
+        "hargaSemiGrosir",
+        "hargaEcer",
+        "stok",
+        "minimalStok",
+      ].includes(name)
+        ? Number(value)
+        : value,
     });
   };
 
   const handleSave = () => {
     onSave(form);
 
-    setForm({
-      kode: "",
-      nama: "",
-      harga: "",
-      stok: 0,
-    });
+    setForm(initialForm);
 
     onClose();
   };
@@ -52,9 +83,8 @@ export default function TambahBarangModal({ isOpen, onClose, onSave }: Props) {
           </button>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           <input
-            type="text"
             name="kode"
             value={form.kode}
             onChange={handleChange}
@@ -63,7 +93,14 @@ export default function TambahBarangModal({ isOpen, onClose, onSave }: Props) {
           />
 
           <input
-            type="text"
+            name="barcode"
+            value={form.barcode}
+            onChange={handleChange}
+            placeholder="Barcode"
+            className="w-full border rounded-lg px-3 py-2"
+          />
+
+          <input
             name="nama"
             value={form.nama}
             onChange={handleChange}
@@ -72,20 +109,38 @@ export default function TambahBarangModal({ isOpen, onClose, onSave }: Props) {
           />
 
           <input
-            type="text"
-            name="harga"
-            value={form.harga}
+            name="hargaBeli"
+            type="number"
+            value={form.hargaBeli}
             onChange={handleChange}
-            placeholder="Harga Jual"
+            placeholder="Harga Beli"
             className="w-full border rounded-lg px-3 py-2"
           />
 
           <input
+            name="hargaEcer"
             type="number"
+            value={form.hargaEcer}
+            onChange={handleChange}
+            placeholder="Harga Ecer"
+            className="w-full border rounded-lg px-3 py-2"
+          />
+
+          <input
             name="stok"
+            type="number"
             value={form.stok}
             onChange={handleChange}
             placeholder="Stok"
+            className="w-full border rounded-lg px-3 py-2"
+          />
+
+          <input
+            name="minimalStok"
+            type="number"
+            value={form.minimalStok}
+            onChange={handleChange}
+            placeholder="Minimal Stok"
             className="w-full border rounded-lg px-3 py-2"
           />
         </div>

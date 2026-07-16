@@ -1,8 +1,6 @@
-import type { Supplier } from "../types/supplier";
+import type { SupplierFormData } from "../types/supplierForm";
 
-export const initialSupplierForm: Supplier = {
-  id: 0,
-
+export const initialSupplierForm: SupplierFormData = {
   kode: "",
 
   nama: "",
