@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import LaporanFilter from "../components/laporan/LaporanFilter";
 import LaporanStats from "../components/laporan/LaporanStats";
 import LaporanTable from "../components/laporan/LaporanTable";
 import DetailPenjualanModal from "../components/laporan/DetailPenjualanModal";
 import PrintPenjualan from "../components/laporan/PrintPenjualan";
+import ExportExcelButton from "../components/laporan/ExportExcelButton";
 
 import useLaporan from "../hooks/useLaporan";
 
@@ -36,16 +37,32 @@ export default function LaporanPenjualan() {
 
   const [selectedPrint, setSelectedPrint] = useState<Penjualan | null>(null);
 
+  // =========================
+  // RESET SETELAH PRINT
+  // =========================
+
+  useEffect(() => {
+    const handleAfterPrint = () => {
+      setSelectedPrint(null);
+    };
+
+    window.addEventListener("afterprint", handleAfterPrint);
+
+    return () => {
+      window.removeEventListener("afterprint", handleAfterPrint);
+    };
+  }, []);
+
+  // =========================
+  // PRINT NOTA
+  // =========================
+
   const bukaPrint = (item: Penjualan) => {
     setSelectedPrint(item);
 
     setTimeout(() => {
       window.print();
     }, 300);
-  };
-
-  const selesaiPrint = () => {
-    setSelectedPrint(null);
   };
 
   return (
@@ -69,6 +86,12 @@ export default function LaporanPenjualan() {
         onReset={resetLaporan}
       />
 
+      {/* Export */}
+
+      <div className="flex justify-end">
+        <ExportExcelButton data={laporan} />
+      </div>
+
       {/* Statistik */}
 
       <LaporanStats totalTransaksi={totalTransaksi} totalOmzet={totalOmzet} />
@@ -90,14 +113,6 @@ export default function LaporanPenjualan() {
       {selectedPrint && (
         <div className="hidden print:block">
           <PrintPenjualan penjualan={selectedPrint} />
-        </div>
-      )}
-
-      {/* Setelah print selesai */}
-
-      {selectedPrint && (
-        <div className="hidden">
-          <button onClick={selesaiPrint}>selesai</button>
         </div>
       )}
     </div>
