@@ -1,15 +1,21 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type Variant = "primary" | "secondary" | "danger" | "success";
+type Variant = "primary" | "secondary" | "success" | "danger";
+
+type Size = "sm" | "md" | "lg";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   variant?: Variant;
+  size?: Size;
+  fullWidth?: boolean;
 }
 
 export default function Button({
   children,
   variant = "primary",
+  size = "md",
+  fullWidth = false,
   className = "",
   ...props
 }: ButtonProps) {
@@ -20,12 +26,16 @@ export default function Button({
     danger: "bg-red-600 hover:bg-red-700 text-white",
   };
 
+  const sizes = {
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-5 py-2 text-base",
+    lg: "px-6 py-3 text-lg",
+  };
+
   return (
     <button
       {...props}
       className={`
-        px-5
-        py-2
         rounded-lg
         font-medium
         transition-all
@@ -33,6 +43,8 @@ export default function Button({
         disabled:opacity-50
         disabled:cursor-not-allowed
         ${variants[variant]}
+        ${sizes[size]}
+        ${fullWidth ? "w-full" : ""}
         ${className}
       `}
     >

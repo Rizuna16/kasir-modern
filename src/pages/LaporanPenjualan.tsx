@@ -5,7 +5,7 @@ import DetailPenjualanModal from "../components/laporan/DetailPenjualanModal";
 
 import useLaporan from "../hooks/useLaporan";
 
-export default function Laporan() {
+export default function LaporanPenjualan() {
   const {
     laporan,
 
@@ -30,33 +30,29 @@ export default function Laporan() {
   } = useLaporan();
 
   return (
-    <div className="p-6">
+    <div className="space-y-6">
       {/* Header */}
 
-      <div className="mb-5">
-        <h1 className="text-2xl font-bold">Laporan Penjualan</h1>
+      <div>
+        <h1 className="text-2xl font-bold text-gray-800">Laporan Penjualan</h1>
 
-        <p className="text-sm text-gray-500">Rekap transaksi penjualan</p>
+        <p className="mt-1 text-sm text-gray-500">Rekap transaksi penjualan.</p>
       </div>
 
       {/* Filter */}
 
-      <div className="mb-5">
-        <LaporanFilter
-          tanggalAwal={tanggalAwal}
-          tanggalAkhir={tanggalAkhir}
-          onTanggalAwalChange={setTanggalAwal}
-          onTanggalAkhirChange={setTanggalAkhir}
-          onCari={cariLaporan}
-          onReset={resetLaporan}
-        />
-      </div>
+      <LaporanFilter
+        tanggalAwal={tanggalAwal}
+        tanggalAkhir={tanggalAkhir}
+        onTanggalAwalChange={setTanggalAwal}
+        onTanggalAkhirChange={setTanggalAkhir}
+        onCari={cariLaporan}
+        onReset={resetLaporan}
+      />
 
       {/* Statistik */}
 
-      <div className="mb-5">
-        <LaporanStats totalTransaksi={totalTransaksi} totalOmzet={totalOmzet} />
-      </div>
+      <LaporanStats totalTransaksi={totalTransaksi} totalOmzet={totalOmzet} />
 
       {/* Table */}
 

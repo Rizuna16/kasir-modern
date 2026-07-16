@@ -10,7 +10,7 @@ import Supplier from "../pages/Supplier";
 import Pelanggan from "../pages/Pelanggan";
 import Penjualan from "../pages/Penjualan";
 import Pembelian from "../pages/Pembelian";
-import Laporan from "../pages/Laporan";
+import LaporanPenjualan from "../pages/LaporanPenjualan";
 import Pengaturan from "../pages/Pengaturan";
 import Login from "../pages/Login";
 import User from "../pages/User";
@@ -41,7 +41,7 @@ const AppRoutes = () => {
 
         <Route path="/pembelian" element={<Pembelian />} />
 
-        <Route path="/laporan" element={<Laporan />} />
+        <Route path="/laporan" element={<LaporanPenjualan />} />
 
         <Route path="/pengaturan" element={<Pengaturan />} />
       </Route>
