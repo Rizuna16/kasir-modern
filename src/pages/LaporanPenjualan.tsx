@@ -6,6 +6,7 @@ import LaporanTable from "../components/laporan/LaporanTable";
 import DetailPenjualanModal from "../components/laporan/DetailPenjualanModal";
 import PrintPenjualan from "../components/laporan/PrintPenjualan";
 import ExportExcelButton from "../components/laporan/ExportExcelButton";
+import ExportPDFButton from "../components/laporan/ExportPDFButton";
 
 import useLaporan from "../hooks/useLaporan";
 
@@ -88,8 +89,10 @@ export default function LaporanPenjualan() {
 
       {/* Export */}
 
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-3">
         <ExportExcelButton data={laporan} />
+
+        <ExportPDFButton data={laporan} />
       </div>
 
       {/* Statistik */}
