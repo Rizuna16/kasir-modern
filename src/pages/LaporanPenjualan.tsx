@@ -1,9 +1,14 @@
+import { useState } from "react";
+
 import LaporanFilter from "../components/laporan/LaporanFilter";
 import LaporanStats from "../components/laporan/LaporanStats";
 import LaporanTable from "../components/laporan/LaporanTable";
 import DetailPenjualanModal from "../components/laporan/DetailPenjualanModal";
+import PrintPenjualan from "../components/laporan/PrintPenjualan";
 
 import useLaporan from "../hooks/useLaporan";
+
+import type { Penjualan } from "../types/penjualan";
 
 export default function LaporanPenjualan() {
   const {
@@ -28,6 +33,20 @@ export default function LaporanPenjualan() {
     bukaDetail,
     tutupDetail,
   } = useLaporan();
+
+  const [selectedPrint, setSelectedPrint] = useState<Penjualan | null>(null);
+
+  const bukaPrint = (item: Penjualan) => {
+    setSelectedPrint(item);
+
+    setTimeout(() => {
+      window.print();
+    }, 300);
+  };
+
+  const selesaiPrint = () => {
+    setSelectedPrint(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -56,7 +75,7 @@ export default function LaporanPenjualan() {
 
       {/* Table */}
 
-      <LaporanTable data={laporan} onDetail={bukaDetail} />
+      <LaporanTable data={laporan} onDetail={bukaDetail} onPrint={bukaPrint} />
 
       {/* Detail Modal */}
 
@@ -65,6 +84,22 @@ export default function LaporanPenjualan() {
         penjualan={selectedPenjualan}
         onClose={tutupDetail}
       />
+
+      {/* Print Area */}
+
+      {selectedPrint && (
+        <div className="hidden print:block">
+          <PrintPenjualan penjualan={selectedPrint} />
+        </div>
+      )}
+
+      {/* Setelah print selesai */}
+
+      {selectedPrint && (
+        <div className="hidden">
+          <button onClick={selesaiPrint}>selesai</button>
+        </div>
+      )}
     </div>
   );
 }
