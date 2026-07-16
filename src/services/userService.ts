@@ -1,6 +1,10 @@
 import type { User } from "../types/user";
 
-let userData: User[] = [
+const STORAGE_KEY = "user";
+
+// Data awal user
+
+const defaultUser: User[] = [
   {
     id: 1,
 
@@ -34,46 +38,100 @@ let userData: User[] = [
   },
 ];
 
-export const getUser = (): User[] => {
-  return [...userData];
+// Ambil data user
+
+const getStorage = (): User[] => {
+  const data = localStorage.getItem(STORAGE_KEY);
+
+  if (!data) {
+    localStorage.setItem(
+      STORAGE_KEY,
+
+      JSON.stringify(defaultUser),
+    );
+
+    return defaultUser;
+  }
+
+  return JSON.parse(data);
 };
 
+// Simpan user
+
+const saveStorage = (data: User[]): void => {
+  localStorage.setItem(
+    STORAGE_KEY,
+
+    JSON.stringify(data),
+  );
+};
+
+// Ambil semua user
+
+export const getUser = (): User[] => {
+  return getStorage();
+};
+
+// Tambah user
+
 export const addUser = (data: Omit<User, "id">): User => {
+  const user = getStorage();
+
+  const lastId = user.length > 0 ? Math.max(...user.map((item) => item.id)) : 0;
+
   const newUser: User = {
-    id: userData.length + 1,
+    id: lastId + 1,
 
     ...data,
   };
 
-  userData.push(newUser);
+  user.push(newUser);
+
+  saveStorage(user);
 
   return newUser;
 };
 
+// Ambil user berdasarkan id
+
 export const getUserById = (id: number): User | undefined => {
-  return userData.find((item) => item.id === id);
+  const user = getStorage();
+
+  return user.find((item) => item.id === id);
 };
+
+// Update user
 
 export const updateUser = (
   id: number,
 
   data: Omit<User, "id">,
 ): User | null => {
-  const index = userData.findIndex((item) => item.id === id);
+  const user = getStorage();
+
+  const index = user.findIndex((item) => item.id === id);
 
   if (index === -1) {
     return null;
   }
 
-  userData[index] = {
+  user[index] = {
     id,
 
     ...data,
   };
 
-  return userData[index];
+  saveStorage(user);
+
+  return user[index];
 };
 
+// Hapus user
+
 export const deleteUser = (id: number): void => {
-  userData = userData.filter((item) => item.id !== id);
+  const user = getStorage();
+
+  const dataBaru = user.filter((item) => item.id !== id);
+
+  saveStorage(dataBaru);
 };

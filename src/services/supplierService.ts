@@ -1,6 +1,10 @@
 import type { Supplier } from "../types/supplier";
 
-let supplierData: Supplier[] = [
+const STORAGE_KEY = "supplier";
+
+// Data awal supplier
+
+const defaultSupplier: Supplier[] = [
   {
     id: crypto.randomUUID(),
 
@@ -20,6 +24,7 @@ let supplierData: Supplier[] = [
 
     updatedAt: new Date().toISOString(),
   },
+
   {
     id: crypto.randomUUID(),
 
@@ -41,20 +46,55 @@ let supplierData: Supplier[] = [
   },
 ];
 
+// Ambil data supplier
+
+const getStorage = (): Supplier[] => {
+  const data = localStorage.getItem(STORAGE_KEY);
+
+  if (!data) {
+    localStorage.setItem(
+      STORAGE_KEY,
+
+      JSON.stringify(defaultSupplier),
+    );
+
+    return defaultSupplier;
+  }
+
+  return JSON.parse(data);
+};
+
+// Simpan supplier
+
+const saveStorage = (data: Supplier[]): void => {
+  localStorage.setItem(
+    STORAGE_KEY,
+
+    JSON.stringify(data),
+  );
+};
+
 // Ambil semua supplier
+
 export const getSupplier = (): Supplier[] => {
-  return [...supplierData];
+  return getStorage();
 };
 
 // Ambil supplier berdasarkan id
+
 export const getSupplierById = (id: string): Supplier | undefined => {
-  return supplierData.find((item) => item.id === id);
+  const supplier = getStorage();
+
+  return supplier.find((item) => item.id === id);
 };
 
-// Tambah supplier baru
+// Tambah supplier
+
 export const addSupplier = (
   data: Omit<Supplier, "id" | "createdAt" | "updatedAt">,
 ): Supplier => {
+  const supplier = getStorage();
+
   const newSupplier: Supplier = {
     id: crypto.randomUUID(),
 
@@ -65,38 +105,51 @@ export const addSupplier = (
     updatedAt: new Date().toISOString(),
   };
 
-  supplierData.push(newSupplier);
+  supplier.push(newSupplier);
+
+  saveStorage(supplier);
 
   return newSupplier;
 };
 
 // Update supplier
+
 export const updateSupplier = (
   id: string,
+
   data: Omit<Supplier, "id" | "createdAt" | "updatedAt">,
 ): Supplier | null => {
-  const index = supplierData.findIndex((item) => item.id === id);
+  const supplier = getStorage();
+
+  const index = supplier.findIndex((item) => item.id === id);
 
   if (index === -1) {
     return null;
   }
 
-  supplierData[index] = {
-    ...supplierData[index],
+  supplier[index] = {
+    ...supplier[index],
 
     ...data,
 
     id,
 
-    createdAt: supplierData[index].createdAt,
+    createdAt: supplier[index].createdAt,
 
     updatedAt: new Date().toISOString(),
   };
 
-  return supplierData[index];
+  saveStorage(supplier);
+
+  return supplier[index];
 };
 
 // Hapus supplier
+
 export const deleteSupplier = (id: string): void => {
-  supplierData = supplierData.filter((item) => item.id !== id);
+  const supplier = getStorage();
+
+  const dataBaru = supplier.filter((item) => item.id !== id);
+
+  saveStorage(dataBaru);
 };

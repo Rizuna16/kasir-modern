@@ -2,22 +2,49 @@ import { updateStokBarang, kurangiStokBarang } from "./barangService";
 
 import type { Pembelian } from "../types/pembelian";
 
-let pembelianData: Pembelian[] = [];
+const STORAGE_KEY = "pembelian";
+
+// Ambil data pembelian
+
+const getStorage = (): Pembelian[] => {
+  const data = localStorage.getItem(STORAGE_KEY);
+
+  if (!data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+
+    return [];
+  }
+
+  return JSON.parse(data);
+};
+
+// Simpan data pembelian
+
+const saveStorage = (data: Pembelian[]): void => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+};
 
 // Ambil semua pembelian
+
 export const getPembelian = (): Pembelian[] => {
-  return [...pembelianData];
+  return getStorage();
 };
 
 // Ambil berdasarkan ID
+
 export const getPembelianById = (id: string): Pembelian | undefined => {
-  return pembelianData.find((item) => item.id === id);
+  const pembelian = getStorage();
+
+  return pembelian.find((item) => item.id === id);
 };
 
 // Tambah pembelian
+
 export const addPembelian = (
   data: Omit<Pembelian, "id" | "createdAt" | "updatedAt">,
 ): Pembelian => {
+  const pembelian = getStorage();
+
   const newPembelian: Pembelian = {
     id: crypto.randomUUID(),
 
@@ -28,9 +55,12 @@ export const addPembelian = (
     updatedAt: new Date().toISOString(),
   };
 
-  pembelianData.push(newPembelian);
+  pembelian.push(newPembelian);
 
-  // Tambah stok
+  saveStorage(pembelian);
+
+  // tambah stok barang
+
   newPembelian.detail.forEach((item) => {
     updateStokBarang(item.barangId, item.qty);
   });
@@ -38,54 +68,64 @@ export const addPembelian = (
   return newPembelian;
 };
 
-// ==============================
-// UPDATE PEMBELIAN
-// ==============================
+// Update pembelian
+
 export const updatePembelian = (
   id: string,
+
   data: Omit<Pembelian, "id" | "createdAt" | "updatedAt">,
 ): Pembelian | null => {
-  const index = pembelianData.findIndex((item) => item.id === id);
+  const pembelian = getStorage();
+
+  const index = pembelian.findIndex((item) => item.id === id);
 
   if (index === -1) {
     return null;
   }
 
-  // Rollback stok lama
-  pembelianData[index].detail.forEach((item) => {
+  // kembalikan stok lama
+
+  pembelian[index].detail.forEach((item) => {
     kurangiStokBarang(item.barangId, item.qty);
   });
 
-  // Simpan transaksi baru
-  pembelianData[index] = {
-    ...pembelianData[index],
+  pembelian[index] = {
+    ...pembelian[index],
 
     ...data,
 
     id,
 
-    createdAt: pembelianData[index].createdAt,
+    createdAt: pembelian[index].createdAt,
 
     updatedAt: new Date().toISOString(),
   };
 
-  // Tambahkan stok baru
-  pembelianData[index].detail.forEach((item) => {
+  // tambah stok baru
+
+  pembelian[index].detail.forEach((item) => {
     updateStokBarang(item.barangId, item.qty);
   });
 
-  return pembelianData[index];
+  saveStorage(pembelian);
+
+  return pembelian[index];
 };
 
 // Hapus pembelian
-export const deletePembelian = (id: string): void => {
-  const pembelian = getPembelianById(id);
 
-  if (pembelian) {
-    pembelian.detail.forEach((item) => {
+export const deletePembelian = (id: string): void => {
+  const pembelian = getStorage();
+
+  const transaksi = pembelian.find((item) => item.id === id);
+
+  if (transaksi) {
+    transaksi.detail.forEach((item) => {
       kurangiStokBarang(item.barangId, item.qty);
     });
   }
 
-  pembelianData = pembelianData.filter((item) => item.id !== id);
+  const dataBaru = pembelian.filter((item) => item.id !== id);
+
+  saveStorage(dataBaru);
 };
