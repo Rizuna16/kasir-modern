@@ -1,5 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 
+import ProtectedRoute from "../components/auth/ProtectedRoute";
+
 import MainLayout from "../layouts/MainLayout";
 
 import Dashboard from "../pages/Dashboard";
@@ -21,8 +23,14 @@ const AppRoutes = () => {
       {/* Login */}
       <Route path="/login" element={<Login />} />
 
-      {/* Layout Utama */}
-      <Route element={<MainLayout />}>
+      {/* Route yang harus login */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="/" element={<Dashboard />} />
 
         <Route path="/barang" element={<Barang />} />
