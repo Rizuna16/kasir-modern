@@ -8,3 +8,4 @@ export { default as Badge } from "./Badge";
 export { default as SearchBox } from "./SearchBox";
 export { default as DataTable } from "./DataTable";
 export { default as Pagination } from "./Pagination";
+export { default as Loading } from "./Loading";
