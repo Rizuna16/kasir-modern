@@ -34,20 +34,86 @@ export default function TopProducts() {
   }, []);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border p-5">
-      <h2 className="font-bold text-lg mb-4">Produk Terlaris</h2>
+    <div
+      className="
+        rounded-xl
+
+        border
+        border-gray-200
+
+        bg-white
+
+        p-5
+
+        shadow-sm
+
+        transition-all
+
+        duration-200
+
+        dark:border-gray-700
+
+        dark:bg-gray-800
+      "
+    >
+      <h2
+        className="
+          mb-4
+
+          text-lg
+
+          font-bold
+
+          text-gray-900
+
+          dark:text-white
+        "
+      >
+        Produk Terlaris
+      </h2>
 
       <div className="space-y-4">
         {products.length === 0 ? (
-          <p className="text-gray-500 text-sm">Belum ada data penjualan.</p>
+          <p
+            className="
+              text-sm
+
+              text-gray-500
+
+              dark:text-gray-400
+            "
+          >
+            Belum ada data penjualan.
+          </p>
         ) : (
           products.map((item, index) => (
-            <div key={item.nama} className="flex justify-between">
+            <div
+              key={item.nama}
+              className="
+                flex
+
+                justify-between
+
+                text-gray-700
+
+                dark:text-gray-200
+              "
+            >
               <span>
                 {index + 1}. {item.nama}
               </span>
 
-              <span className="font-semibold">{item.terjual} pcs</span>
+              <span
+                className="
+                  font-semibold
+
+                  text-gray-900
+
+                  dark:text-white
+                "
+              >
+                {item.terjual} pcs
+              </span>
             </div>
           ))
         )}

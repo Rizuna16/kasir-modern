@@ -44,9 +44,25 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <h1
+          className="
+      text-3xl
+      font-bold
+      text-gray-900
+      dark:text-white
+    "
+        >
+          Dashboard
+        </h1>
 
-        <p className="text-gray-500">Ringkasan aktivitas toko hari ini</p>
+        <p
+          className="
+      text-gray-500
+      dark:text-gray-400
+    "
+        >
+          Ringkasan aktivitas toko hari ini
+        </p>
       </div>
 
       <div

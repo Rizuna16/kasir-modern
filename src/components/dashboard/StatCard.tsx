@@ -18,23 +18,76 @@ export default function StatCard({
   color,
 }: Props) {
   return (
-    <div className="bg-white rounded-xl shadow-sm p-5 border">
-      <div className="flex justify-between items-center">
-        <div>
-          <p className="text-gray-500 text-sm">{title}</p>
+    <div
+      className="
+        rounded-xl
 
-          <h2 className="text-2xl font-bold mt-2">{value}</h2>
+        border
+        border-gray-200
+
+        bg-white
+
+        p-5
+
+        shadow-sm
+
+        transition-all
+        duration-200
+
+        hover:shadow-md
+
+        dark:border-gray-700
+
+        dark:bg-gray-800
+      "
+    >
+      <div className="flex items-center justify-between">
+        <div>
+          <p
+            className="
+              text-sm
+
+              text-gray-500
+
+              dark:text-gray-400
+            "
+          >
+            {title}
+          </p>
+
+          <h2
+            className="
+              mt-2
+
+              text-2xl
+
+              font-bold
+
+              text-gray-900
+
+              dark:text-white
+            "
+          >
+            {value}
+          </h2>
         </div>
 
         <div
           className={`
-            w-12
-            h-12
-            rounded-full
             flex
+
+            h-12
+
+            w-12
+
             items-center
+
             justify-center
+
+            rounded-full
+
             text-xl
+
             ${color}
           `}
         >

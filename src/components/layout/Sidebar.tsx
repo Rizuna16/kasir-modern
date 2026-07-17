@@ -22,26 +22,57 @@ export default function Sidebar() {
         w-64
         flex-col
 
-        bg-blue-600
+        border-r
+        border-blue-500/20
+
+        bg-gradient-to-b
+        from-blue-600
+        to-blue-700
 
         p-5
 
-        shadow-lg
+        shadow-xl
+
+        transition-colors
+        duration-300
+
+        dark:border-gray-700
+
+        dark:from-gray-900
+        dark:to-gray-800
       "
     >
-      <h1
+      <div
         className="
           mb-8
 
-          text-2xl
+          flex
+          items-center
 
-          font-bold
+          rounded-xl
 
-          text-white
+          bg-white/10
+
+          px-4
+          py-3
+
+          backdrop-blur-sm
         "
       >
-        Kasir Modern
-      </h1>
+        <h1
+          className="
+            text-2xl
+
+            font-bold
+
+            tracking-wide
+
+            text-white
+          "
+        >
+          Kasir Modern
+        </h1>
+      </div>
 
       <nav
         className="
@@ -54,6 +85,31 @@ export default function Sidebar() {
           <SidebarItem key={menu.path} to={menu.path} label={menu.label} />
         ))}
       </nav>
+
+      <div
+        className="
+          mt-auto
+
+          rounded-xl
+
+          bg-white/10
+
+          px-4
+          py-3
+
+          text-xs
+
+          text-blue-100
+
+          backdrop-blur-sm
+
+          dark:text-gray-300
+        "
+      >
+        <p>Kasir Modern</p>
+
+        <p className="mt-1 opacity-80">Point Of Sales System</p>
+      </div>
     </aside>
   );
 }

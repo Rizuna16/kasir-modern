@@ -17,8 +17,9 @@ export default function SidebarItem({ to, label }: SidebarItemProps) {
         rounded-xl
 
         px-4
-
         py-3
+
+        font-medium
 
         transition-all
 
@@ -31,14 +32,24 @@ export default function SidebarItem({ to, label }: SidebarItemProps) {
 
               text-blue-600
 
-              font-semibold
+              shadow-lg
 
-              shadow-sm
+              dark:bg-gray-700
+
+              dark:text-white
             `
             : `
-              text-white
+              text-blue-50
 
-              hover:bg-blue-500
+              hover:bg-white/10
+
+              hover:text-white
+
+              dark:text-gray-300
+
+              dark:hover:bg-gray-700/50
+
+              dark:hover:text-white
             `
         }
         `

@@ -45,26 +45,94 @@ export default function SalesChart() {
   }, []);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border p-5">
-      <h2 className="text-lg font-bold mb-5">Grafik Penjualan Mingguan</h2>
+    <div
+      className="
+        rounded-xl
 
-      <div className="h-[300px]">
+        border
+        border-gray-200
+
+        bg-white
+
+        p-5
+
+        shadow-sm
+
+        transition-all
+
+        duration-200
+
+        dark:border-gray-700
+
+        dark:bg-gray-800
+      "
+    >
+      <h2
+        className="
+          mb-5
+
+          text-lg
+
+          font-bold
+
+          text-gray-900
+
+          dark:text-white
+        "
+      >
+        Grafik Penjualan Mingguan
+      </h2>
+
+      <div className="h-75">
         {data.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-gray-500">
+          <div
+            className="
+              flex
+
+              h-full
+
+              items-center
+
+              justify-center
+
+              text-gray-500
+
+              dark:text-gray-400
+            "
+          >
             Belum ada transaksi penjualan
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="#6b7280"
+                opacity={0.3}
+              />
 
-              <XAxis dataKey="hari" />
+              <XAxis dataKey="hari" stroke="#9ca3af" />
 
-              <YAxis />
+              <YAxis stroke="#9ca3af" />
 
-              <Tooltip />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#1f2937",
+                  borderRadius: "12px",
+                  border: "none",
+                  color: "#fff",
+                }}
+              />
 
-              <Line type="monotone" dataKey="penjualan" strokeWidth={3} />
+              <Line
+                type="monotone"
+                dataKey="penjualan"
+                strokeWidth={3}
+                stroke="#2563eb"
+                dot={{
+                  r: 4,
+                }}
+              />
             </LineChart>
           </ResponsiveContainer>
         )}
