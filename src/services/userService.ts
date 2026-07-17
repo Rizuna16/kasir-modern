@@ -36,6 +36,22 @@ const defaultUser: User[] = [
 
     aktif: true,
   },
+
+  {
+    id: 3,
+
+    nama: "Owner",
+
+    username: "owner",
+
+    email: "owner@kasir.com",
+
+    password: "owner123",
+
+    role: "Owner",
+
+    aktif: true,
+  },
 ];
 
 // Ambil data user
@@ -44,11 +60,7 @@ const getStorage = (): User[] => {
   const data = localStorage.getItem(STORAGE_KEY);
 
   if (!data) {
-    localStorage.setItem(
-      STORAGE_KEY,
-
-      JSON.stringify(defaultUser),
-    );
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultUser));
 
     return defaultUser;
   }
@@ -59,11 +71,7 @@ const getStorage = (): User[] => {
 // Simpan user
 
 const saveStorage = (data: User[]): void => {
-  localStorage.setItem(
-    STORAGE_KEY,
-
-    JSON.stringify(data),
-  );
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 };
 
 // Ambil semua user

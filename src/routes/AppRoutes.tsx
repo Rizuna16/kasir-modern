@@ -1,29 +1,35 @@
-import { Routes, Route } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 import ProtectedRoute from "../components/auth/ProtectedRoute";
+import RoleRoute from "../components/auth/RoleRoute";
+
+import { PERMISSIONS } from "../config/permissions";
 
 import MainLayout from "../layouts/MainLayout";
 
-import Dashboard from "../pages/Dashboard";
+import AccessDenied from "../pages/AccessDenied";
 import Barang from "../pages/Barang";
+import Dashboard from "../pages/Dashboard";
 import Kategori from "../pages/Kategori";
+import LaporanPenjualan from "../pages/LaporanPenjualan";
+import Login from "../pages/Login";
+import Pelanggan from "../pages/Pelanggan";
+import Pembelian from "../pages/Pembelian";
+import Pengaturan from "../pages/Pengaturan";
+import Penjualan from "../pages/Penjualan";
 import Satuan from "../pages/Satuan";
 import Supplier from "../pages/Supplier";
-import Pelanggan from "../pages/Pelanggan";
-import Penjualan from "../pages/Penjualan";
-import Pembelian from "../pages/Pembelian";
-import LaporanPenjualan from "../pages/LaporanPenjualan";
-import Pengaturan from "../pages/Pengaturan";
-import Login from "../pages/Login";
 import User from "../pages/User";
 
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Login */}
+      {/* Public */}
       <Route path="/login" element={<Login />} />
 
-      {/* Route yang harus login */}
+      <Route path="/403" element={<AccessDenied />} />
+
+      {/* Protected */}
       <Route
         element={
           <ProtectedRoute>
@@ -31,27 +37,104 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       >
-        <Route path="/" element={<Dashboard />} />
+        <Route
+          path="/"
+          element={
+            <RoleRoute allowedRoles={PERMISSIONS.DASHBOARD}>
+              <Dashboard />
+            </RoleRoute>
+          }
+        />
 
-        <Route path="/barang" element={<Barang />} />
+        <Route
+          path="/barang"
+          element={
+            <RoleRoute allowedRoles={PERMISSIONS.BARANG}>
+              <Barang />
+            </RoleRoute>
+          }
+        />
 
-        <Route path="/kategori" element={<Kategori />} />
+        <Route
+          path="/kategori"
+          element={
+            <RoleRoute allowedRoles={PERMISSIONS.KATEGORI}>
+              <Kategori />
+            </RoleRoute>
+          }
+        />
 
-        <Route path="/satuan" element={<Satuan />} />
+        <Route
+          path="/satuan"
+          element={
+            <RoleRoute allowedRoles={PERMISSIONS.SATUAN}>
+              <Satuan />
+            </RoleRoute>
+          }
+        />
 
-        <Route path="/supplier" element={<Supplier />} />
+        <Route
+          path="/supplier"
+          element={
+            <RoleRoute allowedRoles={PERMISSIONS.SUPPLIER}>
+              <Supplier />
+            </RoleRoute>
+          }
+        />
 
-        <Route path="/pelanggan" element={<Pelanggan />} />
+        <Route
+          path="/pelanggan"
+          element={
+            <RoleRoute allowedRoles={PERMISSIONS.PELANGGAN}>
+              <Pelanggan />
+            </RoleRoute>
+          }
+        />
 
-        <Route path="/user" element={<User />} />
+        <Route
+          path="/user"
+          element={
+            <RoleRoute allowedRoles={PERMISSIONS.USER}>
+              <User />
+            </RoleRoute>
+          }
+        />
 
-        <Route path="/penjualan" element={<Penjualan />} />
+        <Route
+          path="/penjualan"
+          element={
+            <RoleRoute allowedRoles={PERMISSIONS.PENJUALAN}>
+              <Penjualan />
+            </RoleRoute>
+          }
+        />
 
-        <Route path="/pembelian" element={<Pembelian />} />
+        <Route
+          path="/pembelian"
+          element={
+            <RoleRoute allowedRoles={PERMISSIONS.PEMBELIAN}>
+              <Pembelian />
+            </RoleRoute>
+          }
+        />
 
-        <Route path="/laporan" element={<LaporanPenjualan />} />
+        <Route
+          path="/laporan"
+          element={
+            <RoleRoute allowedRoles={PERMISSIONS.LAPORAN}>
+              <LaporanPenjualan />
+            </RoleRoute>
+          }
+        />
 
-        <Route path="/pengaturan" element={<Pengaturan />} />
+        <Route
+          path="/pengaturan"
+          element={
+            <RoleRoute allowedRoles={PERMISSIONS.PENGATURAN}>
+              <Pengaturan />
+            </RoleRoute>
+          }
+        />
       </Route>
     </Routes>
   );
