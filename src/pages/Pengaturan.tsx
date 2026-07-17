@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { toast } from "sonner";
 
@@ -9,11 +9,19 @@ import usePengaturan from "../hooks/usePengaturan";
 export default function Pengaturan() {
   const { pengaturan, updatePengaturan } = usePengaturan();
 
-  const [namaToko, setNamaToko] = useState(pengaturan.namaToko);
+  const [namaToko, setNamaToko] = useState("");
 
-  const [alamat, setAlamat] = useState(pengaturan.alamat);
+  const [alamat, setAlamat] = useState("");
 
-  const [telepon, setTelepon] = useState(pengaturan.telepon);
+  const [telepon, setTelepon] = useState("");
+
+  useEffect(() => {
+    setNamaToko(pengaturan.namaToko);
+
+    setAlamat(pengaturan.alamat);
+
+    setTelepon(pengaturan.telepon);
+  }, [pengaturan]);
 
   const handleSave = () => {
     updatePengaturan({
@@ -29,8 +37,6 @@ export default function Pengaturan() {
 
   return (
     <div className="space-y-6">
-      {/* HEADER */}
-
       <div>
         <h1
           className="
@@ -52,8 +58,6 @@ export default function Pengaturan() {
           Kelola informasi aplikasi dan data toko
         </p>
       </div>
-
-      {/* CONTENT */}
 
       <Card>
         <div className="space-y-5">

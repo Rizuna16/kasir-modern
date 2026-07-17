@@ -14,6 +14,8 @@ import useLaporan from "../hooks/useLaporan";
 
 import type { Penjualan } from "../types/penjualan";
 
+const PRINT_DELAY = 300;
+
 export default function LaporanPenjualan() {
   const {
     laporan,
@@ -57,7 +59,7 @@ export default function LaporanPenjualan() {
 
     setTimeout(() => {
       window.print();
-    }, 300);
+    }, PRINT_DELAY);
   };
 
   return (
@@ -65,9 +67,9 @@ export default function LaporanPenjualan() {
       <div>
         <h1
           className="
-            text-2xl
+            text-3xl
             font-bold
-            text-gray-800
+            text-gray-900
             dark:text-white
           "
         >
@@ -95,20 +97,41 @@ export default function LaporanPenjualan() {
         onReset={resetLaporan}
       />
 
-      <div className="flex justify-end gap-3">
-        <ExportExcelButton data={laporan} />
+      <Card>
+        <div
+          className="
+            flex
+            justify-end
+            gap-3
+          "
+        >
+          <ExportExcelButton data={laporan} />
 
-        <ExportPDFButton data={laporan} />
-      </div>
+          <ExportPDFButton data={laporan} />
+        </div>
+      </Card>
 
       <LaporanStats totalTransaksi={totalTransaksi} totalOmzet={totalOmzet} />
 
       <Card>
-        <LaporanTable
-          data={laporan}
-          onDetail={bukaDetail}
-          onPrint={bukaPrint}
-        />
+        {laporan.length === 0 ? (
+          <div
+            className="
+                py-10
+                text-center
+                text-gray-500
+                dark:text-gray-400
+              "
+          >
+            Belum ada transaksi penjualan.
+          </div>
+        ) : (
+          <LaporanTable
+            data={laporan}
+            onDetail={bukaDetail}
+            onPrint={bukaPrint}
+          />
+        )}
       </Card>
 
       <DetailPenjualanModal

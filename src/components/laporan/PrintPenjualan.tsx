@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 
 import type { Penjualan } from "../../types/penjualan";
 
-import { getPengaturan } from "../../services/pengaturanService";
+import {
+  getPengaturan,
+  type PengaturanToko,
+} from "../../services/pengaturanService";
 
-import type { PengaturanToko } from "../../services/pengaturanService";
+import { formatRupiah } from "../../utils/currency";
 
 interface Props {
   penjualan: Penjualan;
@@ -31,16 +34,19 @@ export default function PrintPenjualan({ penjualan }: Props) {
         padding: "5mm",
         fontFamily: "monospace",
         fontSize: "12px",
+        pageBreakInside: "avoid",
       }}
     >
       {/* HEADER */}
 
       <div className="text-center border-b pb-2">
-        <h1 className="text-base font-bold">{pengaturan.namaToko}</h1>
+        <h1 className="text-base font-bold">
+          {pengaturan.namaToko || "Nama Toko"}
+        </h1>
 
-        <p>{pengaturan.alamat}</p>
+        <p>{pengaturan.alamat || "-"}</p>
 
-        <p>Telp. {pengaturan.telepon}</p>
+        <p>Telp. {pengaturan.telepon || "-"}</p>
       </div>
 
       {/* INFO TRANSAKSI */}
@@ -61,7 +67,7 @@ export default function PrintPenjualan({ penjualan }: Props) {
         <div className="flex justify-between">
           <span>Pelanggan</span>
 
-          <span>{penjualan.pelangganNama}</span>
+          <span>{penjualan.pelangganNama || "-"}</span>
         </div>
       </div>
 
@@ -87,13 +93,9 @@ export default function PrintPenjualan({ penjualan }: Props) {
 
               <td className="text-center">{item.qty}</td>
 
-              <td className="text-right">
-                {item.hargaJual.toLocaleString("id-ID")}
-              </td>
+              <td className="text-right">{formatRupiah(item.hargaJual)}</td>
 
-              <td className="text-right">
-                {item.subtotal.toLocaleString("id-ID")}
-              </td>
+              <td className="text-right">{formatRupiah(item.subtotal)}</td>
             </tr>
           ))}
         </tbody>
@@ -105,7 +107,7 @@ export default function PrintPenjualan({ penjualan }: Props) {
             </td>
 
             <td className="pt-2 text-right font-bold">
-              Rp {penjualan.total.toLocaleString("id-ID")}
+              {formatRupiah(penjualan.total)}
             </td>
           </tr>
         </tfoot>
