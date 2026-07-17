@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import BarangTable from "../components/barang/BarangTable";
 import BarangTambahModal from "../components/barang/BarangTambahModal";
 import BarangEditModal from "../components/barang/BarangEditModal";
+import BarangDeleteDialog from "../components/barang/BarangDeleteDialog";
 
 import {
   getBarang,
@@ -23,9 +24,13 @@ export default function BarangPage() {
 
   const [isEditOpen, setIsEditOpen] = useState(false);
 
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+  const [deleteId, setDeleteId] = useState("");
+
   const [form, setForm] = useState<BarangFormData>(initialBarangForm);
 
-  const [editId, setEditId] = useState<string>("");
+  const [editId, setEditId] = useState("");
 
   function loadData() {
     setBarang(getBarang());
@@ -50,13 +55,9 @@ export default function BarangPage() {
   }
 
   function handleSaveEdit() {
-    updateBarang(
-      editId,
-
-      {
-        ...form,
-      },
-    );
+    updateBarang(editId, {
+      ...form,
+    });
 
     setIsEditOpen(false);
 
@@ -72,29 +73,17 @@ export default function BarangPage() {
 
     setForm({
       kode: data.kode ?? "",
-
       barcode: data.barcode ?? "",
-
       nama: data.nama ?? "",
-
       kategoriId: data.kategoriId ?? "",
-
       satuanId: data.satuanId ?? "",
-
       supplierId: data.supplierId ?? "",
-
       hargaBeli: data.hargaBeli ?? 0,
-
       hargaGrosir: data.hargaGrosir ?? 0,
-
       hargaSemiGrosir: data.hargaSemiGrosir ?? 0,
-
       hargaEcer: data.hargaEcer ?? 0,
-
       stok: data.stok ?? 0,
-
       minimalStok: data.minimalStok ?? 0,
-
       status: data.status ?? "Aktif",
     });
 
@@ -102,22 +91,24 @@ export default function BarangPage() {
   }
 
   function handleDelete(id: string) {
-    const yakin = window.confirm(
-      "Apakah Anda yakin ingin menghapus barang ini?",
-    );
+    setDeleteId(id);
 
-    if (!yakin) {
-      return;
-    }
+    setIsDeleteOpen(true);
+  }
 
-    deleteBarang(id);
+  function handleConfirmDelete() {
+    deleteBarang(deleteId);
+
+    setIsDeleteOpen(false);
+
+    setDeleteId("");
 
     loadData();
   }
 
   return (
     <div className="p-6">
-      <div className="flex justify-between mb-5">
+      <div className="mb-5 flex justify-between">
         <h1 className="text-2xl font-bold">Master Barang</h1>
 
         <button
@@ -129,11 +120,11 @@ export default function BarangPage() {
             setIsTambahOpen(true);
           }}
           className="
+            rounded
             bg-blue-600
-            text-white
             px-4
             py-2
-            rounded
+            text-white
           "
         >
           Tambah Barang
@@ -156,6 +147,15 @@ export default function BarangPage() {
         form={form}
         setForm={setForm}
         onSave={handleSaveEdit}
+      />
+
+      <BarangDeleteDialog
+        isOpen={isDeleteOpen}
+        onCancel={() => {
+          setIsDeleteOpen(false);
+          setDeleteId("");
+        }}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );
