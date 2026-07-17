@@ -2,6 +2,8 @@ import * as XLSX from "xlsx";
 
 import type { Penjualan } from "../../types/penjualan";
 
+import { toastWarning } from "../../utils/toast";
+
 interface Props {
   data: Penjualan[];
 }
@@ -9,38 +11,25 @@ interface Props {
 export default function ExportExcelButton({ data }: Props) {
   const exportExcel = () => {
     if (data.length === 0) {
-      alert("Tidak ada data laporan");
+      toastWarning("Tidak ada data laporan untuk diekspor.");
       return;
     }
 
-    // ======================
-    // SHEET 1 LAPORAN
-    // ======================
-
     const laporanSheet = data.map((item, index) => ({
       No: index + 1,
-
       Tanggal: item.tanggal,
-
       "Nomor Nota": item.nomorNota,
-
       Pelanggan: item.pelangganNama,
-
       Total: item.total,
-
       Status: item.status,
     }));
 
     const detailSheet = data.flatMap((item) =>
       item.detail.map((detail) => ({
         "Nomor Nota": item.nomorNota,
-
         Barang: detail.namaBarang,
-
         Qty: detail.qty,
-
         Harga: detail.hargaJual,
-
         Subtotal: detail.subtotal,
       })),
     );

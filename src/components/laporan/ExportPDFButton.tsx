@@ -3,6 +3,8 @@ import autoTable from "jspdf-autotable";
 
 import type { Penjualan } from "../../types/penjualan";
 
+import { toastWarning } from "../../utils/toast";
+
 interface Props {
   data: Penjualan[];
 }
@@ -10,7 +12,7 @@ interface Props {
 export default function ExportPDFButton({ data }: Props) {
   const exportPDF = () => {
     if (data.length === 0) {
-      alert("Tidak ada data laporan");
+      toastWarning("Tidak ada data laporan untuk diekspor.");
       return;
     }
 
@@ -39,33 +41,21 @@ export default function ExportPDFButton({ data }: Props) {
 
     const tableData = data.map((item, index) => [
       index + 1,
-
       item.tanggal,
-
       item.nomorNota,
-
       item.pelangganNama,
-
       `Rp ${item.total.toLocaleString("id-ID")}`,
-
       item.status,
     ]);
 
     autoTable(doc, {
       startY: 38,
-
       head: [["No", "Tanggal", "Nota", "Pelanggan", "Total", "Status"]],
-
       body: tableData,
-
       styles: {
         fontSize: 9,
       },
     });
-
-    // =========================
-    // RINGKASAN
-    // =========================
 
     const totalTransaksi = data.length;
 
@@ -80,10 +70,6 @@ export default function ExportPDFButton({ data }: Props) {
       14,
       posisiY + 7,
     );
-
-    // =========================
-    // DOWNLOAD
-    // =========================
 
     doc.save("laporan-penjualan.pdf");
   };
