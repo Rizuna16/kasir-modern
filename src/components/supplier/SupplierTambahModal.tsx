@@ -18,13 +18,9 @@ interface SupplierTambahModalProps {
 
 export default function SupplierTambahModal({
   isOpen,
-
   onClose,
-
   onSave,
-
   form,
-
   setForm,
 }: SupplierTambahModalProps) {
   return (

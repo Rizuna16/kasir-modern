@@ -1,4 +1,6 @@
-import Button from "../ui/Button";
+import { DataTable, Button, Badge } from "../ui";
+
+import { formatRupiah } from "../../utils/currency";
 
 import type { Penjualan } from "../../types/penjualan";
 
@@ -10,91 +12,119 @@ interface Props {
   onPrint?: (item: Penjualan) => void;
 }
 
-export default function LaporanTable({ data, onDetail, onPrint }: Props) {
+export default function LaporanTable({
+  data,
+
+  onDetail,
+
+  onPrint,
+}: Props) {
   return (
-    <div className="overflow-x-auto rounded-lg border bg-white shadow-sm">
-      <table className="min-w-full text-sm">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="px-4 py-3 text-left">No</th>
+    <DataTable
+      columns={[
+        {
+          header: "No",
 
-            <th className="px-4 py-3 text-left">Tanggal</th>
+          accessor: "id",
 
-            <th className="px-4 py-3 text-left">Nomor Nota</th>
+          render: (_, index) => <span>{index + 1}</span>,
+        },
 
-            <th className="px-4 py-3 text-left">Pelanggan</th>
+        {
+          header: "Tanggal",
 
-            <th className="px-4 py-3 text-right">Total</th>
+          accessor: "tanggal",
+        },
 
-            <th className="px-4 py-3 text-center">Status</th>
+        {
+          header: "Nomor Nota",
 
-            <th className="px-4 py-3 text-center">Aksi</th>
-          </tr>
-        </thead>
+          accessor: "nomorNota",
 
-        <tbody>
-          {data.length === 0 ? (
-            <tr>
-              <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
-                Tidak ada transaksi.
-              </td>
-            </tr>
-          ) : (
-            data.map((item, index) => (
-              <tr key={item.id} className="border-t hover:bg-gray-50">
-                <td className="px-4 py-3">{index + 1}</td>
+          render: (item) => (
+            <span
+              className="
+                font-medium
+                text-gray-800
+                dark:text-white
+              "
+            >
+              {item.nomorNota}
+            </span>
+          ),
+        },
 
-                <td className="px-4 py-3">{item.tanggal}</td>
+        {
+          header: "Pelanggan",
 
-                <td className="px-4 py-3 font-medium">{item.nomorNota}</td>
+          accessor: "pelangganNama",
+        },
 
-                <td className="px-4 py-3">{item.pelangganNama}</td>
+        {
+          header: "Total",
 
-                <td className="px-4 py-3 text-right">
-                  Rp {item.total.toLocaleString("id-ID")}
-                </td>
+          accessor: "total",
 
-                <td className="px-4 py-3 text-center">
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                      item.status === "LUNAS"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}
-                  >
-                    {item.status}
-                  </span>
-                </td>
+          render: (item) => (
+            <span
+              className="
+                font-semibold
+                text-gray-800
+                dark:text-white
+              "
+            >
+              {formatRupiah(item.total)}
+            </span>
+          ),
+        },
 
-                <td className="px-4 py-3">
-                  <div className="flex justify-center gap-2">
-                    <Button
-                      type="button"
-                      variant="primary"
-                      onClick={() => {
-                        console.log("KLIK DETAIL", item);
+        {
+          header: "Status",
 
-                        onDetail(item);
-                      }}
-                    >
-                      Detail
-                    </Button>
+          accessor: "status",
 
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={() => onPrint?.(item)}
-                      disabled={!onPrint}
-                    >
-                      Print
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
+          render: (item) => (
+            <Badge variant={item.status === "LUNAS" ? "success" : "warning"}>
+              {item.status}
+            </Badge>
+          ),
+        },
+
+        {
+          header: "Aksi",
+
+          accessor: "id",
+
+          render: (item) => (
+            <div
+              className="
+                flex
+                justify-center
+                gap-2
+              "
+            >
+              <Button
+                size="sm"
+                variant="primary"
+                onClick={() => onDetail(item)}
+              >
+                Detail
+              </Button>
+
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => onPrint?.(item)}
+                disabled={!onPrint}
+              >
+                Print
+              </Button>
+            </div>
+          ),
+        },
+      ]}
+      data={data}
+      emptyMessage="Tidak ada transaksi."
+    />
   );
 }

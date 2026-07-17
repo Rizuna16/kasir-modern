@@ -1,16 +1,22 @@
-import ConfirmDialog from "../ui/ConfirmDialog";
+import { ConfirmDialog } from "../ui";
 
 interface PelangganDeleteDialogProps {
   isOpen: boolean;
+
   pelangganName: string;
+
   onConfirm: () => void;
+
   onCancel: () => void;
 }
 
 export default function PelangganDeleteDialog({
   isOpen,
+
   pelangganName,
+
   onConfirm,
+
   onCancel,
 }: PelangganDeleteDialogProps) {
   return (

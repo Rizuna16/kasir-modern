@@ -10,110 +10,154 @@ export default function LowStock() {
   useEffect(() => {
     const data = getBarang();
 
-    const lowStock = data.filter((item) => item.stok <= item.minimalStok);
-
-    setStocks(lowStock);
+    setStocks(data.filter((item) => item.stok <= item.minimalStok));
   }, []);
 
   return (
     <div
       className="
-        rounded-xl
+        rounded-2xl
 
         border
-        border-gray-200
+        border-gray-100
+        dark:border-gray-700
 
         bg-white
+        dark:bg-gray-800
 
-        p-5
+        p-6
 
         shadow-sm
 
         transition-all
+        duration-300
 
-        duration-200
-
-        dark:border-gray-700
-
-        dark:bg-gray-800
+        hover:shadow-lg
       "
     >
-      <h2
-        className="
-          mb-4
+      <div className="mb-6">
+        <h2
+          className="
+            text-xl
+            font-bold
 
-          text-lg
+            text-gray-900
+            dark:text-white
+          "
+        >
+          Stok Menipis
+        </h2>
 
-          font-bold
+        <p
+          className="
+            mt-1
+            text-sm
 
-          text-gray-900
+            text-gray-500
+            dark:text-gray-400
+          "
+        >
+          Barang yang perlu segera dilakukan restock.
+        </p>
+      </div>
 
-          dark:text-white
-        "
-      >
-        Stok Menipis
-      </h2>
+      {stocks.length === 0 ? (
+        <div
+          className="
+            flex
+            flex-col
+            items-center
+            justify-center
+            gap-3
 
-      <div className="space-y-3">
-        {stocks.length === 0 ? (
-          <p
-            className="
-              text-sm
+            py-10
+          "
+        >
+          <div className="text-5xl">✅</div>
 
-              text-gray-500
-
-              dark:text-gray-400
-            "
-          >
+          <p className="font-semibold text-gray-700 dark:text-gray-200">
             Semua stok aman
           </p>
-        ) : (
-          stocks.map((item) => (
+
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Tidak ada barang yang perlu direstock.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {stocks.map((item) => (
             <div
               key={item.id}
               className="
                 flex
-
                 items-center
-
                 justify-between
+
+                rounded-xl
+
+                px-3
+                py-3
+
+                transition-colors
+
+                hover:bg-red-50
+                dark:hover:bg-red-900/20
               "
             >
-              <div
-                className="
-                  flex
+              <div className="flex items-center gap-3">
+                <div
+                  className="
+                    flex
+                    h-9
+                    w-9
+                    items-center
+                    justify-center
 
-                  items-center
+                    rounded-full
 
-                  gap-2
+                    bg-red-100
+                    dark:bg-red-900/40
 
-                  text-gray-700
+                    text-lg
+                  "
+                >
+                  ⚠️
+                </div>
 
-                  dark:text-gray-200
-                "
-              >
-                <span>⚠️</span>
+                <div>
+                  <p className="font-medium text-gray-800 dark:text-gray-100">
+                    {item.nama}
+                  </p>
 
-                <span>{item.nama}</span>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Minimal stok: {item.minimalStok}
+                  </p>
+                </div>
               </div>
 
               <span
                 className="
-                  text-sm
+                  rounded-full
 
+                  bg-red-100
+                  dark:bg-red-900/40
+
+                  px-3
+                  py-1
+
+                  text-sm
                   font-semibold
 
-                  text-red-500
-
-                  dark:text-red-400
+                  text-red-700
+                  dark:text-red-300
                 "
               >
-                {item.stok}
+                {item.stok} pcs
               </span>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

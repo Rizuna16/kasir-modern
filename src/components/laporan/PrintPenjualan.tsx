@@ -1,10 +1,28 @@
+import { useEffect, useState } from "react";
+
 import type { Penjualan } from "../../types/penjualan";
+
+import { getPengaturan } from "../../services/pengaturanService";
+
+import type { PengaturanToko } from "../../services/pengaturanService";
 
 interface Props {
   penjualan: Penjualan;
 }
 
 export default function PrintPenjualan({ penjualan }: Props) {
+  const [pengaturan, setPengaturan] = useState<PengaturanToko | null>(null);
+
+  useEffect(() => {
+    const data = getPengaturan();
+
+    setPengaturan(data);
+  }, []);
+
+  if (!pengaturan) {
+    return null;
+  }
+
   return (
     <div
       className="print-area text-black"
@@ -18,11 +36,11 @@ export default function PrintPenjualan({ penjualan }: Props) {
       {/* HEADER */}
 
       <div className="text-center border-b pb-2">
-        <h1 className="text-base font-bold">KASIR MODERN</h1>
+        <h1 className="text-base font-bold">{pengaturan.namaToko}</h1>
 
-        <p>Jl. Contoh No.123</p>
+        <p>{pengaturan.alamat}</p>
 
-        <p>Telp. 0812-3456-7890</p>
+        <p>Telp. {pengaturan.telepon}</p>
       </div>
 
       {/* INFO TRANSAKSI */}
@@ -30,16 +48,19 @@ export default function PrintPenjualan({ penjualan }: Props) {
       <div className="mt-3 text-xs">
         <div className="flex justify-between">
           <span>No Nota</span>
+
           <span>{penjualan.nomorNota}</span>
         </div>
 
         <div className="flex justify-between">
           <span>Tanggal</span>
+
           <span>{penjualan.tanggal}</span>
         </div>
 
         <div className="flex justify-between">
           <span>Pelanggan</span>
+
           <span>{penjualan.pelangganNama}</span>
         </div>
       </div>
@@ -62,7 +83,7 @@ export default function PrintPenjualan({ penjualan }: Props) {
         <tbody>
           {penjualan.detail.map((item) => (
             <tr key={item.id}>
-              <td className="py-1">{item.namaBarang}</td>
+              <td>{item.namaBarang}</td>
 
               <td className="text-center">{item.qty}</td>
 

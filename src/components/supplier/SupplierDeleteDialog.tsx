@@ -1,9 +1,12 @@
-import ConfirmDialog from "../ui/ConfirmDialog";
+import { ConfirmDialog } from "../ui";
 
 interface SupplierDeleteDialogProps {
   isOpen: boolean;
+
   supplierName: string;
+
   onConfirm: () => void;
+
   onCancel: () => void;
 }
 

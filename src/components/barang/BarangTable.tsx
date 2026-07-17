@@ -1,4 +1,4 @@
-import { DataTable } from "../ui";
+import { DataTable, Button } from "../ui";
 
 import type { Barang } from "../../types/barang";
 
@@ -18,9 +18,7 @@ interface BarangTableProps {
 
 export default function BarangTable({
   data,
-
   onEdit,
-
   onDelete,
 }: BarangTableProps) {
   const { getNamaSatuan } = useSatuan();
@@ -32,104 +30,201 @@ export default function BarangTable({
   const columns = [
     {
       header: "Kode",
-
       accessor: "kode" as keyof Barang,
+
+      render: (item: Barang) => (
+        <span className="font-mono font-semibold text-gray-700 dark:text-gray-200">
+          {item.kode}
+        </span>
+      ),
     },
 
     {
       header: "Barcode",
-
       accessor: "barcode" as keyof Barang,
+
+      render: (item: Barang) => (
+        <span className="font-mono text-sm text-gray-500 dark:text-gray-400">
+          {item.barcode || "-"}
+        </span>
+      ),
     },
 
     {
       header: "Nama Barang",
-
       accessor: "nama" as keyof Barang,
+
+      render: (item: Barang) => (
+        <div>
+          <p className="font-semibold text-gray-900 dark:text-white">
+            {item.nama}
+          </p>
+
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {item.kode}
+          </p>
+        </div>
+      ),
     },
 
     {
       header: "Kategori",
-
       accessor: "kategoriId" as keyof Barang,
 
-      render: (item: Barang) => <>{getNamaKategori(item.kategoriId)}</>,
+      render: (item: Barang) => (
+        <span
+          className="
+            rounded-full
+            bg-blue-100
+            px-3
+            py-1
+            text-xs
+            font-medium
+            text-blue-700
+
+            dark:bg-blue-900/30
+            dark:text-blue-300
+          "
+        >
+          {getNamaKategori(item.kategoriId)}
+        </span>
+      ),
     },
 
     {
       header: "Satuan",
-
       accessor: "satuanId" as keyof Barang,
 
-      render: (item: Barang) => <>{getNamaSatuan(item.satuanId)}</>,
+      render: (item: Barang) => (
+        <span
+          className="
+            rounded-full
+            bg-purple-100
+            px-3
+            py-1
+            text-xs
+            font-medium
+            text-purple-700
+
+            dark:bg-purple-900/30
+            dark:text-purple-300
+          "
+        >
+          {getNamaSatuan(item.satuanId)}
+        </span>
+      ),
     },
 
     {
       header: "Supplier",
-
       accessor: "supplierId" as keyof Barang,
 
-      render: (item: Barang) => <>{getNamaSupplier(item.supplierId)}</>,
+      render: (item: Barang) => {
+        const supplier = getNamaSupplier(item.supplierId);
+
+        return (
+          <span className="text-gray-700 dark:text-gray-300">
+            {supplier || "-"}
+          </span>
+        );
+      },
     },
 
     {
       header: "Harga Beli",
-
       accessor: "hargaBeli" as keyof Barang,
 
       className: "text-right",
 
-      render: (item: Barang) => <>{formatRupiah(item.hargaBeli)}</>,
+      render: (item: Barang) => (
+        <span className="font-semibold text-gray-900 dark:text-white">
+          {formatRupiah(item.hargaBeli)}
+        </span>
+      ),
     },
 
     {
       header: "Harga Grosir",
-
       accessor: "hargaGrosir" as keyof Barang,
 
       className: "text-right",
 
-      render: (item: Barang) => <>{formatRupiah(item.hargaGrosir)}</>,
+      render: (item: Barang) => (
+        <span className="font-semibold text-gray-900 dark:text-white">
+          {formatRupiah(item.hargaGrosir)}
+        </span>
+      ),
     },
 
     {
-      header: "Harga Semi Grosir",
-
+      header: "Harga Semi",
       accessor: "hargaSemiGrosir" as keyof Barang,
 
       className: "text-right",
 
-      render: (item: Barang) => <>{formatRupiah(item.hargaSemiGrosir)}</>,
+      render: (item: Barang) => (
+        <span className="font-semibold text-gray-900 dark:text-white">
+          {formatRupiah(item.hargaSemiGrosir)}
+        </span>
+      ),
     },
 
     {
       header: "Harga Ecer",
-
       accessor: "hargaEcer" as keyof Barang,
 
       className: "text-right",
 
-      render: (item: Barang) => <>{formatRupiah(item.hargaEcer)}</>,
+      render: (item: Barang) => (
+        <span className="font-semibold text-gray-900 dark:text-white">
+          {formatRupiah(item.hargaEcer)}
+        </span>
+      ),
     },
 
     {
       header: "Stok",
-
       accessor: "stok" as keyof Barang,
 
       className: "text-center",
 
-      render: (item: Barang) =>
-        item.stok <= item.minimalStok ? (
-          <span className="text-red-600 font-semibold">⚠️ {item.stok}</span>
-        ) : (
-          <span>{item.stok}</span>
-        ),
+      render: (item: Barang) => {
+        const rendah = item.stok <= item.minimalStok;
+
+        return (
+          <span
+            className={`
+              rounded-full
+              px-3
+              py-1
+              text-xs
+              font-semibold
+
+              ${
+                rendah
+                  ? `
+                    bg-red-100
+                    text-red-700
+                    dark:bg-red-900/30
+                    dark:text-red-300
+                  `
+                  : `
+                    bg-green-100
+                    text-green-700
+                    dark:bg-green-900/30
+                    dark:text-green-300
+                  `
+              }
+            `}
+          >
+            {rendah ? "⚠️" : "✓"} {item.stok} pcs
+          </span>
+        );
+      },
     },
 
     {
       header: "Status",
-
       accessor: "status" as keyof Barang,
 
       className: "text-center",
@@ -137,24 +232,27 @@ export default function BarangTable({
       render: (item: Barang) => (
         <span
           className={`
+            rounded-full
+            px-3
+            py-1
+            text-xs
+            font-semibold
 
-          px-3
-
-          py-1
-
-          rounded-full
-
-          text-xs
-
-          font-medium
-
-
-          ${
-            item.status === "Aktif"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }
-
+            ${
+              item.status === "Aktif"
+                ? `
+                  bg-green-100
+                  text-green-700
+                  dark:bg-green-900/30
+                  dark:text-green-300
+                `
+                : `
+                  bg-red-100
+                  text-red-700
+                  dark:bg-red-900/30
+                  dark:text-red-300
+                `
+            }
           `}
         >
           {item.status}
@@ -164,32 +262,19 @@ export default function BarangTable({
 
     {
       header: "Aksi",
-
       accessor: "id" as keyof Barang,
 
-      className: "text-center w-40",
+      className: "text-center w-52",
 
       render: (item: Barang) => (
-        <div className="flex justify-center gap-3">
-          <button
-            onClick={() => onEdit(item)}
-            className="
-            text-blue-600
-            hover:text-blue-800
-            "
-          >
+        <div className="flex justify-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => onEdit(item)}>
             Edit
-          </button>
+          </Button>
 
-          <button
-            onClick={() => onDelete(item.id)}
-            className="
-            text-red-600
-            hover:text-red-800
-            "
-          >
+          <Button size="sm" variant="danger" onClick={() => onDelete(item.id)}>
             Hapus
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -198,11 +283,23 @@ export default function BarangTable({
   return (
     <div
       className="
-      bg-white
-      rounded-xl
-      border
-      shadow-sm
-      p-6
+        rounded-2xl
+
+        border
+        border-gray-200
+        dark:border-gray-700
+
+        bg-white
+        dark:bg-gray-800
+
+        p-6
+
+        shadow-sm
+
+        transition-all
+        duration-300
+
+        hover:shadow-md
       "
     >
       <DataTable

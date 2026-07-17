@@ -18,13 +18,9 @@ interface SupplierEditModalProps {
 
 export default function SupplierEditModal({
   isOpen,
-
   onClose,
-
   onSave,
-
   form,
-
   setForm,
 }: SupplierEditModalProps) {
   return (

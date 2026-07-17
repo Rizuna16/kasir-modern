@@ -1,4 +1,4 @@
-import DataTable from "../ui/DataTable";
+import { DataTable, Button, Badge } from "../ui";
 
 import type { Supplier } from "../../types/supplier";
 
@@ -18,69 +18,80 @@ export default function SupplierTable({
   const columns = [
     {
       header: "Kode",
+
       accessor: "kode" as keyof Supplier,
     },
 
     {
       header: "Nama Supplier",
+
       accessor: "nama" as keyof Supplier,
     },
 
     {
       header: "Telepon",
+
       accessor: "telepon" as keyof Supplier,
     },
 
     {
       header: "Email",
+
       accessor: "email" as keyof Supplier,
     },
 
     {
       header: "Alamat",
+
       accessor: "alamat" as keyof Supplier,
     },
 
     {
       header: "Status",
+
       accessor: "status" as keyof Supplier,
 
-      render: (row: Supplier) => (
-        <span
-          className={`rounded-full px-3 py-1 text-xs font-medium ${
-            row.status === "Aktif"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
-        >
-          {row.status}
-        </span>
+      className: "text-center",
+
+      render: (item: Supplier) => (
+        <Badge variant={item.status === "Aktif" ? "success" : "danger"}>
+          {item.status}
+        </Badge>
       ),
     },
 
     {
       header: "Aksi",
+
       accessor: "id" as keyof Supplier,
 
-      render: (row: Supplier) => (
-        <div className="flex gap-2">
-          <button
-            onClick={() => onEdit(row.id)}
-            className="rounded bg-yellow-500 px-3 py-1 text-sm text-white hover:bg-yellow-600"
-          >
-            Edit
-          </button>
+      className: "text-center",
 
-          <button
-            onClick={() => onDelete(row.id)}
-            className="rounded bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600"
-          >
+      render: (item: Supplier) => (
+        <div
+          className="
+            flex
+            justify-center
+            gap-2
+          "
+        >
+          <Button size="sm" variant="secondary" onClick={() => onEdit(item.id)}>
+            Edit
+          </Button>
+
+          <Button size="sm" variant="danger" onClick={() => onDelete(item.id)}>
             Hapus
-          </button>
+          </Button>
         </div>
       ),
     },
   ];
 
-  return <DataTable columns={columns} data={data} />;
+  return (
+    <DataTable
+      columns={columns}
+      data={data}
+      emptyMessage="Belum ada data supplier"
+    />
+  );
 }

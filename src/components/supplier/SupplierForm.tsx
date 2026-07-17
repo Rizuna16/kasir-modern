@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 
-import Input from "../ui/Input";
+import { Input, Select } from "../ui";
 
 import type { SupplierFormData } from "../../types/supplierForm";
 
@@ -14,9 +14,28 @@ export default function SupplierForm({ form, setForm }: SupplierFormProps) {
   return (
     <div className="space-y-6">
       <section>
-        <h3 className="text-lg font-semibold mb-3">Informasi Supplier</h3>
+        <h3
+          className="
+            mb-4
+            text-lg
+            font-semibold
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            text-gray-900
+            dark:text-white
+          "
+        >
+          Informasi Supplier
+        </h3>
+
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-5
+
+            md:grid-cols-2
+          "
+        >
           <Input
             label="Kode Supplier"
             placeholder="Contoh : SUP001"
@@ -80,22 +99,26 @@ export default function SupplierForm({ form, setForm }: SupplierFormProps) {
           />
 
           <div className="md:col-span-2">
-            <label className="block mb-2 text-sm font-medium">Status</label>
-
-            <select
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <Select
+              label="Status"
               value={form.status}
-              onChange={(e) =>
+              onChange={(value) =>
                 setForm({
                   ...form,
-                  status: e.target.value as "Aktif" | "Nonaktif",
+                  status: value as "Aktif" | "Nonaktif",
                 })
               }
-            >
-              <option value="Aktif">Aktif</option>
-
-              <option value="Nonaktif">Nonaktif</option>
-            </select>
+              options={[
+                {
+                  label: "Aktif",
+                  value: "Aktif",
+                },
+                {
+                  label: "Nonaktif",
+                  value: "Nonaktif",
+                },
+              ]}
+            />
           </div>
         </div>
       </section>

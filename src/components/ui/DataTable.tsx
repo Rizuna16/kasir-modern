@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 
-interface Column<T> {
+export interface Column<T> {
   header: string;
 
   accessor: keyof T;
 
-  render?: (row: T) => ReactNode;
+  render?: (row: T, index: number) => ReactNode;
 
   className?: string;
 }
@@ -35,8 +35,10 @@ export default function DataTable<T>({
 
         border
         border-gray-200
+        dark:border-slate-700
 
         bg-white
+        dark:bg-slate-900
 
         shadow-sm
       "
@@ -45,6 +47,7 @@ export default function DataTable<T>({
         <thead
           className="
             bg-gray-50
+            dark:bg-slate-800
           "
         >
           <tr>
@@ -66,6 +69,7 @@ export default function DataTable<T>({
                   tracking-wide
 
                   text-gray-600
+                  dark:text-gray-300
 
                   ${column.className ?? ""}
                 `}
@@ -83,8 +87,11 @@ export default function DataTable<T>({
                 colSpan={columns.length}
                 className="
                   py-12
+
                   text-center
+
                   text-gray-500
+                  dark:text-gray-400
                 "
               >
                 <div
@@ -107,6 +114,7 @@ export default function DataTable<T>({
                       border-4
 
                       border-gray-200
+                      dark:border-slate-600
 
                       border-t-blue-600
                     "
@@ -122,6 +130,7 @@ export default function DataTable<T>({
                 colSpan={columns.length}
                 className="
                   py-12
+
                   text-center
                 "
               >
@@ -138,7 +147,9 @@ export default function DataTable<T>({
                   <p
                     className="
                       font-semibold
+
                       text-gray-700
+                      dark:text-gray-200
                     "
                   >
                     {emptyMessage}
@@ -147,7 +158,9 @@ export default function DataTable<T>({
                   <p
                     className="
                       text-sm
+
                       text-gray-400
+                      dark:text-gray-500
                     "
                   >
                     Belum ada data untuk ditampilkan
@@ -161,11 +174,14 @@ export default function DataTable<T>({
                 key={rowIndex}
                 className="
                   border-t
+
                   border-gray-100
+                  dark:border-slate-800
 
                   transition
 
                   hover:bg-gray-50
+                  dark:hover:bg-slate-800
                 "
               >
                 {columns.map((column, columnIndex) => (
@@ -177,14 +193,21 @@ export default function DataTable<T>({
 
                       text-sm
 
-                      text-gray-700
-
                       ${column.className ?? ""}
                     `}
                   >
-                    {column.render
-                      ? column.render(row)
-                      : String(row[column.accessor] ?? "")}
+                    {column.render ? (
+                      column.render(row, rowIndex)
+                    ) : (
+                      <span
+                        className="
+                          text-gray-700
+                          dark:text-gray-200
+                        "
+                      >
+                        {String(row[column.accessor] ?? "")}
+                      </span>
+                    )}
                   </td>
                 ))}
               </tr>

@@ -4,7 +4,7 @@ import type { Pembelian } from "../types/pembelian";
 
 const STORAGE_KEY = "pembelian";
 
-// Ambil data pembelian
+// Ambil data storage
 
 const getStorage = (): Pembelian[] => {
   const data = localStorage.getItem(STORAGE_KEY);
@@ -15,10 +15,14 @@ const getStorage = (): Pembelian[] => {
     return [];
   }
 
-  return JSON.parse(data);
+  try {
+    return JSON.parse(data);
+  } catch {
+    return [];
+  }
 };
 
-// Simpan data pembelian
+// Simpan storage
 
 const saveStorage = (data: Pembelian[]): void => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -45,21 +49,21 @@ export const addPembelian = (
 ): Pembelian => {
   const pembelian = getStorage();
 
+  const now = new Date().toISOString();
+
   const newPembelian: Pembelian = {
     id: crypto.randomUUID(),
 
     ...data,
 
-    createdAt: new Date().toISOString(),
+    createdAt: now,
 
-    updatedAt: new Date().toISOString(),
+    updatedAt: now,
   };
 
   pembelian.push(newPembelian);
 
   saveStorage(pembelian);
-
-  // tambah stok barang
 
   newPembelian.detail.forEach((item) => {
     updateStokBarang(item.barangId, item.qty);
@@ -83,8 +87,6 @@ export const updatePembelian = (
     return null;
   }
 
-  // kembalikan stok lama
-
   pembelian[index].detail.forEach((item) => {
     kurangiStokBarang(item.barangId, item.qty);
   });
@@ -100,8 +102,6 @@ export const updatePembelian = (
 
     updatedAt: new Date().toISOString(),
   };
-
-  // tambah stok baru
 
   pembelian[index].detail.forEach((item) => {
     updateStokBarang(item.barangId, item.qty);

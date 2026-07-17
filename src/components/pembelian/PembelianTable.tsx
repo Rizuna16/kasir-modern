@@ -1,4 +1,10 @@
+// src/components/pembelian/PembelianTable.tsx
+
+import { DataTable, Button, Badge } from "../ui";
+
 import type { Pembelian } from "../../types/pembelian";
+
+import { formatRupiah } from "../../utils/currency";
 
 interface Props {
   data: Pembelian[];
@@ -6,73 +12,117 @@ interface Props {
   onDetail: (pembelian: Pembelian) => void;
 }
 
-export default function PembelianTable({ data, onDetail }: Props) {
+export default function PembelianTable({
+  data,
+
+  onDetail,
+}: Props) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full border">
-        <thead>
-          <tr className="bg-gray-100 border-b">
-            <th className="p-3 text-left">No Faktur</th>
+    <DataTable
+      columns={[
+        {
+          header: "No",
+          accessor: "id",
+          render: (_, index) => (
+            <span
+              className="
+                text-gray-700
+                dark:text-gray-300
+              "
+            >
+              {index + 1}
+            </span>
+          ),
+        },
 
-            <th className="p-3 text-left">Tanggal</th>
+        {
+          header: "Nomor Faktur",
+          accessor: "nomorFaktur",
+          render: (item) => (
+            <span
+              className="
+                font-medium
+                text-gray-800
+                dark:text-white
+              "
+            >
+              {item.nomorFaktur}
+            </span>
+          ),
+        },
 
-            <th className="p-3 text-left">Supplier</th>
+        {
+          header: "Tanggal",
+          accessor: "tanggal",
+          render: (item) => (
+            <span
+              className="
+                text-gray-700
+                dark:text-gray-300
+              "
+            >
+              {item.tanggal}
+            </span>
+          ),
+        },
 
-            <th className="p-3 text-left">Total</th>
+        {
+          header: "Supplier",
+          accessor: "supplierNama",
+          render: (item) => (
+            <span
+              className="
+                text-gray-700
+                dark:text-gray-300
+              "
+            >
+              {item.supplierNama}
+            </span>
+          ),
+        },
 
-            <th className="p-3 text-left">Status</th>
+        {
+          header: "Total",
+          accessor: "total",
+          render: (item) => (
+            <span
+              className="
+                font-semibold
+                text-gray-800
+                dark:text-white
+              "
+            >
+              {formatRupiah(item.total)}
+            </span>
+          ),
+        },
 
-            <th className="p-3 text-center">Aksi</th>
-          </tr>
-        </thead>
+        {
+          header: "Status",
+          accessor: "status",
+          render: (item) => (
+            <Badge variant={item.status === "LUNAS" ? "success" : "warning"}>
+              {item.status}
+            </Badge>
+          ),
+        },
 
-        <tbody>
-          {data.map((item) => (
-            <tr key={item.id} className="border-b">
-              <td className="p-3">{item.nomorFaktur}</td>
-
-              <td className="p-3">{item.tanggal}</td>
-
-              <td className="p-3">{item.supplierNama}</td>
-
-              <td className="p-3">Rp {item.total.toLocaleString()}</td>
-
-              <td className="p-3">{item.status}</td>
-
-              <td className="p-3 text-center">
-                <button
-                  onClick={() => onDetail(item)}
-                  className="
-                    px-3
-                    py-1
-                    rounded
-                    bg-blue-500
-                    text-white
-                    hover:bg-blue-600
-                  "
-                >
-                  Detail
-                </button>
-              </td>
-            </tr>
-          ))}
-
-          {data.length === 0 && (
-            <tr>
-              <td
-                colSpan={6}
-                className="
-                  text-center
-                  py-5
-                  text-gray-500
-                "
-              >
-                Belum ada transaksi pembelian
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+        {
+          header: "Aksi",
+          accessor: "id",
+          render: (item) => (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => onDetail(item)}
+            >
+              Detail
+            </Button>
+          ),
+        },
+      ]}
+      data={data}
+      emptyMessage="Belum ada transaksi pembelian"
+    />
   );
 }

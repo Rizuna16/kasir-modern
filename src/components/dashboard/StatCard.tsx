@@ -1,54 +1,46 @@
 interface Props {
   title: string;
-
   value: string | number;
-
   icon: string;
-
   color: string;
 }
 
-export default function StatCard({
-  title,
-
-  value,
-
-  icon,
-
-  color,
-}: Props) {
+export default function StatCard({ title, value, icon, color }: Props) {
   return (
     <div
       className="
-        rounded-xl
+        group
+
+        rounded-2xl
 
         border
-        border-gray-200
+        border-gray-100
+        dark:border-gray-700
 
         bg-white
+        dark:bg-gray-800
 
-        p-5
+        p-6
 
         shadow-sm
 
         transition-all
-        duration-200
+        duration-300
 
-        hover:shadow-md
-
-        dark:border-gray-700
-
-        dark:bg-gray-800
+        hover:-translate-y-1
+        hover:shadow-lg
       "
     >
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex-1">
           <p
             className="
-              text-sm
+              text-xs
+              font-semibold
+              uppercase
+              tracking-wider
 
               text-gray-500
-
               dark:text-gray-400
             "
           >
@@ -57,14 +49,13 @@ export default function StatCard({
 
           <h2
             className="
-              mt-2
+              mt-3
 
-              text-2xl
+              text-3xl
 
               font-bold
 
               text-gray-900
-
               dark:text-white
             "
           >
@@ -75,18 +66,21 @@ export default function StatCard({
         <div
           className={`
             flex
-
-            h-12
-
-            w-12
-
+            h-14
+            w-14
             items-center
-
             justify-center
 
-            rounded-full
+            rounded-2xl
 
-            text-xl
+            text-2xl
+
+            shadow-sm
+
+            transition-transform
+            duration-300
+
+            group-hover:scale-110
 
             ${color}
           `}

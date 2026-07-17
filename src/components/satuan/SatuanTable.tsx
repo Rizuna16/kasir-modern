@@ -4,11 +4,15 @@ import type { Satuan } from "../../types/satuan";
 
 interface SatuanTableProps {
   data: Satuan[];
+
   search: string;
+
   setSearch: (value: string) => void;
 
   onTambah: () => void;
+
   onEdit: (id: number) => void;
+
   onDelete: (id: number) => void;
 }
 
@@ -23,60 +27,107 @@ export default function SatuanTable({
   const columns = [
     {
       header: "ID",
+
       accessor: "id" as keyof Satuan,
+
+      className: "text-center w-20",
     },
 
     {
       header: "Nama Satuan",
+
       accessor: "nama" as keyof Satuan,
     },
 
     {
       header: "Aksi",
+
       accessor: "id" as keyof Satuan,
 
+      className: "text-center w-44",
+
       render: (item: Satuan) => (
-        <div className="flex justify-center gap-3">
-          <button
+        <div className="flex justify-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => onEdit(item.id)}
-            className="text-blue-600 hover:text-blue-800"
+            className="
+              text-blue-600
+              hover:text-blue-700
+
+              dark:text-blue-400
+              dark:hover:text-blue-300
+            "
           >
             Edit
-          </button>
+          </Button>
 
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => onDelete(item.id)}
-            className="text-red-600 hover:text-red-800"
+            className="
+              text-red-600
+              hover:text-red-700
+
+              dark:text-red-400
+              dark:hover:text-red-300
+            "
           >
             Hapus
-          </button>
+          </Button>
         </div>
       ),
     },
   ];
 
   return (
-    <div className="bg-white rounded-xl border shadow-sm p-6">
-      {/* Header */}
+    <div
+      className="
+        rounded-xl
 
-      <div className="flex justify-between items-center mb-5">
-        <div>
-          <h2 className="text-lg font-semibold">Master Satuan</h2>
+        border
+        border-gray-200
+        dark:border-gray-700
 
-          <p className="text-gray-500 text-sm">Kelola satuan barang</p>
+        bg-white
+        dark:bg-gray-800
+
+        p-6
+
+        shadow-sm
+
+        transition-all
+        duration-200
+      "
+    >
+      {/* Toolbar */}
+
+      <div
+        className="
+          mb-6
+
+          flex
+          flex-col
+          gap-4
+
+          md:flex-row
+          md:items-center
+          md:justify-between
+        "
+      >
+        <div className="w-full md:max-w-sm">
+          <SearchBox
+            value={search}
+            onChange={setSearch}
+            placeholder="Cari satuan..."
+          />
         </div>
 
-        <Button onClick={onTambah}>+ Tambah Satuan</Button>
-      </div>
-
-      {/* Search */}
-
-      <div className="mb-5">
-        <SearchBox
-          value={search}
-          onChange={setSearch}
-          placeholder="Cari satuan..."
-        />
+        <Button variant="primary" onClick={onTambah}>
+          + Tambah Satuan
+        </Button>
       </div>
 
       {/* Table */}

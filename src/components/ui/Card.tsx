@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 
 type Padding = "sm" | "md" | "lg";
 
+type Variant = "default" | "soft";
+
 interface CardProps {
   title?: string;
 
@@ -17,17 +19,28 @@ interface CardProps {
 
   hover?: boolean;
 
+  variant?: Variant;
+
   className?: string;
 }
 
 export default function Card({
   title,
+
   subtitle,
+
   children,
+
   action,
+
   footer,
+
   padding = "md",
+
   hover = false,
+
+  variant = "default",
+
   className = "",
 }: CardProps) {
   const paddings = {
@@ -38,47 +51,93 @@ export default function Card({
     lg: "p-8",
   };
 
+  const variants = {
+    default: `
+        bg-white
+        dark:bg-slate-900
+      `,
+
+    soft: `
+        bg-gray-50
+        dark:bg-slate-800
+      `,
+  };
+
   return (
     <div
       className={`
+
         rounded-xl
 
+
         border
+
         border-gray-200
 
-        bg-white
+        dark:border-slate-700
+
+
+
+        ${variants[variant]}
+
+
 
         shadow-sm
 
+
         transition-all
+
         duration-200
+
+
 
         ${hover ? "hover:shadow-md" : ""}
 
+
+
         ${className}
+
       `}
     >
       {(title || subtitle || action) && (
         <div
           className="
+
             flex
+
             items-center
+
             justify-between
 
+
+
             border-b
+
             border-gray-100
 
+            dark:border-slate-700
+
+
+
             px-6
+
             py-4
+
           "
         >
           <div>
             {title && (
               <h2
                 className="
+
                   text-lg
+
                   font-semibold
+
                   text-gray-800
+
+                  dark:text-white
+
                 "
               >
                 {title}
@@ -88,9 +147,15 @@ export default function Card({
             {subtitle && (
               <p
                 className="
+
                   mt-1
+
                   text-sm
+
                   text-gray-500
+
+                  dark:text-gray-400
+
                 "
               >
                 {subtitle}
@@ -107,14 +172,27 @@ export default function Card({
       {footer && (
         <div
           className="
+
             border-t
+
             border-gray-100
 
+            dark:border-slate-700
+
+
+
             px-6
+
             py-3
 
+
+
             text-sm
+
             text-gray-500
+
+            dark:text-gray-400
+
           "
         >
           {footer}

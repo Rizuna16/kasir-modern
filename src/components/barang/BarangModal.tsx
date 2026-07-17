@@ -30,15 +30,10 @@ interface BarangModalProps {
 
 export default function BarangModal({
   isOpen,
-
   title,
-
   onClose,
-
   onSave,
-
   form,
-
   setForm,
 }: BarangModalProps) {
   const [kategori, setKategori] = useState<Kategori[]>([]);
@@ -51,23 +46,30 @@ export default function BarangModal({
     loadMasterData();
   }, []);
 
-  const loadMasterData = () => {
-    const dataKategori = getKategori();
+  function loadMasterData() {
+    setKategori(getKategori());
 
-    const dataSatuan = getSatuan();
+    setSatuan(getSatuan());
 
-    const dataSupplier = getSupplier();
-
-    setKategori(dataKategori);
-
-    setSatuan(dataSatuan);
-
-    setSupplier(dataSupplier);
-  };
+    setSupplier(getSupplier());
+  }
 
   return (
-    <Modal isOpen={isOpen} title={title} onClose={onClose}>
+    <Modal isOpen={isOpen} title={title} onClose={onClose} size="xl">
       <div className="space-y-6">
+        <div>
+          <p
+            className="
+              text-sm
+              text-gray-500
+              dark:text-gray-400
+            "
+          >
+            Lengkapi informasi barang di bawah ini. Pastikan seluruh data sudah
+            benar sebelum disimpan.
+          </p>
+        </div>
+
         <BarangForm
           form={form}
           setForm={setForm}
@@ -76,14 +78,43 @@ export default function BarangModal({
           supplier={supplier}
         />
 
-        <div className="flex justify-end gap-3">
-          <Button variant="secondary" onClick={onClose}>
-            Batal
-          </Button>
+        <div
+          className="
+            border-t
+            border-gray-200
+            pt-5
 
-          <Button variant="primary" onClick={onSave}>
-            Simpan
-          </Button>
+            dark:border-gray-700
+          "
+        >
+          <div
+            className="
+              flex
+              flex-col-reverse
+              gap-3
+
+              sm:flex-row
+              sm:justify-end
+            "
+          >
+            <Button
+              variant="secondary"
+              fullWidth
+              className="sm:w-auto"
+              onClick={onClose}
+            >
+              Batal
+            </Button>
+
+            <Button
+              variant="primary"
+              fullWidth
+              className="sm:w-auto"
+              onClick={onSave}
+            >
+              Simpan
+            </Button>
+          </div>
         </div>
       </div>
     </Modal>

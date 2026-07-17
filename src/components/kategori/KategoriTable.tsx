@@ -1,13 +1,21 @@
 import type { Dispatch, SetStateAction } from "react";
+
 import type { Kategori } from "../../types/kategori";
+
 import Button from "../ui/Button";
+import { DataTable } from "../ui";
 
 interface Props {
   data: Kategori[];
+
   search: string;
+
   setSearch: Dispatch<SetStateAction<string>>;
+
   onTambah: () => void;
+
   onDelete: (id: number) => void;
+
   onEdit: (id: number) => void;
 }
 
@@ -19,14 +27,132 @@ export default function KategoriTable({
   onDelete,
   onEdit,
 }: Props) {
-  return (
-    <div className="bg-white rounded-xl border shadow-sm p-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
-        <div>
-          <h2 className="text-lg font-semibold">Master Kategori</h2>
+  const columns = [
+    {
+      header: "ID",
 
-          <p className="text-gray-500 text-sm">Kelola kategori barang</p>
+      accessor: "id" as keyof Kategori,
+    },
+
+    {
+      header: "Nama Kategori",
+
+      accessor: "nama" as keyof Kategori,
+    },
+
+    {
+      header: "Deskripsi",
+
+      accessor: "deskripsi" as keyof Kategori,
+    },
+
+    {
+      header: "Aksi",
+
+      accessor: "id" as keyof Kategori,
+
+      className: "text-center w-40",
+
+      render: (item: Kategori) => (
+        <div
+          className="
+            flex
+            justify-center
+            gap-3
+          "
+        >
+          <button
+            onClick={() => onEdit(item.id)}
+            className="
+              text-blue-600
+              hover:text-blue-800
+
+              dark:text-blue-400
+              dark:hover:text-blue-300
+            "
+          >
+            Edit
+          </button>
+
+          <button
+            onClick={() => onDelete(item.id)}
+            className="
+              text-red-600
+              hover:text-red-800
+
+              dark:text-red-400
+              dark:hover:text-red-300
+            "
+          >
+            Hapus
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <div
+      className="
+        rounded-xl
+
+        border
+        border-gray-200
+
+        bg-white
+
+        p-6
+
+        shadow-sm
+
+        transition-all
+
+        duration-200
+
+        dark:border-gray-700
+
+        dark:bg-gray-800
+      "
+    >
+      {/* Header */}
+      <div
+        className="
+          mb-5
+
+          flex
+          flex-col
+          gap-4
+
+          md:flex-row
+          md:items-center
+          md:justify-between
+        "
+      >
+        <div>
+          <h2
+            className="
+              text-lg
+              font-semibold
+
+              text-gray-900
+
+              dark:text-white
+            "
+          >
+            Master Kategori
+          </h2>
+
+          <p
+            className="
+              text-sm
+
+              text-gray-500
+
+              dark:text-gray-400
+            "
+          >
+            Kelola kategori barang
+          </p>
         </div>
 
         <Button onClick={onTambah}>+ Tambah Kategori</Button>
@@ -39,70 +165,46 @@ export default function KategoriTable({
           placeholder="Cari kategori..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full md:w-80 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="
+            w-full
+
+            md:w-80
+
+            rounded-lg
+
+            border
+            border-gray-300
+
+            bg-white
+
+            px-4
+            py-2
+
+            text-gray-900
+
+            placeholder:text-gray-400
+
+            focus:outline-none
+            focus:ring-2
+            focus:ring-blue-500
+
+            dark:border-gray-600
+
+            dark:bg-gray-700
+
+            dark:text-white
+
+            dark:placeholder:text-gray-400
+          "
         />
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b bg-gray-50">
-              <th className="p-3 text-left w-20">ID</th>
-
-              <th className="p-3 text-left">Nama Kategori</th>
-
-              <th className="p-3 text-left">Deskripsi</th>
-
-              <th className="p-3 text-center w-40">Aksi</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {data.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="text-center py-10 text-gray-500">
-                  Belum ada data kategori
-                </td>
-              </tr>
-            ) : (
-              data.map((item) => (
-                <tr
-                  key={item.id}
-                  className="border-b hover:bg-gray-50 transition"
-                >
-                  <td className="p-3">{item.id}</td>
-
-                  <td className="p-3 font-medium">{item.nama}</td>
-
-                  <td className="p-3 text-gray-600">{item.deskripsi}</td>
-
-                  <td className="p-3">
-                    <div className="flex items-center justify-center gap-3">
-                      <button
-                        onClick={() => {
-                          console.log("klik edit", item.id);
-                          onEdit(item.id);
-                        }}
-                        className="text-blue-600 hover:text-blue-800 font-medium"
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        onClick={() => onDelete(item.id)}
-                        className="text-red-600 hover:text-red-800 font-medium"
-                      >
-                        Hapus
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        columns={columns}
+        data={data}
+        emptyMessage="Belum ada data kategori"
+      />
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import { Button, DataTable, Badge } from "../ui";
+
 import type { User } from "../../types/user";
 
 interface Props {
@@ -8,84 +10,95 @@ interface Props {
   onDelete: (id: number) => void;
 }
 
-export default function UserTable({
-  data,
+export default function UserTable({ data, onEdit, onDelete }: Props) {
+  const columns = [
+    {
+      header: "Nama",
 
-  onEdit,
+      accessor: "nama" as keyof User,
+    },
 
-  onDelete,
-}: Props) {
+    {
+      header: "Username",
+
+      accessor: "username" as keyof User,
+    },
+
+    {
+      header: "Email",
+
+      accessor: "email" as keyof User,
+    },
+
+    {
+      header: "Role",
+
+      accessor: "role" as keyof User,
+
+      render: (item: User) => <Badge variant="info">{item.role}</Badge>,
+    },
+
+    {
+      header: "Status",
+
+      accessor: "aktif" as keyof User,
+
+      render: (item: User) =>
+        item.aktif ? (
+          <Badge variant="success">Aktif</Badge>
+        ) : (
+          <Badge variant="danger">Nonaktif</Badge>
+        ),
+    },
+
+    {
+      header: "Aksi",
+
+      accessor: "id" as keyof User,
+
+      className: "text-center w-44",
+
+      render: (item: User) => (
+        <div className="flex justify-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onEdit(item)}
+            className="
+              text-blue-600
+              hover:text-blue-700
+
+              dark:text-blue-400
+              dark:hover:text-blue-300
+            "
+          >
+            Edit
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onDelete(item.id)}
+            className="
+              text-red-600
+              hover:text-red-700
+
+              dark:text-red-400
+              dark:hover:text-red-300
+            "
+          >
+            Hapus
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border px-4 py-2">Nama</th>
-
-            <th className="border px-4 py-2">Username</th>
-
-            <th className="border px-4 py-2">Email</th>
-
-            <th className="border px-4 py-2">Role</th>
-
-            <th className="border px-4 py-2">Status</th>
-
-            <th className="border px-4 py-2">Aksi</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {data.map((item) => (
-            <tr key={item.id}>
-              <td className="border px-4 py-2">{item.nama}</td>
-
-              <td className="border px-4 py-2">{item.username}</td>
-
-              <td className="border px-4 py-2">{item.email}</td>
-
-              <td className="border px-4 py-2">{item.role}</td>
-
-              <td className="border px-4 py-2">
-                {item.aktif ? (
-                  <span className="text-green-600">Aktif</span>
-                ) : (
-                  <span className="text-red-600">Nonaktif</span>
-                )}
-              </td>
-
-              <td className="border px-4 py-2">
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => onEdit(item)}
-                    className="
-                      bg-yellow-500
-                      text-white
-                      px-3
-                      py-1
-                      rounded
-                    "
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    onClick={() => onDelete(item.id)}
-                    className="
-                      bg-red-600
-                      text-white
-                      px-3
-                      py-1
-                      rounded
-                    "
-                  >
-                    Hapus
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <DataTable
+      columns={columns}
+      data={data}
+      emptyMessage="Belum ada data user"
+    />
   );
 }

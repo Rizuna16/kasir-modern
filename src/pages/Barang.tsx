@@ -5,6 +5,8 @@ import BarangTambahModal from "../components/barang/BarangTambahModal";
 import BarangEditModal from "../components/barang/BarangEditModal";
 import BarangDeleteDialog from "../components/barang/BarangDeleteDialog";
 
+import Button from "../components/ui/Button";
+
 import {
   getBarang,
   addBarang,
@@ -99,19 +101,55 @@ export default function BarangPage() {
   function handleConfirmDelete() {
     deleteBarang(deleteId);
 
-    setIsDeleteOpen(false);
-
     setDeleteId("");
+
+    setIsDeleteOpen(false);
 
     loadData();
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-5 flex justify-between">
-        <h1 className="text-2xl font-bold">Master Barang</h1>
+    <div className="space-y-6">
+      <div
+        className="
+          flex
+          flex-col
+          gap-4
 
-        <button
+          md:flex-row
+          md:items-center
+          md:justify-between
+        "
+      >
+        <div>
+          <h1
+            className="
+              text-3xl
+              font-bold
+
+              text-gray-900
+              dark:text-white
+            "
+          >
+            Master Barang
+          </h1>
+
+          <p
+            className="
+              mt-1
+
+              text-sm
+
+              text-gray-500
+              dark:text-gray-400
+            "
+          >
+            Kelola data barang, stok, dan harga penjualan.
+          </p>
+        </div>
+
+        <Button
+          variant="primary"
           onClick={() => {
             setForm({
               ...initialBarangForm,
@@ -119,23 +157,18 @@ export default function BarangPage() {
 
             setIsTambahOpen(true);
           }}
-          className="
-            rounded
-            bg-blue-600
-            px-4
-            py-2
-            text-white
-          "
         >
           Tambah Barang
-        </button>
+        </Button>
       </div>
 
       <BarangTable data={barang} onEdit={handleEdit} onDelete={handleDelete} />
 
       <BarangTambahModal
         isOpen={isTambahOpen}
-        onClose={() => setIsTambahOpen(false)}
+        onClose={() => {
+          setIsTambahOpen(false);
+        }}
         form={form}
         setForm={setForm}
         onSave={handleSaveTambah}
@@ -143,7 +176,9 @@ export default function BarangPage() {
 
       <BarangEditModal
         isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
+        onClose={() => {
+          setIsEditOpen(false);
+        }}
         form={form}
         setForm={setForm}
         onSave={handleSaveEdit}
@@ -152,8 +187,8 @@ export default function BarangPage() {
       <BarangDeleteDialog
         isOpen={isDeleteOpen}
         onCancel={() => {
-          setIsDeleteOpen(false);
           setDeleteId("");
+          setIsDeleteOpen(false);
         }}
         onConfirm={handleConfirmDelete}
       />

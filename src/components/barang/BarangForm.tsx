@@ -1,4 +1,5 @@
 import Input from "../ui/Input";
+import Select from "../ui/Select";
 
 import type { BarangFormData } from "../../types/barangForm";
 import type { Satuan } from "../../types/satuan";
@@ -19,26 +20,42 @@ interface BarangFormProps {
 
 export default function BarangForm({
   form,
-
   setForm,
-
   kategori,
-
   satuan,
-
   supplier,
 }: BarangFormProps) {
   return (
     <div className="space-y-6">
-      {/* INFORMASI BARANG */}
+      {/* ==================== INFORMASI ==================== */}
 
-      <section>
-        <h3 className="text-lg font-semibold mb-3">Informasi Barang</h3>
+      <section
+        className="
+          rounded-xl
+          border
+          border-gray-200
+          dark:border-gray-700
+          bg-white
+          dark:bg-gray-800
+          p-6
+          shadow-sm
+        "
+      >
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Informasi Barang
+          </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Lengkapi identitas barang yang akan disimpan.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <Input
             label="Kode Barang"
             placeholder="Contoh: BRG001"
+            helperText="Kode unik barang."
             value={form.kode ?? ""}
             onChange={(e) =>
               setForm({
@@ -50,7 +67,7 @@ export default function BarangForm({
 
           <Input
             label="Barcode"
-            placeholder="Scan barcode"
+            placeholder="Scan / Masukkan Barcode"
             value={form.barcode ?? ""}
             onChange={(e) =>
               setForm({
@@ -63,6 +80,7 @@ export default function BarangForm({
           <div className="md:col-span-2">
             <Input
               label="Nama Barang"
+              placeholder="Masukkan nama barang"
               value={form.nama ?? ""}
               onChange={(e) =>
                 setForm({
@@ -73,102 +91,83 @@ export default function BarangForm({
             />
           </div>
 
-          {/* KATEGORI */}
+          <Select
+            label="Kategori"
+            value={form.kategoriId ?? ""}
+            placeholder="Pilih Kategori"
+            options={kategori.map((item) => ({
+              value: String(item.id),
+              label: item.nama,
+            }))}
+            onChange={(value) =>
+              setForm({
+                ...form,
+                kategoriId: value,
+              })
+            }
+          />
+
+          <Select
+            label="Satuan"
+            value={form.satuanId ?? ""}
+            placeholder="Pilih Satuan"
+            options={satuan.map((item) => ({
+              value: String(item.id),
+              label: item.nama,
+            }))}
+            onChange={(value) =>
+              setForm({
+                ...form,
+                satuanId: value,
+              })
+            }
+          />
 
           <div className="md:col-span-2">
-            <label className="block mb-2 text-sm font-medium">Kategori</label>
-
-            <select
-              className="
-              w-full rounded-lg
-              border border-gray-300
-              px-3 py-2
-              "
-              value={form.kategoriId ?? ""}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  kategoriId: e.target.value,
-                })
-              }
-            >
-              <option value="">Pilih Kategori</option>
-
-              {kategori.map((item) => (
-                <option key={item.id} value={String(item.id)}>
-                  {item.nama}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* SATUAN */}
-
-          <div className="md:col-span-2">
-            <label className="block mb-2 text-sm font-medium">Satuan</label>
-
-            <select
-              className="
-              w-full rounded-lg
-              border border-gray-300
-              px-3 py-2
-              "
-              value={form.satuanId ?? ""}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  satuanId: e.target.value,
-                })
-              }
-            >
-              <option value="">Pilih Satuan</option>
-
-              {satuan.map((item) => (
-                <option key={item.id} value={String(item.id)}>
-                  {item.nama}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* SUPPLIER BARU */}
-
-          <div className="md:col-span-2">
-            <label className="block mb-2 text-sm font-medium">Supplier</label>
-
-            <select
-              className="
-              w-full rounded-lg
-              border border-gray-300
-              px-3 py-2
-              "
+            <Select
+              label="Supplier"
               value={form.supplierId ?? ""}
-              onChange={(e) =>
+              placeholder="Pilih Supplier"
+              options={supplier.map((item) => ({
+                value: String(item.id),
+                label: item.nama,
+              }))}
+              onChange={(value) =>
                 setForm({
                   ...form,
-
-                  supplierId: e.target.value,
+                  supplierId: value,
                 })
               }
-            >
-              <option value="">Pilih Supplier</option>
-
-              {supplier.map((item) => (
-                <option key={item.id} value={String(item.id)}>
-                  {item.nama}
-                </option>
-              ))}
-            </select>
+            />
           </div>
         </div>
       </section>
 
-      {/* HARGA */}
+      {/* ==================== HARGA ==================== */}
 
-      <section>
-        <h3 className="text-lg font-semibold mb-3">Harga Barang</h3>
+      <section
+        className="
+          rounded-xl
+          border
+          border-gray-200
+          dark:border-gray-700
+          bg-white
+          dark:bg-gray-800
+          p-6
+          shadow-sm
+        "
+      >
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Harga Barang
+          </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Tentukan harga pembelian dan penjualan.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <Input
             label="Harga Beli"
             type="number"
@@ -219,12 +218,32 @@ export default function BarangForm({
         </div>
       </section>
 
-      {/* STOK */}
+      {/* ==================== STOK ==================== */}
 
-      <section>
-        <h3 className="text-lg font-semibold mb-3">Persediaan</h3>
+      <section
+        className="
+          rounded-xl
+          border
+          border-gray-200
+          dark:border-gray-700
+          bg-white
+          dark:bg-gray-800
+          p-6
+          shadow-sm
+        "
+      >
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Persediaan
+          </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Barang akan dianggap stok menipis jika stok lebih kecil atau sama
+            dengan minimal stok.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <Input
             label="Stok"
             type="number"
@@ -239,6 +258,7 @@ export default function BarangForm({
 
           <Input
             label="Minimal Stok"
+            helperText="Digunakan untuk peringatan stok menipis."
             type="number"
             value={form.minimalStok ?? 0}
             onChange={(e) =>

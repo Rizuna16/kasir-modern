@@ -1,9 +1,10 @@
 import { useState } from "react";
 
+import { Button, ConfirmDialog } from "../components/ui";
+
 import UserTable from "../components/user/UserTable";
 import UserTambahModal from "../components/user/UserTambahModal";
 import UserEditModal from "../components/user/UserEditModal";
-import ConfirmDialog from "../components/ui/ConfirmDialog";
 
 import useUser from "../hooks/useUser";
 
@@ -35,24 +36,68 @@ export default function UserPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-5 flex justify-between">
-        <h1 className="text-2xl font-bold">Master User</h1>
+    <div className="space-y-6">
+      {/* Page Header */}
 
-        <button
-          onClick={() => {
-            setIsTambahOpen(true);
-          }}
+      <div>
+        <h1
           className="
-            rounded
-            bg-blue-600
-            px-4
-            py-2
-            text-white
+            text-3xl
+            font-bold
+            text-gray-900
+            dark:text-white
           "
         >
-          Tambah User
-        </button>
+          Master User
+        </h1>
+
+        <p
+          className="
+            text-gray-500
+            dark:text-gray-400
+          "
+        >
+          Kelola pengguna dan hak akses sistem
+        </p>
+      </div>
+
+      {/* Toolbar */}
+
+      <div
+        className="
+          flex
+          flex-col
+          gap-4
+
+          rounded-xl
+
+          border
+          border-gray-200
+
+          bg-white
+
+          p-4
+
+          shadow-sm
+
+
+          dark:border-gray-700
+
+          dark:bg-gray-800
+
+
+          md:flex-row
+
+          md:items-center
+
+          md:justify-between
+        "
+      >
+        <div />
+
+        <Button variant="primary" onClick={() => setIsTambahOpen(true)}>
+          + Tambah User
+        </Button>
       </div>
 
       <UserTable data={user} onEdit={handleEdit} onDelete={handleDelete} />

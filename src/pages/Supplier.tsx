@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import useSupplier from "../hooks/useSupplier";
 import useSupplierModal from "../hooks/useSupplierModal";
 
@@ -45,6 +47,10 @@ export default function Supplier() {
     paginatedData: paginatedSupplier,
   } = usePagination(filteredSupplier, 10);
 
+  useEffect(() => {
+    setPage(1);
+  }, [search, setPage]);
+
   const {
     openTambah,
 
@@ -73,12 +79,42 @@ export default function Supplier() {
     tutupDelete,
   } = useSupplierModal();
 
+  const handleTambah = () => {
+    const berhasil = tambahSupplier({
+      kode: form.kode,
+      nama: form.nama,
+      alamat: form.alamat,
+      telepon: form.telepon,
+      email: form.email,
+      status: form.status,
+    });
+
+    if (berhasil) {
+      tutupTambah();
+    }
+  };
+
   const handleEdit = (id: string) => {
     const data = ambilSupplier(id);
 
     if (!data) return;
 
     bukaEdit(id, data);
+  };
+
+  const handleUpdate = () => {
+    if (editId === null) return;
+
+    editSupplier(editId, {
+      kode: form.kode,
+      nama: form.nama,
+      alamat: form.alamat,
+      telepon: form.telepon,
+      email: form.email,
+      status: form.status,
+    });
+
+    tutupEdit();
   };
 
   const handleDelete = () => {
@@ -91,10 +127,27 @@ export default function Supplier() {
 
   return (
     <div className="space-y-6">
+      {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold">Data Supplier</h1>
+        <h1
+          className="
+            text-3xl
+            font-bold
+            text-gray-900
+            dark:text-white
+          "
+        >
+          Data Supplier
+        </h1>
 
-        <p className="text-gray-500">Kelola data supplier toko</p>
+        <p
+          className="
+            text-gray-500
+            dark:text-gray-400
+          "
+        >
+          Kelola data supplier toko
+        </p>
       </div>
 
       <SupplierToolbar
@@ -120,20 +173,7 @@ export default function Supplier() {
         onClose={tutupTambah}
         form={form}
         setForm={setForm}
-        onSave={() => {
-          const berhasil = tambahSupplier({
-            kode: form.kode,
-            nama: form.nama,
-            alamat: form.alamat,
-            telepon: form.telepon,
-            email: form.email,
-            status: form.status,
-          });
-
-          if (berhasil) {
-            tutupTambah();
-          }
-        }}
+        onSave={handleTambah}
       />
 
       <SupplierEditModal
@@ -141,20 +181,7 @@ export default function Supplier() {
         onClose={tutupEdit}
         form={form}
         setForm={setForm}
-        onSave={() => {
-          if (editId === null) return;
-
-          editSupplier(editId, {
-            kode: form.kode,
-            nama: form.nama,
-            alamat: form.alamat,
-            telepon: form.telepon,
-            email: form.email,
-            status: form.status,
-          });
-
-          tutupEdit();
-        }}
+        onSave={handleUpdate}
       />
 
       <SupplierDeleteDialog

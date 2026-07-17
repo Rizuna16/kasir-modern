@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { ConfirmDialog, Pagination } from "../components/ui";
@@ -19,8 +19,16 @@ import type { Satuan } from "../types/satuan";
 import useSearch from "../hooks/useSearch";
 import usePagination from "../hooks/usePagination";
 
+interface SatuanForm {
+  nama: string;
+}
+
 export default function Satuan() {
   const [satuan, setSatuan] = useState<Satuan[]>(getSatuan());
+
+  const [form, setForm] = useState<SatuanForm>({
+    nama: "",
+  });
 
   const { search, setSearch, filteredData } = useSearch(satuan, "nama");
 
@@ -37,9 +45,21 @@ export default function Satuan() {
 
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
-  const [form, setForm] = useState({
-    nama: "",
-  });
+  useEffect(() => {
+    setPage(1);
+  }, [search, setPage]);
+
+  const refreshData = () => {
+    setSatuan(getSatuan());
+  };
+
+  const resetForm = () => {
+    setForm({
+      nama: "",
+    });
+
+    setEditId(null);
+  };
 
   const handleSave = () => {
     if (form.nama.trim() === "") {
@@ -58,15 +78,31 @@ export default function Satuan() {
       toast.success("Satuan berhasil ditambahkan!");
     }
 
-    setSatuan(getSatuan());
+    refreshData();
 
-    setForm({
-      nama: "",
-    });
-
-    setEditId(null);
+    resetForm();
 
     setOpenModal(false);
+  };
+
+  const handleEdit = (id: number) => {
+    const data = getSatuanById(id);
+
+    if (!data) return;
+
+    setForm({
+      nama: data.nama,
+    });
+
+    setEditId(id);
+
+    setOpenModal(true);
+  };
+
+  const handleDeleteRequest = (id: number) => {
+    setSelectedId(id);
+
+    setOpenDelete(true);
   };
 
   const handleDelete = () => {
@@ -74,7 +110,7 @@ export default function Satuan() {
 
     deleteSatuan(selectedId);
 
-    setSatuan(getSatuan());
+    refreshData();
 
     toast.success("Satuan berhasil dihapus!");
 
@@ -85,10 +121,28 @@ export default function Satuan() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Data Satuan</h1>
+      {/* Page Header */}
 
-        <p className="text-gray-500">Kelola satuan barang</p>
+      <div>
+        <h1
+          className="
+            text-3xl
+            font-bold
+            text-gray-900
+            dark:text-white
+          "
+        >
+          Data Satuan
+        </h1>
+
+        <p
+          className="
+            text-gray-500
+            dark:text-gray-400
+          "
+        >
+          Kelola satuan barang
+        </p>
       </div>
 
       <SatuanTable
@@ -96,32 +150,12 @@ export default function Satuan() {
         search={search}
         setSearch={setSearch}
         onTambah={() => {
-          setForm({
-            nama: "",
-          });
-
-          setEditId(null);
+          resetForm();
 
           setOpenModal(true);
         }}
-        onEdit={(id) => {
-          const data = getSatuanById(id);
-
-          if (!data) return;
-
-          setForm({
-            nama: data.nama,
-          });
-
-          setEditId(id);
-
-          setOpenModal(true);
-        }}
-        onDelete={(id) => {
-          setSelectedId(id);
-
-          setOpenDelete(true);
-        }}
+        onEdit={handleEdit}
+        onDelete={handleDeleteRequest}
       />
 
       <Pagination
@@ -132,10 +166,12 @@ export default function Satuan() {
 
       <SatuanModal
         isOpen={openModal}
-        title={editId ? "Edit Satuan" : "Tambah Satuan"}
+        title={editId !== null ? "Edit Satuan" : "Tambah Satuan"}
         form={form}
         setForm={setForm}
-        onClose={() => setOpenModal(false)}
+        onClose={() => {
+          setOpenModal(false);
+        }}
         onSave={handleSave}
       />
 
@@ -143,7 +179,9 @@ export default function Satuan() {
         isOpen={openDelete}
         title="Hapus Satuan"
         message="Apakah Anda yakin ingin menghapus satuan ini?"
-        onCancel={() => setOpenDelete(false)}
+        onCancel={() => {
+          setOpenDelete(false);
+        }}
         onConfirm={handleDelete}
       />
     </div>

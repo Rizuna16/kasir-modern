@@ -1,94 +1,134 @@
+import { DataTable, Button, Badge } from "../ui";
+
 import type { Penjualan } from "../../types/penjualan";
 
 interface Props {
   data: Penjualan[];
 
   onDelete: (id: string) => void;
+
+  onDetail: (data: Penjualan) => void;
+
+  onPrint: (data: Penjualan) => void;
 }
 
 export default function PenjualanTable({
   data,
 
   onDelete,
+
+  onDetail,
+
+  onPrint,
 }: Props) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full border">
-        <thead>
-          <tr className="border-b bg-gray-100">
-            <th className="p-3 text-left">No Nota</th>
+    <DataTable
+      columns={[
+        {
+          header: "No",
 
-            <th className="p-3 text-left">Tanggal</th>
+          accessor: "id",
 
-            <th className="p-3 text-left">Pelanggan</th>
+          render: (_, index) => index + 1,
+        },
 
-            <th className="p-3 text-left">Total</th>
+        {
+          header: "No Nota",
 
-            <th className="p-3 text-left">Status</th>
+          accessor: "nomorNota",
 
-            <th className="p-3 text-left">Aksi</th>
-          </tr>
-        </thead>
+          render: (item) => (
+            <span
+              className="
+                font-semibold
+                text-gray-800
+                dark:text-white
+              "
+            >
+              {item.nomorNota}
+            </span>
+          ),
+        },
 
-        <tbody>
-          {data.map((item) => (
-            <tr key={item.id} className="border-b">
-              <td className="p-3">{item.nomorNota}</td>
+        {
+          header: "Tanggal",
 
-              <td className="p-3">{item.tanggal}</td>
+          accessor: "tanggal",
+        },
 
-              <td className="p-3">{item.pelangganNama}</td>
+        {
+          header: "Pelanggan",
 
-              <td className="p-3">Rp {item.total.toLocaleString()}</td>
+          accessor: "pelangganNama",
+        },
 
-              <td className="p-3">
-                <span
-                  className="
-                  bg-green-100
-                  text-green-700
-                  px-3
-                  py-1
-                  rounded-full
-                  text-sm
-                  "
-                >
-                  {item.status}
-                </span>
-              </td>
+        {
+          header: "Total",
 
-              <td className="p-3">
-                <button
-                  onClick={() => onDelete(item.id)}
-                  className="
-                  bg-red-500
-                  text-white
-                  px-3
-                  py-1
-                  rounded
-                  "
-                >
-                  Hapus
-                </button>
-              </td>
-            </tr>
-          ))}
+          accessor: "total",
 
-          {data.length === 0 && (
-            <tr>
-              <td
-                colSpan={6}
-                className="
-                text-center
-                py-5
-                text-gray-500
-                "
+          render: (item) => (
+            <span
+              className="
+                font-semibold
+                text-gray-800
+                dark:text-white
+              "
+            >
+              Rp {item.total.toLocaleString()}
+            </span>
+          ),
+        },
+
+        {
+          header: "Status",
+
+          accessor: "status",
+
+          render: (item) => (
+            <Badge variant={item.status === "LUNAS" ? "success" : "warning"}>
+              {item.status}
+            </Badge>
+          ),
+        },
+
+        {
+          header: "Aksi",
+
+          accessor: "id",
+
+          render: (item) => (
+            <div
+              className="
+                flex
+                gap-2
+              "
+            >
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => onDetail(item)}
               >
-                Belum ada transaksi
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+                Detail
+              </Button>
+
+              <Button size="sm" variant="primary" onClick={() => onPrint(item)}>
+                Print
+              </Button>
+
+              <Button
+                size="sm"
+                variant="danger"
+                onClick={() => onDelete(item.id)}
+              >
+                Hapus
+              </Button>
+            </div>
+          ),
+        },
+      ]}
+      data={data}
+      emptyMessage="Belum ada transaksi penjualan"
+    />
   );
 }

@@ -8,6 +8,8 @@ import usePembelian from "../hooks/usePembelian";
 
 import type { Pembelian as PembelianType } from "../types/pembelian";
 
+import { Button, Card } from "../components/ui";
+
 export default function Pembelian() {
   const { pembelian, loadData } = usePembelian();
 
@@ -25,30 +27,48 @@ export default function Pembelian() {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between mb-5">
-        <h1 className="text-2xl font-bold">Transaksi Pembelian</h1>
+    <div className="p-6 space-y-6">
+      {/* HEADER */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1
+            className="
+              text-2xl
+              font-bold
+              text-gray-800
+              dark:text-white
+            "
+          >
+            Transaksi Pembelian
+          </h1>
 
-        <button
+          <p
+            className="
+              text-sm
+              text-gray-500
+              dark:text-gray-400
+            "
+          >
+            Kelola transaksi pembelian barang
+          </p>
+        </div>
+
+        <Button
+          variant="primary"
           onClick={() => {
             setIsTambahOpen(true);
           }}
-          className="
-            bg-blue-600
-            text-white
-            px-4
-            py-2
-            rounded-lg
-          "
         >
           Tambah Pembelian
-        </button>
+        </Button>
       </div>
 
-      <div className="bg-white rounded shadow p-4">
+      {/* TABLE */}
+      <Card>
         <PembelianTable data={pembelian} onDetail={handleDetail} />
-      </div>
+      </Card>
 
+      {/* TAMBAH MODAL */}
       <PembelianModal
         isOpen={isTambahOpen}
         onClose={() => {
@@ -61,11 +81,13 @@ export default function Pembelian() {
         }}
       />
 
+      {/* DETAIL MODAL */}
       <PembelianDetailModal
         isOpen={isDetailOpen}
         pembelian={selectedPembelian}
         onClose={() => {
           setIsDetailOpen(false);
+
           setSelectedPembelian(null);
         }}
       />

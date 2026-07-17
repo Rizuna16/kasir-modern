@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { Card } from "../components/ui";
+
 import LaporanFilter from "../components/laporan/LaporanFilter";
 import LaporanStats from "../components/laporan/LaporanStats";
 import LaporanTable from "../components/laporan/LaporanTable";
@@ -38,10 +40,6 @@ export default function LaporanPenjualan() {
 
   const [selectedPrint, setSelectedPrint] = useState<Penjualan | null>(null);
 
-  // =========================
-  // RESET SETELAH PRINT
-  // =========================
-
   useEffect(() => {
     const handleAfterPrint = () => {
       setSelectedPrint(null);
@@ -54,10 +52,6 @@ export default function LaporanPenjualan() {
     };
   }, []);
 
-  // =========================
-  // PRINT NOTA
-  // =========================
-
   const bukaPrint = (item: Penjualan) => {
     setSelectedPrint(item);
 
@@ -68,15 +62,29 @@ export default function LaporanPenjualan() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">Laporan Penjualan</h1>
+        <h1
+          className="
+            text-2xl
+            font-bold
+            text-gray-800
+            dark:text-white
+          "
+        >
+          Laporan Penjualan
+        </h1>
 
-        <p className="mt-1 text-sm text-gray-500">Rekap transaksi penjualan.</p>
+        <p
+          className="
+            mt-1
+            text-sm
+            text-gray-500
+            dark:text-gray-400
+          "
+        >
+          Rekap transaksi penjualan.
+        </p>
       </div>
-
-      {/* Filter */}
 
       <LaporanFilter
         tanggalAwal={tanggalAwal}
@@ -87,31 +95,27 @@ export default function LaporanPenjualan() {
         onReset={resetLaporan}
       />
 
-      {/* Export */}
-
       <div className="flex justify-end gap-3">
         <ExportExcelButton data={laporan} />
 
         <ExportPDFButton data={laporan} />
       </div>
 
-      {/* Statistik */}
-
       <LaporanStats totalTransaksi={totalTransaksi} totalOmzet={totalOmzet} />
 
-      {/* Table */}
-
-      <LaporanTable data={laporan} onDetail={bukaDetail} onPrint={bukaPrint} />
-
-      {/* Detail Modal */}
+      <Card>
+        <LaporanTable
+          data={laporan}
+          onDetail={bukaDetail}
+          onPrint={bukaPrint}
+        />
+      </Card>
 
       <DetailPenjualanModal
         isOpen={isDetailOpen}
         penjualan={selectedPenjualan}
         onClose={tutupDetail}
       />
-
-      {/* Print Area */}
 
       {selectedPrint && (
         <div className="hidden print:block">

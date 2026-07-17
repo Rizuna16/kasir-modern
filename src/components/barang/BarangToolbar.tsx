@@ -1,4 +1,5 @@
 import Button from "../ui/Button";
+import Input from "../ui/Input";
 
 interface BarangToolbarProps {
   search: string;
@@ -16,21 +17,41 @@ export default function BarangToolbar({
   onTambah,
 }: BarangToolbarProps) {
   return (
-    <div className="flex items-center justify-between gap-4">
-      <input
-        type="text"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Cari nama barang..."
-        className="
+    <div
+      className="
+        flex
+
+        flex-col
+
+        gap-4
+
+        rounded-xl
+
         border
-        rounded-lg
-        px-4
-        py-2
-        w-full
-        max-w-md
-        "
-      />
+        border-gray-200
+
+        bg-white
+
+        p-4
+
+        md:flex-row
+
+        md:items-center
+
+        md:justify-between
+
+        dark:border-gray-700
+
+        dark:bg-gray-800
+      "
+    >
+      <div className="w-full max-w-md">
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Cari nama barang..."
+        />
+      </div>
 
       <Button variant="primary" onClick={onTambah}>
         + Tambah Barang

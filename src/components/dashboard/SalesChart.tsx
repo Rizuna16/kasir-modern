@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 
 import {
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from "recharts";
 
 import { getPenjualan } from "../../services/penjualanService";
@@ -36,90 +36,105 @@ export default function SalesChart() {
       grouped[label] = (grouped[label] || 0) + item.total;
     });
 
-    const chartData = Object.entries(grouped).map(([hari, penjualan]) => ({
-      hari,
-      penjualan,
-    }));
-
-    setData(chartData.slice(-7));
+    setData(
+      Object.entries(grouped)
+        .map(([hari, penjualan]) => ({
+          hari,
+          penjualan,
+        }))
+        .slice(-7),
+    );
   }, []);
 
   return (
     <div
       className="
-        rounded-xl
+        rounded-2xl
 
         border
-        border-gray-200
+        border-gray-100
+        dark:border-gray-700
 
         bg-white
+        dark:bg-gray-800
 
-        p-5
+        p-6
 
         shadow-sm
 
         transition-all
+        duration-300
 
-        duration-200
-
-        dark:border-gray-700
-
-        dark:bg-gray-800
+        hover:shadow-lg
       "
     >
-      <h2
-        className="
-          mb-5
+      <div className="mb-6">
+        <h2
+          className="
+            text-xl
+            font-bold
 
-          text-lg
+            text-gray-900
+            dark:text-white
+          "
+        >
+          Grafik Penjualan
+        </h2>
 
-          font-bold
+        <p
+          className="
+            mt-1
+            text-sm
 
-          text-gray-900
+            text-gray-500
+            dark:text-gray-400
+          "
+        >
+          Performa penjualan selama 7 hari terakhir.
+        </p>
+      </div>
 
-          dark:text-white
-        "
-      >
-        Grafik Penjualan Mingguan
-      </h2>
-
-      <div className="h-75">
+      <div className="h-80">
         {data.length === 0 ? (
           <div
             className="
               flex
-
               h-full
-
+              flex-col
               items-center
-
               justify-center
-
-              text-gray-500
-
-              dark:text-gray-400
+              gap-3
             "
           >
-            Belum ada transaksi penjualan
+            <div className="text-5xl">📈</div>
+
+            <p className="font-semibold text-gray-700 dark:text-gray-200">
+              Belum ada data penjualan
+            </p>
+
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Grafik akan muncul setelah transaksi pertama.
+            </p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
               <CartesianGrid
+                stroke="#CBD5E1"
                 strokeDasharray="3 3"
-                stroke="#6b7280"
-                opacity={0.3}
+                opacity={0.25}
               />
 
-              <XAxis dataKey="hari" stroke="#9ca3af" />
+              <XAxis dataKey="hari" stroke="#9CA3AF" />
 
-              <YAxis stroke="#9ca3af" />
+              <YAxis stroke="#9CA3AF" />
 
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "#1f2937",
+                  backgroundColor: "#1F2937",
+                  border: "1px solid #374151",
                   borderRadius: "12px",
-                  border: "none",
+                  padding: "10px",
                   color: "#fff",
                 }}
               />
@@ -127,11 +142,12 @@ export default function SalesChart() {
               <Line
                 type="monotone"
                 dataKey="penjualan"
+                stroke="#2563EB"
                 strokeWidth={3}
-                stroke="#2563eb"
-                dot={{
-                  r: 4,
-                }}
+                dot={{ r: 4 }}
+                activeDot={{ r: 7 }}
+                isAnimationActive
+                animationDuration={900}
               />
             </LineChart>
           </ResponsiveContainer>

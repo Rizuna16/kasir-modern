@@ -88,11 +88,33 @@ export default function Kategori() {
   };
 
   return (
-    <div className="space-y-6">
+    <div
+      className="
+        space-y-6
+      "
+    >
+      {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold">Data Kategori</h1>
+        <h1
+          className="
+            text-3xl
+            font-bold
 
-        <p className="text-gray-500">Kelola kategori barang</p>
+            text-gray-900
+            dark:text-white
+          "
+        >
+          Data Kategori
+        </h1>
+
+        <p
+          className="
+            text-gray-500
+            dark:text-gray-400
+          "
+        >
+          Kelola kategori barang
+        </p>
       </div>
 
       <KategoriTable

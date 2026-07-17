@@ -1,30 +1,30 @@
-import type { InputHTMLAttributes, ReactNode } from "react";
+import type { ReactNode, TextareaHTMLAttributes } from "react";
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
 
   error?: string;
 
   helperText?: string;
 
+  fullWidth?: boolean;
+
   leftIcon?: ReactNode;
 
   rightIcon?: ReactNode;
-
-  fullWidth?: boolean;
 }
 
-export default function Input({
+export default function Textarea({
   label,
   error,
   helperText,
+  fullWidth = true,
   leftIcon,
   rightIcon,
-  fullWidth = true,
   className = "",
   disabled,
   ...props
-}: InputProps) {
+}: TextareaProps) {
   return (
     <div className={`${fullWidth ? "w-full" : ""} space-y-1`}>
       {label && (
@@ -46,11 +46,8 @@ export default function Input({
           <div
             className="
               absolute
-              inset-y-0
               left-3
-
-              flex
-              items-center
+              top-3
 
               text-gray-400
               dark:text-gray-500
@@ -60,7 +57,7 @@ export default function Input({
           </div>
         )}
 
-        <input
+        <textarea
           {...props}
           disabled={disabled}
           className={`
@@ -89,6 +86,8 @@ export default function Input({
 
             transition-all
             duration-200
+
+            resize-none
 
             placeholder:text-gray-400
             dark:placeholder:text-gray-500
@@ -120,11 +119,8 @@ export default function Input({
           <div
             className="
               absolute
-              inset-y-0
               right-3
-
-              flex
-              items-center
+              top-3
 
               text-gray-400
               dark:text-gray-500
@@ -139,6 +135,7 @@ export default function Input({
         <p
           className="
             text-sm
+
             text-red-500
             dark:text-red-400
           "

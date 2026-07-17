@@ -1,15 +1,17 @@
 import { Modal, Input, Button } from "../ui";
 
+interface SatuanForm {
+  nama: string;
+}
+
 interface SatuanModalProps {
   isOpen: boolean;
 
   title: string;
 
-  form: {
-    nama: string;
-  };
+  form: SatuanForm;
 
-  setForm: (value: { nama: string }) => void;
+  setForm: (value: SatuanForm) => void;
 
   onClose: () => void;
 
@@ -26,19 +28,20 @@ export default function SatuanModal({
 }: SatuanModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      <div className="space-y-4">
+      <div className="space-y-5">
         <Input
           label="Nama Satuan"
           placeholder="Contoh: PCS"
           value={form.nama}
           onChange={(e) =>
             setForm({
+              ...form,
               nama: e.target.value,
             })
           }
         />
 
-        <div className="flex justify-end gap-3 pt-4">
+        <div className="flex justify-end gap-3 pt-5">
           <Button variant="secondary" onClick={onClose}>
             Batal
           </Button>

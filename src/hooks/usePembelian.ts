@@ -7,16 +7,24 @@ import { getPembelian, deletePembelian } from "../services/pembelianService";
 export default function usePembelian() {
   const [pembelian, setPembelian] = useState<Pembelian[]>([]);
 
-  async function loadData() {
-    const data = await getPembelian();
+  const [loading, setLoading] = useState(false);
 
-    setPembelian(data);
+  async function loadData() {
+    try {
+      setLoading(true);
+
+      const data = await getPembelian();
+
+      setPembelian(data);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function hapus(id: string) {
     await deletePembelian(id);
 
-    loadData();
+    await loadData();
   }
 
   useEffect(() => {
@@ -25,6 +33,8 @@ export default function usePembelian() {
 
   return {
     pembelian,
+
+    loading,
 
     hapus,
 

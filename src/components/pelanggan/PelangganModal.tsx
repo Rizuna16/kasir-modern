@@ -1,41 +1,59 @@
-import type { ReactNode } from "react";
+import type { Dispatch, SetStateAction } from "react";
+
+import { Modal, Button } from "../ui";
+
+import PelangganForm from "./PelangganForm";
+
+import type { PelangganFormData } from "../../types/pelangganForm";
 
 interface PelangganModalProps {
   isOpen: boolean;
 
   title: string;
 
-  children: ReactNode;
-
   onClose: () => void;
+
+  onSave: () => void;
+
+  form: PelangganFormData;
+
+  setForm: Dispatch<SetStateAction<PelangganFormData>>;
 }
 
 export default function PelangganModal({
   isOpen,
+
   title,
-  children,
+
   onClose,
+
+  onSave,
+
+  form,
+
+  setForm,
 }: PelangganModalProps) {
-  if (!isOpen) {
-    return null;
-  }
-
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-lg">
-        <div className="flex justify-between items-center px-5 py-4 border-b">
-          <h2 className="text-lg font-semibold">{title}</h2>
+    <Modal isOpen={isOpen} title={title} onClose={onClose}>
+      <div className="space-y-6">
+        <PelangganForm form={form} setForm={setForm} />
 
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-800"
-          >
-            ✕
-          </button>
+        <div
+          className="
+            flex
+            justify-end
+            gap-3
+          "
+        >
+          <Button variant="secondary" onClick={onClose}>
+            Batal
+          </Button>
+
+          <Button variant="primary" onClick={onSave}>
+            Simpan
+          </Button>
         </div>
-
-        <div className="p-5">{children}</div>
       </div>
-    </div>
+    </Modal>
   );
 }

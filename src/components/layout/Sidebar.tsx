@@ -42,38 +42,6 @@ export default function Sidebar() {
         dark:to-gray-800
       "
     >
-      <div
-        className="
-          mb-8
-
-          flex
-          items-center
-
-          rounded-xl
-
-          bg-white/10
-
-          px-4
-          py-3
-
-          backdrop-blur-sm
-        "
-      >
-        <h1
-          className="
-            text-2xl
-
-            font-bold
-
-            tracking-wide
-
-            text-white
-          "
-        >
-          Kasir Modern
-        </h1>
-      </div>
-
       <nav
         className="
           flex-1
@@ -85,31 +53,6 @@ export default function Sidebar() {
           <SidebarItem key={menu.path} to={menu.path} label={menu.label} />
         ))}
       </nav>
-
-      <div
-        className="
-          mt-auto
-
-          rounded-xl
-
-          bg-white/10
-
-          px-4
-          py-3
-
-          text-xs
-
-          text-blue-100
-
-          backdrop-blur-sm
-
-          dark:text-gray-300
-        "
-      >
-        <p>Kasir Modern</p>
-
-        <p className="mt-1 opacity-80">Point Of Sales System</p>
-      </div>
     </aside>
   );
 }

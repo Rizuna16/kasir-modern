@@ -2,7 +2,9 @@ import Button from "./Button";
 
 interface PaginationProps {
   currentPage: number;
+
   totalPages: number;
+
   onPageChange: (page: number) => void;
 }
 
@@ -14,7 +16,17 @@ export default function Pagination({
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex items-center justify-between mt-6">
+    <div
+      className="
+        mt-6
+
+        flex
+
+        items-center
+
+        justify-between
+      "
+    >
       <Button
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
@@ -22,7 +34,15 @@ export default function Pagination({
         ← Sebelumnya
       </Button>
 
-      <span className="text-sm text-gray-600">
+      <span
+        className="
+          text-sm
+
+          text-gray-600
+
+          dark:text-gray-300
+        "
+      >
         Halaman {currentPage} dari {totalPages}
       </span>
 

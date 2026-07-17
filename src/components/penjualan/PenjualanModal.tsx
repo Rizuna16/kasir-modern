@@ -1,9 +1,17 @@
+// src/components/penjualan/PenjualanModal.tsx
+
 import { useEffect, useState } from "react";
 
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
-import PenjualanRow from "./PenjualanRow";
+import Input from "../ui/Input";
+import Select from "../ui/Select";
+import Card from "../ui/Card";
+
+import PenjualanDetailTable from "./PenjualanDetailTable";
+
 import { toastWarning } from "../../utils/toast";
+
 import { getPelanggan } from "../../services/pelangganService";
 import { getBarang } from "../../services/barangService";
 import { addPenjualan } from "../../services/penjualanService";
@@ -31,7 +39,7 @@ export default function PenjualanModal({
 
   const [barang, setBarang] = useState<Barang[]>([]);
 
-  const [pelangganId, setPelangganId] = useState<number | "">("");
+  const [pelangganId, setPelangganId] = useState("");
 
   const [barangId, setBarangId] = useState("");
 
@@ -54,15 +62,13 @@ export default function PenjualanModal({
   }
 
   function tambahBarang() {
-    const dataBarang = barang.find((item) => item.id === barangId);
+    const dataBarang = barang.find((item) => String(item.id) === barangId);
 
     if (!dataBarang) {
       toastWarning("Silakan pilih barang terlebih dahulu.");
 
       return;
     }
-
-    const subtotal = qty * hargaJual;
 
     const newDetail: DetailPenjualan = {
       id: crypto.randomUUID(),
@@ -75,7 +81,7 @@ export default function PenjualanModal({
 
       hargaJual,
 
-      subtotal,
+      subtotal: qty * hargaJual,
     };
 
     setDetail([...detail, newDetail]);
@@ -111,9 +117,7 @@ export default function PenjualanModal({
   }
 
   function handleDeleteDetail(index: number) {
-    const data = detail.filter((_, i) => i !== index);
-
-    setDetail(data);
+    setDetail(detail.filter((_, i) => i !== index));
   }
 
   function hitungTotal() {
@@ -125,7 +129,9 @@ export default function PenjualanModal({
   }
 
   function handleSave() {
-    const dataPelanggan = pelanggan.find((item) => item.id === pelangganId);
+    const dataPelanggan = pelanggan.find(
+      (item) => String(item.id) === pelangganId,
+    );
 
     if (!dataPelanggan) {
       toastWarning("Silakan pilih pelanggan terlebih dahulu.");
@@ -162,180 +168,158 @@ export default function PenjualanModal({
     onSave();
   }
 
+  const pelangganOptions = pelanggan.map((item) => ({
+    value: String(item.id),
+
+    label: item.nama,
+  }));
+
+  const barangOptions = barang.map((item) => ({
+    value: String(item.id),
+
+    label: item.nama,
+  }));
+
   return (
     <Modal isOpen={isOpen} title="Tambah Penjualan" onClose={onClose}>
-      <div className="space-y-6">
-        {/* Pelanggan */}
-
-        <div>
-          <label className="block mb-2 font-medium">Pelanggan</label>
-
-          <select
-            value={pelangganId}
-            onChange={(e) =>
-              setPelangganId(
-                e.target.value === "" ? "" : Number(e.target.value),
-              )
-            }
+      <div className="space-y-5">
+        <Card>
+          <h3
             className="
-            border
-            rounded-lg
-            px-3
-            py-2
-            w-full
+              mb-4
+              text-lg
+              font-semibold
+              text-gray-800
+              dark:text-white
             "
           >
-            <option value="">Pilih Pelanggan</option>
+            Informasi Pelanggan
+          </h3>
 
-            {pelanggan.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.nama}
-              </option>
-            ))}
-          </select>
-        </div>
+          <Select
+            label="Pelanggan"
+            value={pelangganId}
+            options={pelangganOptions}
+            placeholder="Pilih Pelanggan"
+            onChange={setPelangganId}
+          />
+        </Card>
 
-        {/* Tambah Barang */}
+        <Card>
+          <h3
+            className="
+              mb-4
+              text-lg
+              font-semibold
+              text-gray-800
+              dark:text-white
+            "
+          >
+            Tambah Barang
+          </h3>
 
-        <div className="border rounded-lg p-4">
-          <h3 className="font-semibold mb-4">Tambah Barang</h3>
+          <div
+            className="
+              grid
+              grid-cols-1
+              md:grid-cols-3
+              gap-4
+            "
+          >
+            <Select
+              label="Barang"
+              value={barangId}
+              options={barangOptions}
+              placeholder="Pilih Barang"
+              onChange={setBarangId}
+            />
 
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="block mb-2">Barang</label>
+            <Input
+              label="Qty"
+              type="number"
+              min="1"
+              value={qty}
+              onChange={(e) => setQty(Number(e.target.value))}
+            />
 
-              <select
-                value={barangId}
-                onChange={(e) => setBarangId(e.target.value)}
-                className="
-                border
-                rounded-lg
-                px-3
-                py-2
-                w-full
-                "
-              >
-                <option value="">Pilih Barang</option>
-
-                {barang.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.nama}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block mb-2">Qty</label>
-
-              <input
-                type="number"
-                min="1"
-                value={qty}
-                onChange={(e) => setQty(Number(e.target.value))}
-                className="
-                border
-                rounded-lg
-                px-3
-                py-2
-                w-full
-                "
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2">Harga Jual</label>
-
-              <input
-                type="number"
-                min="0"
-                value={hargaJual}
-                onChange={(e) => setHargaJual(Number(e.target.value))}
-                className="
-                border
-                rounded-lg
-                px-3
-                py-2
-                w-full
-                "
-              />
-            </div>
+            <Input
+              label="Harga Jual"
+              type="number"
+              min="0"
+              value={hargaJual}
+              onChange={(e) => setHargaJual(Number(e.target.value))}
+            />
           </div>
 
-          <div className="mt-4">
-            <Button type="button" variant="success" onClick={tambahBarang}>
+          <div className="mt-5">
+            <Button variant="success" onClick={tambahBarang}>
               Tambah Barang
             </Button>
           </div>
-        </div>
+        </Card>
 
-        {/* Detail Penjualan */}
+        <Card>
+          <h3
+            className="
+              mb-4
+              text-lg
+              font-semibold
+              text-gray-800
+              dark:text-white
+            "
+          >
+            Detail Penjualan
+          </h3>
 
-        <div>
-          <h3 className="font-semibold mb-3">Detail Penjualan</h3>
+          <PenjualanDetailTable
+            data={detail}
+            onChange={handleChangeDetail}
+            onDelete={handleDeleteDetail}
+          />
+        </Card>
 
-          <table className="w-full border">
-            <thead>
-              <tr className="border-b bg-gray-100">
-                <th className="p-3">Barang</th>
+        <Card>
+          <div
+            className="
+              flex
+              justify-between
+              items-center
+            "
+          >
+            <span
+              className="
+                font-semibold
+                text-gray-700
+                dark:text-gray-300
+              "
+            >
+              Total
+            </span>
 
-                <th>Qty</th>
+            <span
+              className="
+                text-2xl
+                font-bold
+                text-blue-600
+              "
+            >
+              Rp {hitungTotal().toLocaleString()}
+            </span>
+          </div>
+        </Card>
 
-                <th>Harga</th>
-
-                <th>Subtotal</th>
-
-                <th>Aksi</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {detail.map((item, index) => (
-                <PenjualanRow
-                  key={index}
-                  item={item}
-                  index={index}
-                  onChange={handleChangeDetail}
-                  onDelete={handleDeleteDetail}
-                />
-              ))}
-
-              {detail.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="
-                    text-center
-                    py-5
-                    text-gray-500
-                    "
-                  >
-                    Belum ada barang
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Total */}
-
-        <div className="flex justify-between">
-          <h2 className="text-xl font-bold">Total</h2>
-
-          <h2 className="text-xl font-bold">
-            Rp {hitungTotal().toLocaleString()}
-          </h2>
-        </div>
-
-        {/* Button */}
-
-        <div className="flex justify-end gap-3">
-          <Button type="button" variant="secondary" onClick={onClose}>
+        <div
+          className="
+            flex
+            justify-end
+            gap-3
+          "
+        >
+          <Button variant="secondary" onClick={onClose}>
             Batal
           </Button>
 
-          <Button type="button" variant="primary" onClick={handleSave}>
+          <Button variant="primary" onClick={handleSave}>
             Simpan
           </Button>
         </div>

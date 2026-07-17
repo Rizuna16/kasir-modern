@@ -1,12 +1,22 @@
+// src/components/pembelian/PembelianModal.tsx
+
 import { useEffect, useState } from "react";
 
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
-import BarangPembelianRow from "./BarangPembelianRow";
+import Input from "../ui/Input";
+import Select from "../ui/Select";
+import Card from "../ui/Card";
+
+import PembelianDetailTable from "./PembelianDetailTable";
+
 import { toastWarning } from "../../utils/toast";
+import { formatRupiah } from "../../utils/currency";
+
 import { getSupplier } from "../../services/supplierService";
 import { getBarang } from "../../services/barangService";
 import { addPembelian } from "../../services/pembelianService";
+
 import type { Supplier } from "../../types/supplier";
 import type { Barang } from "../../types/barang";
 import type { DetailPembelian } from "../../types/pembelian";
@@ -52,8 +62,20 @@ export default function PembelianModal({
     setBarang(getBarang());
   }
 
+  function resetForm() {
+    setSupplierId("");
+
+    setBarangId("");
+
+    setQty(1);
+
+    setHargaBeli(0);
+
+    setDetail([]);
+  }
+
   function tambahBarang() {
-    const dataBarang = barang.find((item) => item.id === barangId);
+    const dataBarang = barang.find((item) => String(item.id) === barangId);
 
     if (!dataBarang) {
       toastWarning("Silakan pilih barang terlebih dahulu.");
@@ -61,7 +83,17 @@ export default function PembelianModal({
       return;
     }
 
-    const subtotal = qty * hargaBeli;
+    if (qty <= 0) {
+      toastWarning("Qty harus lebih dari 0.");
+
+      return;
+    }
+
+    if (hargaBeli <= 0) {
+      toastWarning("Harga beli harus lebih dari 0.");
+
+      return;
+    }
 
     const newDetail: DetailPembelian = {
       id: crypto.randomUUID(),
@@ -74,10 +106,10 @@ export default function PembelianModal({
 
       hargaBeli,
 
-      subtotal,
+      subtotal: qty * hargaBeli,
     };
 
-    setDetail([...detail, newDetail]);
+    setDetail((prev) => [...prev, newDetail]);
 
     setBarangId("");
 
@@ -110,9 +142,7 @@ export default function PembelianModal({
   }
 
   function handleDeleteDetail(index: number) {
-    const data = detail.filter((_, i) => i !== index);
-
-    setDetail(data);
+    setDetail(detail.filter((_, i) => i !== index));
   }
 
   function hitungTotal() {
@@ -124,7 +154,9 @@ export default function PembelianModal({
   }
 
   function handleSave() {
-    const dataSupplier = supplier.find((item) => item.id === supplierId);
+    const dataSupplier = supplier.find(
+      (item) => String(item.id) === supplierId,
+    );
 
     if (!dataSupplier) {
       toastWarning("Silakan pilih supplier terlebih dahulu.");
@@ -141,11 +173,7 @@ export default function PembelianModal({
     addPembelian({
       nomorFaktur: "PB-" + Date.now(),
 
-      tanggal: new Date()
-
-        .toISOString()
-
-        .slice(0, 10),
+      tanggal: new Date().toISOString().slice(0, 10),
 
       supplierId: dataSupplier.id,
 
@@ -158,183 +186,164 @@ export default function PembelianModal({
       status: "LUNAS",
     });
 
-    setDetail([]);
-
-    setSupplierId("");
+    resetForm();
 
     onSave();
   }
 
+  const supplierOptions = supplier.map((item) => ({
+    value: String(item.id),
+
+    label: item.nama,
+  }));
+
+  const barangOptions = barang.map((item) => ({
+    value: String(item.id),
+
+    label: item.nama,
+  }));
+
   return (
     <Modal isOpen={isOpen} title="Tambah Pembelian" onClose={onClose}>
-      <div className="space-y-6">
-        {/* Supplier */}
-
-        <div>
-          <label className="block mb-2 font-medium">Supplier</label>
-
-          <select
-            value={supplierId}
-            onChange={(e) => setSupplierId(e.target.value)}
+      <div className="space-y-5">
+        <Card>
+          <h3
             className="
-            border
-            rounded-lg
-            px-3
-            py-2
-            w-full
+              mb-4
+              text-lg
+              font-semibold
+              text-gray-800
+              dark:text-white
             "
           >
-            <option value="">Pilih Supplier</option>
+            Informasi Supplier
+          </h3>
 
-            {supplier.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.nama}
-              </option>
-            ))}
-          </select>
-        </div>
+          <Select
+            label="Supplier"
+            value={supplierId}
+            options={supplierOptions}
+            placeholder="Pilih Supplier"
+            onChange={setSupplierId}
+          />
+        </Card>
 
-        {/* Tambah Barang */}
+        <Card>
+          <h3
+            className="
+              mb-4
+              text-lg
+              font-semibold
+              text-gray-800
+              dark:text-white
+            "
+          >
+            Tambah Barang
+          </h3>
 
-        <div className="border rounded-lg p-4">
-          <h3 className="font-semibold mb-4">Tambah Barang</h3>
+          <div
+            className="
+              grid
+              grid-cols-1
+              md:grid-cols-3
+              gap-4
+            "
+          >
+            <Select
+              label="Barang"
+              value={barangId}
+              options={barangOptions}
+              placeholder="Pilih Barang"
+              onChange={setBarangId}
+            />
 
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="block mb-2">Barang</label>
+            <Input
+              label="Qty"
+              type="number"
+              min="1"
+              value={qty}
+              onChange={(e) => setQty(Number(e.target.value))}
+            />
 
-              <select
-                value={barangId}
-                onChange={(e) => setBarangId(e.target.value)}
-                className="
-                border
-                rounded-lg
-                px-3
-                py-2
-                w-full
-                "
-              >
-                <option value="">Pilih Barang</option>
-
-                {barang.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.nama}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block mb-2">Qty</label>
-
-              <input
-                type="number"
-                min="1"
-                value={qty}
-                onChange={(e) => setQty(Number(e.target.value))}
-                className="
-                border
-                rounded-lg
-                px-3
-                py-2
-                w-full
-                "
-              />
-            </div>
-
-            <div>
-              <label className="block mb-2">Harga Beli</label>
-
-              <input
-                type="number"
-                min="0"
-                value={hargaBeli}
-                onChange={(e) => setHargaBeli(Number(e.target.value))}
-                className="
-                border
-                rounded-lg
-                px-3
-                py-2
-                w-full
-                "
-              />
-            </div>
+            <Input
+              label="Harga Beli"
+              type="number"
+              min="0"
+              value={hargaBeli}
+              onChange={(e) => setHargaBeli(Number(e.target.value))}
+            />
           </div>
 
-          <div className="mt-4">
-            <Button type="button" variant="success" onClick={tambahBarang}>
+          <div className="mt-5">
+            <Button variant="success" onClick={tambahBarang}>
               Tambah Barang
             </Button>
           </div>
-        </div>
+        </Card>
 
-        {/* Detail */}
+        <Card>
+          <h3
+            className="
+              mb-4
+              text-lg
+              font-semibold
+              text-gray-800
+              dark:text-white
+            "
+          >
+            Detail Pembelian
+          </h3>
 
-        <div>
-          <h3 className="font-semibold mb-3">Detail Pembelian</h3>
+          <PembelianDetailTable
+            data={detail}
+            onChange={handleChangeDetail}
+            onDelete={handleDeleteDetail}
+          />
+        </Card>
 
-          <table className="w-full border">
-            <thead>
-              <tr className="border-b bg-gray-100">
-                <th className="p-3">Barang</th>
+        <Card>
+          <div
+            className="
+              flex
+              justify-between
+              items-center
+            "
+          >
+            <span
+              className="
+                text-lg
+                font-semibold
+                text-gray-700
+                dark:text-gray-300
+              "
+            >
+              Total Pembelian
+            </span>
 
-                <th>Qty</th>
+            <span
+              className="
+                text-2xl
+                font-bold
+                text-blue-600
+              "
+            >
+              {formatRupiah(hitungTotal())}
+            </span>
+          </div>
+        </Card>
 
-                <th>Harga</th>
-
-                <th>Subtotal</th>
-
-                <th>Aksi</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {detail.map((item, index) => (
-                <BarangPembelianRow
-                  key={index}
-                  item={item}
-                  index={index}
-                  onChange={handleChangeDetail}
-                  onDelete={handleDeleteDetail}
-                />
-              ))}
-
-              {detail.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="
-                    text-center
-                    py-5
-                    text-gray-500
-                    "
-                  >
-                    Belum ada barang
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Total */}
-
-        <div className="flex justify-between">
-          <h2 className="text-xl font-bold">Total</h2>
-
-          <h2 className="text-xl font-bold">
-            Rp {hitungTotal().toLocaleString()}
-          </h2>
-        </div>
-
-        {/* Button */}
-
-        <div className="flex justify-end gap-3">
-          <Button type="button" variant="secondary" onClick={onClose}>
+        <div
+          className="
+            flex
+            justify-end
+            gap-3
+          "
+        >
+          <Button variant="secondary" onClick={onClose}>
             Batal
           </Button>
 
-          <Button type="button" variant="primary" onClick={handleSave}>
+          <Button variant="primary" onClick={handleSave}>
             Simpan
           </Button>
         </div>

@@ -12,12 +12,37 @@ import {
 import type { Supplier } from "../types/supplier";
 import type { SupplierFormData } from "../types/supplierForm";
 
-export default function useSupplier() {
+interface UseSupplierReturn {
+  supplier: Supplier[];
+
+  refreshSupplier: () => void;
+
+  tambahSupplier: (form: SupplierFormData) => boolean;
+
+  hapusSupplier: (id: string) => void;
+
+  ambilSupplier: (id: string) => Supplier | undefined;
+
+  getNamaSupplier: (id: string) => string;
+
+  editSupplier: (id: string, form: SupplierFormData) => void;
+}
+
+export default function useSupplier(): UseSupplierReturn {
   const [supplier, setSupplier] = useState<Supplier[]>(getSupplier());
 
   const refreshSupplier = () => {
     setSupplier(getSupplier());
   };
+
+  const mappingForm = (form: SupplierFormData) => ({
+    kode: form.kode,
+    nama: form.nama,
+    alamat: form.alamat,
+    telepon: form.telepon,
+    email: form.email,
+    status: form.status,
+  });
 
   const tambahSupplier = (form: SupplierFormData) => {
     if (form.nama.trim() === "") {
@@ -26,14 +51,7 @@ export default function useSupplier() {
       return false;
     }
 
-    addSupplier({
-      kode: form.kode,
-      nama: form.nama,
-      alamat: form.alamat,
-      telepon: form.telepon,
-      email: form.email,
-      status: form.status,
-    });
+    addSupplier(mappingForm(form));
 
     refreshSupplier();
 
@@ -61,6 +79,12 @@ export default function useSupplier() {
   };
 
   const editSupplier = (id: string, form: SupplierFormData) => {
+    if (form.nama.trim() === "") {
+      toast.error("Nama supplier wajib diisi!");
+
+      return;
+    }
+
     const lama = getSupplierById(id);
 
     if (!lama) {
@@ -69,14 +93,7 @@ export default function useSupplier() {
       return;
     }
 
-    updateSupplier(id, {
-      kode: form.kode,
-      nama: form.nama,
-      alamat: form.alamat,
-      telepon: form.telepon,
-      email: form.email,
-      status: form.status,
-    });
+    updateSupplier(id, mappingForm(form));
 
     refreshSupplier();
 
