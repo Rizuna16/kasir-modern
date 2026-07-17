@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
-
 import PenjualanRow from "./PenjualanRow";
-
+import { toastWarning } from "../../utils/toast";
 import { getPelanggan } from "../../services/pelangganService";
 import { getBarang } from "../../services/barangService";
 import { addPenjualan } from "../../services/penjualanService";
@@ -58,7 +57,7 @@ export default function PenjualanModal({
     const dataBarang = barang.find((item) => item.id === barangId);
 
     if (!dataBarang) {
-      alert("Silahkan pilih barang");
+      toastWarning("Silakan pilih barang terlebih dahulu.");
 
       return;
     }
@@ -129,13 +128,13 @@ export default function PenjualanModal({
     const dataPelanggan = pelanggan.find((item) => item.id === pelangganId);
 
     if (!dataPelanggan) {
-      alert("Silahkan pilih pelanggan");
+      toastWarning("Silakan pilih pelanggan terlebih dahulu.");
 
       return;
     }
 
     if (detail.length === 0) {
-      alert("Tambahkan barang terlebih dahulu");
+      toastWarning("Tambahkan minimal satu barang terlebih dahulu.");
 
       return;
     }

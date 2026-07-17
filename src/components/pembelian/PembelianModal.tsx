@@ -2,13 +2,11 @@ import { useEffect, useState } from "react";
 
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
-
 import BarangPembelianRow from "./BarangPembelianRow";
-
+import { toastWarning } from "../../utils/toast";
 import { getSupplier } from "../../services/supplierService";
 import { getBarang } from "../../services/barangService";
 import { addPembelian } from "../../services/pembelianService";
-
 import type { Supplier } from "../../types/supplier";
 import type { Barang } from "../../types/barang";
 import type { DetailPembelian } from "../../types/pembelian";
@@ -58,7 +56,7 @@ export default function PembelianModal({
     const dataBarang = barang.find((item) => item.id === barangId);
 
     if (!dataBarang) {
-      alert("Silahkan pilih barang");
+      toastWarning("Silakan pilih barang terlebih dahulu.");
 
       return;
     }
@@ -129,13 +127,13 @@ export default function PembelianModal({
     const dataSupplier = supplier.find((item) => item.id === supplierId);
 
     if (!dataSupplier) {
-      alert("Silahkan pilih supplier");
+      toastWarning("Silakan pilih supplier terlebih dahulu.");
 
       return;
     }
 
     if (detail.length === 0) {
-      alert("Tambahkan barang terlebih dahulu");
+      toastWarning("Tambahkan minimal satu barang terlebih dahulu.");
 
       return;
     }
