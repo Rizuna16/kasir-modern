@@ -5,7 +5,7 @@ import BarangTambahModal from "../components/barang/BarangTambahModal";
 import BarangEditModal from "../components/barang/BarangEditModal";
 import BarangDeleteDialog from "../components/barang/BarangDeleteDialog";
 
-import Button from "../components/ui/Button";
+import { Button, Card } from "../components/ui";
 
 import {
   getBarang,
@@ -75,17 +75,29 @@ export default function BarangPage() {
 
     setForm({
       kode: data.kode ?? "",
+
       barcode: data.barcode ?? "",
+
       nama: data.nama ?? "",
+
       kategoriId: data.kategoriId ?? "",
+
       satuanId: data.satuanId ?? "",
+
       supplierId: data.supplierId ?? "",
+
       hargaBeli: data.hargaBeli ?? 0,
+
       hargaGrosir: data.hargaGrosir ?? 0,
+
       hargaSemiGrosir: data.hargaSemiGrosir ?? 0,
+
       hargaEcer: data.hargaEcer ?? 0,
+
       stok: data.stok ?? 0,
+
       minimalStok: data.minimalStok ?? 0,
+
       status: data.status ?? "Aktif",
     });
 
@@ -115,7 +127,6 @@ export default function BarangPage() {
           flex
           flex-col
           gap-4
-
           md:flex-row
           md:items-center
           md:justify-between
@@ -126,7 +137,6 @@ export default function BarangPage() {
             className="
               text-3xl
               font-bold
-
               text-gray-900
               dark:text-white
             "
@@ -137,9 +147,7 @@ export default function BarangPage() {
           <p
             className="
               mt-1
-
               text-sm
-
               text-gray-500
               dark:text-gray-400
             "
@@ -162,7 +170,26 @@ export default function BarangPage() {
         </Button>
       </div>
 
-      <BarangTable data={barang} onEdit={handleEdit} onDelete={handleDelete} />
+      <Card>
+        {barang.length === 0 ? (
+          <div
+            className="
+                py-10
+                text-center
+                text-gray-500
+                dark:text-gray-400
+              "
+          >
+            Belum ada data barang.
+          </div>
+        ) : (
+          <BarangTable
+            data={barang}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        )}
+      </Card>
 
       <BarangTambahModal
         isOpen={isTambahOpen}
@@ -188,6 +215,7 @@ export default function BarangPage() {
         isOpen={isDeleteOpen}
         onCancel={() => {
           setDeleteId("");
+
           setIsDeleteOpen(false);
         }}
         onConfirm={handleConfirmDelete}

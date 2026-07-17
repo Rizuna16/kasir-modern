@@ -27,15 +27,20 @@ export default function Pembelian() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      {/* HEADER */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div
+        className="
+          flex
+          items-center
+          justify-between
+        "
+      >
         <div>
           <h1
             className="
-              text-2xl
+              text-3xl
               font-bold
-              text-gray-800
+              text-gray-900
               dark:text-white
             "
           >
@@ -53,27 +58,31 @@ export default function Pembelian() {
           </p>
         </div>
 
-        <Button
-          variant="primary"
-          onClick={() => {
-            setIsTambahOpen(true);
-          }}
-        >
+        <Button variant="primary" onClick={() => setIsTambahOpen(true)}>
           Tambah Pembelian
         </Button>
       </div>
 
-      {/* TABLE */}
       <Card>
-        <PembelianTable data={pembelian} onDetail={handleDetail} />
+        {pembelian.length === 0 ? (
+          <div
+            className="
+                py-10
+                text-center
+                text-gray-500
+                dark:text-gray-400
+              "
+          >
+            Belum ada transaksi pembelian.
+          </div>
+        ) : (
+          <PembelianTable data={pembelian} onDetail={handleDetail} />
+        )}
       </Card>
 
-      {/* TAMBAH MODAL */}
       <PembelianModal
         isOpen={isTambahOpen}
-        onClose={() => {
-          setIsTambahOpen(false);
-        }}
+        onClose={() => setIsTambahOpen(false)}
         onSave={() => {
           setIsTambahOpen(false);
 
@@ -81,7 +90,6 @@ export default function Pembelian() {
         }}
       />
 
-      {/* DETAIL MODAL */}
       <PembelianDetailModal
         isOpen={isDetailOpen}
         pembelian={selectedPembelian}

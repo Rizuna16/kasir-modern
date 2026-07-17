@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Button, ConfirmDialog } from "../components/ui";
+import { Button, Card, ConfirmDialog } from "../components/ui";
 
 import UserTable from "../components/user/UserTable";
 import UserTambahModal from "../components/user/UserTambahModal";
@@ -11,7 +11,15 @@ import useUser from "../hooks/useUser";
 import type { User } from "../types/user";
 
 export default function UserPage() {
-  const { user, tambahUser, editUser, hapusUser } = useUser();
+  const {
+    user,
+
+    tambahUser,
+
+    editUser,
+
+    hapusUser,
+  } = useUser();
 
   const [isTambahOpen, setIsTambahOpen] = useState(false);
 
@@ -37,8 +45,6 @@ export default function UserPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-
       <div>
         <h1
           className="
@@ -61,46 +67,35 @@ export default function UserPage() {
         </p>
       </div>
 
-      {/* Toolbar */}
+      <Card>
+        <div
+          className="
+            flex
+            justify-end
+          "
+        >
+          <Button variant="primary" onClick={() => setIsTambahOpen(true)}>
+            + Tambah User
+          </Button>
+        </div>
+      </Card>
 
-      <div
-        className="
-          flex
-          flex-col
-          gap-4
-
-          rounded-xl
-
-          border
-          border-gray-200
-
-          bg-white
-
-          p-4
-
-          shadow-sm
-
-
-          dark:border-gray-700
-
-          dark:bg-gray-800
-
-
-          md:flex-row
-
-          md:items-center
-
-          md:justify-between
-        "
-      >
-        <div />
-
-        <Button variant="primary" onClick={() => setIsTambahOpen(true)}>
-          + Tambah User
-        </Button>
-      </div>
-
-      <UserTable data={user} onEdit={handleEdit} onDelete={handleDelete} />
+      <Card>
+        {user.length === 0 ? (
+          <div
+            className="
+                py-10
+                text-center
+                text-gray-500
+                dark:text-gray-400
+              "
+          >
+            Belum ada data user.
+          </div>
+        ) : (
+          <UserTable data={user} onEdit={handleEdit} onDelete={handleDelete} />
+        )}
+      </Card>
 
       <UserTambahModal
         isOpen={isTambahOpen}

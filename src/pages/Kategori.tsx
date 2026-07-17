@@ -1,7 +1,8 @@
 import { useState } from "react";
+
 import { toast } from "sonner";
 
-import { ConfirmDialog, Pagination } from "../components/ui";
+import { Card, ConfirmDialog, Pagination } from "../components/ui";
 
 import KategoriTable from "../components/kategori/KategoriTable";
 import KategoriModal from "../components/kategori/KategoriModal";
@@ -74,7 +75,9 @@ export default function Kategori() {
   };
 
   const handleDelete = () => {
-    if (selectedId === null) return;
+    if (selectedId === null) {
+      return;
+    }
 
     deleteKategori(selectedId);
 
@@ -88,18 +91,12 @@ export default function Kategori() {
   };
 
   return (
-    <div
-      className="
-        space-y-6
-      "
-    >
-      {/* Page Header */}
+    <div className="space-y-6">
       <div>
         <h1
           className="
             text-3xl
             font-bold
-
             text-gray-900
             dark:text-white
           "
@@ -117,42 +114,59 @@ export default function Kategori() {
         </p>
       </div>
 
-      <KategoriTable
-        data={paginatedData}
-        search={search}
-        setSearch={setSearch}
-        onTambah={() => {
-          setForm({
-            nama: "",
+      <Card>
+        {paginatedData.length === 0 ? (
+          <div
+            className="
+                py-10
+                text-center
+                text-gray-500
+                dark:text-gray-400
+              "
+          >
+            Belum ada data kategori.
+          </div>
+        ) : (
+          <KategoriTable
+            data={paginatedData}
+            search={search}
+            setSearch={setSearch}
+            onTambah={() => {
+              setForm({
+                nama: "",
 
-            deskripsi: "",
-          });
+                deskripsi: "",
+              });
 
-          setEditId(null);
+              setEditId(null);
 
-          setOpenModal(true);
-        }}
-        onEdit={(id) => {
-          const data = getKategoriById(id);
+              setOpenModal(true);
+            }}
+            onEdit={(id) => {
+              const data = getKategoriById(id);
 
-          if (!data) return;
+              if (!data) {
+                return;
+              }
 
-          setForm({
-            nama: data.nama,
+              setForm({
+                nama: data.nama,
 
-            deskripsi: data.deskripsi,
-          });
+                deskripsi: data.deskripsi,
+              });
 
-          setEditId(id);
+              setEditId(id);
 
-          setOpenModal(true);
-        }}
-        onDelete={(id) => {
-          setSelectedId(id);
+              setOpenModal(true);
+            }}
+            onDelete={(id) => {
+              setSelectedId(id);
 
-          setOpenDelete(true);
-        }}
-      />
+              setOpenDelete(true);
+            }}
+          />
+        )}
+      </Card>
 
       <Pagination
         currentPage={page}
@@ -165,9 +179,7 @@ export default function Kategori() {
         title={editId !== null ? "Edit Kategori" : "Tambah Kategori"}
         form={form}
         setForm={setForm}
-        onClose={() => {
-          setOpenModal(false);
-        }}
+        onClose={() => setOpenModal(false)}
         onSave={handleSave}
       />
 

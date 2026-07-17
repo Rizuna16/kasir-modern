@@ -1,9 +1,8 @@
 import { useState } from "react";
-
 import { useNavigate } from "react-router-dom";
-
 import { toast } from "sonner";
 
+import { Button, Input } from "../components/ui";
 import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
@@ -22,7 +21,6 @@ export default function Login() {
 
     if (!success) {
       toast.error("Username atau password salah");
-
       return;
     }
 
@@ -37,44 +35,34 @@ export default function Login() {
         <h1 className="mb-6 text-center text-2xl font-bold">KASIR MODERN</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="mb-1 block text-sm">Username</label>
+          <Input
+            label="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Masukkan username"
+          />
 
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full rounded border p-2"
-              placeholder="Masukkan username"
-            />
-          </div>
+          <Input
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Masukkan password"
+          />
 
-          <div>
-            <label className="mb-1 block text-sm">Password</label>
-
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded border p-2"
-              placeholder="Masukkan password"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full rounded bg-blue-600 py-2 text-white hover:bg-blue-700"
-          >
+          <Button type="submit" fullWidth>
             LOGIN
-          </button>
+          </Button>
         </form>
 
         <div className="mt-5 text-sm text-gray-500">
-          <p>Demo akun:</p>
+          <p className="font-medium">Demo akun:</p>
 
           <p>Admin : admin / admin123</p>
 
           <p>Kasir : kasir / kasir123</p>
+
+          <p>Owner : owner / owner123</p>
         </div>
       </div>
     </div>

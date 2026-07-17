@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { ConfirmDialog, Pagination } from "../components/ui";
+import { Card, ConfirmDialog, Pagination } from "../components/ui";
 
 import SatuanTable from "../components/satuan/SatuanTable";
 import SatuanModal from "../components/satuan/SatuanModal";
@@ -88,7 +88,9 @@ export default function Satuan() {
   const handleEdit = (id: number) => {
     const data = getSatuanById(id);
 
-    if (!data) return;
+    if (!data) {
+      return;
+    }
 
     setForm({
       nama: data.nama,
@@ -106,7 +108,9 @@ export default function Satuan() {
   };
 
   const handleDelete = () => {
-    if (selectedId === null) return;
+    if (selectedId === null) {
+      return;
+    }
 
     deleteSatuan(selectedId);
 
@@ -121,8 +125,6 @@ export default function Satuan() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-
       <div>
         <h1
           className="
@@ -145,18 +147,33 @@ export default function Satuan() {
         </p>
       </div>
 
-      <SatuanTable
-        data={paginatedData}
-        search={search}
-        setSearch={setSearch}
-        onTambah={() => {
-          resetForm();
+      <Card>
+        {paginatedData.length === 0 ? (
+          <div
+            className="
+                py-10
+                text-center
+                text-gray-500
+                dark:text-gray-400
+              "
+          >
+            Belum ada data satuan.
+          </div>
+        ) : (
+          <SatuanTable
+            data={paginatedData}
+            search={search}
+            setSearch={setSearch}
+            onTambah={() => {
+              resetForm();
 
-          setOpenModal(true);
-        }}
-        onEdit={handleEdit}
-        onDelete={handleDeleteRequest}
-      />
+              setOpenModal(true);
+            }}
+            onEdit={handleEdit}
+            onDelete={handleDeleteRequest}
+          />
+        )}
+      </Card>
 
       <Pagination
         currentPage={page}
@@ -169,9 +186,7 @@ export default function Satuan() {
         title={editId !== null ? "Edit Satuan" : "Tambah Satuan"}
         form={form}
         setForm={setForm}
-        onClose={() => {
-          setOpenModal(false);
-        }}
+        onClose={() => setOpenModal(false)}
         onSave={handleSave}
       />
 
@@ -179,9 +194,7 @@ export default function Satuan() {
         isOpen={openDelete}
         title="Hapus Satuan"
         message="Apakah Anda yakin ingin menghapus satuan ini?"
-        onCancel={() => {
-          setOpenDelete(false);
-        }}
+        onCancel={() => setOpenDelete(false)}
         onConfirm={handleDelete}
       />
     </div>

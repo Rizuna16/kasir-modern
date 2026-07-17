@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import UserModal from "./UserModal";
 
+import { Button, Input, Select } from "../ui";
+
 import type { User, UserRole } from "../../types/user";
 
 interface Props {
@@ -45,11 +47,11 @@ export default function UserTambahModal({
     });
   }
 
-  function handleRoleChange(e: React.ChangeEvent<HTMLSelectElement>) {
+  function handleRoleChange(value: string) {
     setForm({
       ...form,
 
-      role: e.target.value as UserRole,
+      role: value as UserRole,
     });
   }
 
@@ -72,98 +74,80 @@ export default function UserTambahModal({
   return (
     <UserModal isOpen={isOpen} title="Tambah User" onClose={onClose}>
       <div className="space-y-4">
-        <input
+        <Input
+          label="Nama Lengkap"
           name="nama"
           value={form.nama}
           onChange={handleChange}
-          placeholder="Nama Lengkap"
-          className="
-            w-full
-            border
-            rounded
-            px-3
-            py-2
-          "
+          placeholder="Masukkan nama lengkap"
         />
 
-        <input
+        <Input
+          label="Username"
           name="username"
           value={form.username}
           onChange={handleChange}
-          placeholder="Username"
-          className="
-            w-full
-            border
-            rounded
-            px-3
-            py-2
-          "
+          placeholder="Masukkan username"
         />
 
-        <input
+        <Input
+          label="Email"
           name="email"
           value={form.email}
           onChange={handleChange}
-          placeholder="Email"
-          className="
-            w-full
-            border
-            rounded
-            px-3
-            py-2
-          "
+          placeholder="Masukkan email"
         />
 
-        <input
+        <Input
+          label="Password"
           name="password"
           type="password"
           value={form.password}
           onChange={handleChange}
-          placeholder="Password"
-          className="
-            w-full
-            border
-            rounded
-            px-3
-            py-2
-          "
+          placeholder="Masukkan password"
         />
 
-        <select
+        <Select
+          label="Role"
           value={form.role}
+          options={[
+            {
+              value: "Admin",
+              label: "Admin",
+            },
+            {
+              value: "Kasir",
+              label: "Kasir",
+            },
+            {
+              value: "Owner",
+              label: "Owner",
+            },
+          ]}
           onChange={handleRoleChange}
+        />
+
+        <label
           className="
-            w-full
-            border
-            rounded
-            px-3
-            py-2
+            flex
+            items-center
+            gap-2
+
+            text-sm
+            text-gray-700
+
+            dark:text-gray-200
           "
         >
-          <option value="Admin">Admin</option>
-
-          <option value="Kasir">Kasir</option>
-
-          <option value="Owner">Owner</option>
-        </select>
-
-        <label className="flex gap-2 items-center">
           <input type="checkbox" checked={form.aktif} onChange={handleAktif} />
           Aktif
         </label>
 
-        <button
-          onClick={handleSubmit}
-          className="
-            bg-blue-600
-            text-white
-            px-4
-            py-2
-            rounded
-          "
-        >
-          Simpan
-        </button>
+        <div className="flex justify-end">
+          <Button variant="primary" onClick={handleSubmit}>
+            Simpan
+          </Button>
+        </div>
       </div>
     </UserModal>
   );

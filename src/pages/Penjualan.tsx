@@ -11,14 +11,10 @@ import type { Penjualan as PenjualanType } from "../types/penjualan";
 
 import { Button, Card } from "../components/ui";
 
+const PRINT_DELAY = 300;
+
 export default function Penjualan() {
-  const {
-    penjualan,
-
-    loadPenjualan,
-
-    hapusPenjualan,
-  } = usePenjualan();
+  const { penjualan, loadPenjualan, hapusPenjualan } = usePenjualan();
 
   const [isTambahOpen, setIsTambahOpen] = useState(false);
 
@@ -31,19 +27,19 @@ export default function Penjualan() {
     null,
   );
 
-  function handleDetail(data: PenjualanType) {
+  const handleDetail = (data: PenjualanType) => {
     setSelectedPenjualan(data);
 
     setIsDetailOpen(true);
-  }
+  };
 
-  function handlePrint(data: PenjualanType) {
+  const handlePrint = (data: PenjualanType) => {
     setSelectedPrint(data);
 
     setTimeout(() => {
       window.print();
-    }, 300);
-  }
+    }, PRINT_DELAY);
+  };
 
   useEffect(() => {
     const handleAfterPrint = () => {
@@ -58,9 +54,7 @@ export default function Penjualan() {
   }, []);
 
   return (
-    <div className="p-6 space-y-6">
-      {/* HEADER */}
-
+    <div className="space-y-6">
       <div
         className="
           flex
@@ -71,9 +65,9 @@ export default function Penjualan() {
         <div>
           <h1
             className="
-              text-2xl
+              text-3xl
               font-bold
-              text-gray-800
+              text-gray-900
               dark:text-white
             "
           >
@@ -91,42 +85,42 @@ export default function Penjualan() {
           </p>
         </div>
 
-        <Button
-          variant="primary"
-          onClick={() => {
-            setIsTambahOpen(true);
-          }}
-        >
+        <Button variant="primary" onClick={() => setIsTambahOpen(true)}>
           Tambah Penjualan
         </Button>
       </div>
 
-      {/* TABLE */}
-
       <Card>
-        <PenjualanTable
-          data={penjualan}
-          onDelete={hapusPenjualan}
-          onDetail={handleDetail}
-          onPrint={handlePrint}
-        />
+        {penjualan.length === 0 ? (
+          <div
+            className="
+                py-10
+                text-center
+                text-gray-500
+                dark:text-gray-400
+              "
+          >
+            Belum ada transaksi penjualan.
+          </div>
+        ) : (
+          <PenjualanTable
+            data={penjualan}
+            onDelete={hapusPenjualan}
+            onDetail={handleDetail}
+            onPrint={handlePrint}
+          />
+        )}
       </Card>
-
-      {/* TAMBAH PENJUALAN */}
 
       <PenjualanModal
         isOpen={isTambahOpen}
-        onClose={() => {
-          setIsTambahOpen(false);
-        }}
+        onClose={() => setIsTambahOpen(false)}
         onSave={() => {
           setIsTambahOpen(false);
 
           loadPenjualan();
         }}
       />
-
-      {/* DETAIL PENJUALAN */}
 
       <DetailPenjualanModal
         isOpen={isDetailOpen}
@@ -137,8 +131,6 @@ export default function Penjualan() {
           setSelectedPenjualan(null);
         }}
       />
-
-      {/* PRINT AREA */}
 
       {selectedPrint && (
         <div className="hidden print:block">

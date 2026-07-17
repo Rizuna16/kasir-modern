@@ -12,7 +12,7 @@ import SupplierTambahModal from "../components/supplier/SupplierTambahModal";
 import SupplierEditModal from "../components/supplier/SupplierEditModal";
 import SupplierDeleteDialog from "../components/supplier/SupplierDeleteDialog";
 
-import { Pagination } from "../components/ui";
+import { Card, Pagination } from "../components/ui";
 
 export default function Supplier() {
   const {
@@ -82,10 +82,15 @@ export default function Supplier() {
   const handleTambah = () => {
     const berhasil = tambahSupplier({
       kode: form.kode,
+
       nama: form.nama,
+
       alamat: form.alamat,
+
       telepon: form.telepon,
+
       email: form.email,
+
       status: form.status,
     });
 
@@ -97,20 +102,29 @@ export default function Supplier() {
   const handleEdit = (id: string) => {
     const data = ambilSupplier(id);
 
-    if (!data) return;
+    if (!data) {
+      return;
+    }
 
     bukaEdit(id, data);
   };
 
   const handleUpdate = () => {
-    if (editId === null) return;
+    if (editId === null) {
+      return;
+    }
 
     editSupplier(editId, {
       kode: form.kode,
+
       nama: form.nama,
+
       alamat: form.alamat,
+
       telepon: form.telepon,
+
       email: form.email,
+
       status: form.status,
     });
 
@@ -118,7 +132,9 @@ export default function Supplier() {
   };
 
   const handleDelete = () => {
-    if (selectedId === null) return;
+    if (selectedId === null) {
+      return;
+    }
 
     hapusSupplier(selectedId);
 
@@ -127,7 +143,6 @@ export default function Supplier() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div>
         <h1
           className="
@@ -156,11 +171,26 @@ export default function Supplier() {
         onTambah={bukaTambah}
       />
 
-      <SupplierTable
-        data={paginatedSupplier}
-        onEdit={handleEdit}
-        onDelete={bukaDelete}
-      />
+      <Card>
+        {paginatedSupplier.length === 0 ? (
+          <div
+            className="
+                py-10
+                text-center
+                text-gray-500
+                dark:text-gray-400
+              "
+          >
+            Belum ada data supplier.
+          </div>
+        ) : (
+          <SupplierTable
+            data={paginatedSupplier}
+            onEdit={handleEdit}
+            onDelete={bukaDelete}
+          />
+        )}
+      </Card>
 
       <Pagination
         currentPage={page}

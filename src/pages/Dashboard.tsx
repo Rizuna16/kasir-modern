@@ -9,6 +9,8 @@ import LowStock from "../components/dashboard/LowStock";
 import { getBarang } from "../services/barangService";
 import { getPenjualan } from "../services/penjualanService";
 
+import { formatRupiah } from "../utils/currency";
+
 export default function Dashboard() {
   const statistik = useMemo(() => {
     const barang = getBarang();
@@ -46,20 +48,20 @@ export default function Dashboard() {
       <div>
         <h1
           className="
-      text-3xl
-      font-bold
-      text-gray-900
-      dark:text-white
-    "
+            text-3xl
+            font-bold
+            text-gray-900
+            dark:text-white
+          "
         >
           Dashboard
         </h1>
 
         <p
           className="
-      text-gray-500
-      dark:text-gray-400
-    "
+            text-gray-500
+            dark:text-gray-400
+          "
         >
           Ringkasan aktivitas toko hari ini
         </p>
@@ -76,7 +78,7 @@ export default function Dashboard() {
       >
         <StatCard
           title="Total Penjualan"
-          value={`Rp ${statistik.totalPenjualan.toLocaleString()}`}
+          value={formatRupiah(statistik.totalPenjualan)}
           icon="💰"
           color="bg-green-100"
         />
