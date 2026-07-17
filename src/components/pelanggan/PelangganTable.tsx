@@ -5,7 +5,7 @@ interface Props {
 
   onEdit: (pelanggan: Pelanggan) => void;
 
-  onDelete: (id: number) => void;
+  onDelete: (pelanggan: Pelanggan) => void;
 }
 
 export default function PelangganTable({
@@ -63,7 +63,7 @@ export default function PelangganTable({
                   </button>
 
                   <button
-                    onClick={() => onDelete(item.id)}
+                    onClick={() => onDelete(item)}
                     className="bg-red-600 text-white px-3 py-1 rounded"
                   >
                     Hapus
