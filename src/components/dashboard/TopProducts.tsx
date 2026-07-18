@@ -1,36 +1,17 @@
 import { useEffect, useState } from "react";
 
-import { getPenjualan } from "../../services/penjualanService";
-
-interface TopProduct {
-  nama: string;
-  terjual: number;
-}
+import {
+  getTopSellingProducts,
+  type TopProductItem,
+} from "../../features/sales/services/dashboardService";
 
 export default function TopProducts() {
-  const [products, setProducts] = useState<TopProduct[]>([]);
+  const [products, setProducts] = useState<TopProductItem[]>([]);
 
   useEffect(() => {
-    const penjualan = getPenjualan();
+    const data = getTopSellingProducts();
 
-    const mapProduk: Record<string, number> = {};
-
-    penjualan.forEach((transaksi) => {
-      transaksi.detail.forEach((item) => {
-        mapProduk[item.namaBarang] =
-          (mapProduk[item.namaBarang] || 0) + item.qty;
-      });
-    });
-
-    const hasil = Object.entries(mapProduk)
-      .map(([nama, terjual]) => ({
-        nama,
-        terjual,
-      }))
-      .sort((a, b) => b.terjual - a.terjual)
-      .slice(0, 5);
-
-    setProducts(hasil);
+    setProducts(data);
   }, []);
 
   return (
@@ -107,7 +88,7 @@ export default function TopProducts() {
         <div className="space-y-3">
           {products.map((item, index) => (
             <div
-              key={item.nama}
+              key={item.barangId}
               className="
                 flex
                 items-center
@@ -149,7 +130,7 @@ export default function TopProducts() {
                 </div>
 
                 <span className="font-medium text-gray-800 dark:text-gray-100">
-                  {item.nama}
+                  {item.namaBarang}
                 </span>
               </div>
 
@@ -170,7 +151,7 @@ export default function TopProducts() {
                   dark:text-blue-300
                 "
               >
-                {item.terjual} pcs
+                {item.qty} pcs
               </span>
             </div>
           ))}

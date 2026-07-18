@@ -16,18 +16,38 @@ import { createInvoice } from "../engine/invoiceEngine";
 
 import { completeTransaction } from "../engine/transactionEngine";
 
+import { addInvoice } from "../services/invoiceService";
+
+import { mapInvoiceToPenjualan } from "../mappers/invoiceMapper";
+
+import { addPenjualan } from "../../../services/penjualanService";
+
 let activeCart: Cart | null = null;
 
 /**
- * Generate ID sederhana
+ * ============================================================
+ * Enterprise Sales Store
+ * ============================================================
+ *
+ * SalesStore merupakan Orchestrator dari Enterprise Sales Engine.
+ *
+ * Responsibility:
+ *
+ * ✅ Mengelola Cart aktif
+ * ✅ Mengelola Customer
+ * ✅ Mengelola Payment
+ * ✅ Checkout
+ * ✅ Menjalankan Business Engine
+ * ✅ Menyimpan Enterprise Invoice
+ * ✅ Menjaga kompatibilitas Legacy Penjualan
+ *
+ * ============================================================
  */
+
 function generateId(prefix: string): string {
   return `${prefix}-${Date.now()}`;
 }
 
-/**
- * Generate nomor invoice
- */
 function generateInvoiceNumber(): string {
   return `INV-${Date.now()}`;
 }
@@ -73,16 +93,10 @@ function startSale(cashierId: string, cashierName: string): Cart {
   return cart;
 }
 
-/**
- * Mendapatkan cart aktif
- */
 function getCart(): Cart | null {
   return activeCart;
 }
 
-/**
- * Simpan cart manual
- */
 function setCart(cart: Cart): Cart {
   activeCart = cart;
 
@@ -91,7 +105,7 @@ function setCart(cart: Cart): Cart {
 
 /**
  * ============================================================
- * CART ENGINE
+ * CART
  * ============================================================
  */
 
@@ -152,8 +166,11 @@ function removeCartItem(itemId: string): Cart | null {
 }
 
 /**
- * Customer
+ * ============================================================
+ * CUSTOMER
+ * ============================================================
  */
+
 function setCustomer(customer?: Customer): Cart | null {
   if (!activeCart) return null;
 
@@ -165,8 +182,11 @@ function setCustomer(customer?: Customer): Cart | null {
 }
 
 /**
- * Payment
+ * ============================================================
+ * PAYMENT
+ * ============================================================
  */
+
 function setPayment(payment: Payment): Cart | null {
   if (!activeCart) return null;
 
@@ -178,8 +198,11 @@ function setPayment(payment: Payment): Cart | null {
 }
 
 /**
- * Hitung ulang total
+ * ============================================================
+ * RECALCULATE
+ * ============================================================
  */
+
 function recalculate() {
   if (!activeCart) return;
 
@@ -195,7 +218,7 @@ function recalculate() {
 
   activeCart.grandTotal =
     activeCart.subtotal -
-    activeCart.itemDiscount +
+    activeCart.itemDiscount -
     activeCart.transactionDiscount +
     activeCart.tax +
     activeCart.serviceCharge;
@@ -205,7 +228,7 @@ function recalculate() {
 
 /**
  * ============================================================
- * COMPLETE SALE
+ * CHECKOUT
  * ============================================================
  */
 
@@ -214,24 +237,58 @@ function completeSale(): Invoice | null {
 
   if (!activeCart.payment) return null;
 
+  /**
+   * 1. Generate Enterprise Invoice
+   */
   const invoice = createInvoice(activeCart);
 
+  /**
+   * 2. Validasi transaksi
+   */
   const result = completeTransaction(invoice);
 
   if (!result.success) {
+    console.warn(result.message);
+
     return null;
   }
 
+  /**
+   * 3. Simpan Invoice Enterprise
+   */
+  addInvoice(invoice);
+
+  /**
+   * 4. Mapping ke Legacy Penjualan
+   */
+  const legacyPenjualan = mapInvoiceToPenjualan(invoice);
+
+  /**
+   * 5. Simpan ke Legacy Service
+   */
+  addPenjualan(legacyPenjualan);
+
+  /**
+   * 6. Tandai Cart selesai
+   */
   activeCart.status = "completed";
 
+  activeCart.updatedAt = new Date().toISOString();
+
+  /**
+   * 7. Bersihkan Cart
+   */
   clearCart();
 
   return invoice;
 }
 
 /**
- * Cancel transaksi
+ * ============================================================
+ * CANCEL
+ * ============================================================
  */
+
 function cancelSale() {
   if (activeCart) {
     activeCart.status = "cancelled";
@@ -243,8 +300,11 @@ function cancelSale() {
 }
 
 /**
- * Reset transaksi
+ * ============================================================
+ * CLEAR
+ * ============================================================
  */
+
 function clearCart() {
   activeCart = null;
 }

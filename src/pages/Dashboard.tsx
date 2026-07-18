@@ -6,42 +6,12 @@ import RecentTransaction from "../components/dashboard/RecentTransaction";
 import TopProducts from "../components/dashboard/TopProducts";
 import LowStock from "../components/dashboard/LowStock";
 
-import { getBarang } from "../services/barangService";
-import { getPenjualan } from "../services/penjualanService";
+import { getDashboardSummary } from "../features/sales/services/dashboardService";
 
 import { formatRupiah } from "../utils/currency";
 
 export default function Dashboard() {
-  const statistik = useMemo(() => {
-    const barang = getBarang();
-
-    const penjualan = getPenjualan();
-
-    const totalPenjualan = penjualan.reduce(
-      (total, item) => total + item.total,
-      0,
-    );
-
-    const hariIni = new Date().toISOString().slice(0, 10);
-
-    const transaksiHariIni = penjualan.filter(
-      (item) => item.tanggal === hariIni,
-    ).length;
-
-    const stokMenipis = barang.filter(
-      (item) => item.stok <= item.minimalStok,
-    ).length;
-
-    return {
-      totalBarang: barang.length,
-
-      totalPenjualan,
-
-      transaksiHariIni,
-
-      stokMenipis,
-    };
-  }, []);
+  const statistik = useMemo(() => getDashboardSummary(), []);
 
   return (
     <div className="space-y-6">

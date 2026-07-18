@@ -10,40 +10,18 @@ import {
   YAxis,
 } from "recharts";
 
-import { getPenjualan } from "../../services/penjualanService";
-
-interface ChartData {
-  hari: string;
-  penjualan: number;
-}
+import {
+  getSalesChart,
+  type SalesChartItem,
+} from "../../features/sales/services/dashboardService";
 
 export default function SalesChart() {
-  const [data, setData] = useState<ChartData[]>([]);
+  const [data, setData] = useState<SalesChartItem[]>([]);
 
   useEffect(() => {
-    const penjualan = getPenjualan();
+    const result = getSalesChart();
 
-    const grouped: Record<string, number> = {};
-
-    penjualan.forEach((item) => {
-      const tanggal = new Date(item.tanggal);
-
-      const label = tanggal.toLocaleDateString("id-ID", {
-        day: "2-digit",
-        month: "short",
-      });
-
-      grouped[label] = (grouped[label] || 0) + item.total;
-    });
-
-    setData(
-      Object.entries(grouped)
-        .map(([hari, penjualan]) => ({
-          hari,
-          penjualan,
-        }))
-        .slice(-7),
-    );
+    setData(result);
   }, []);
 
   return (
