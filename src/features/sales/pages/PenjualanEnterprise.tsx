@@ -23,6 +23,8 @@ export default function PenjualanEnterprise() {
     SalesStore.getCart()?.customer,
   );
 
+  const [message, setMessage] = useState("");
+
   useEffect(() => {
     const data = getBarang();
 
@@ -45,12 +47,24 @@ export default function PenjualanEnterprise() {
     );
   }, [barang, search]);
 
+  function refreshCart() {
+    setCart(SalesStore.getCart());
+  }
+
+  function showMessage(text: string) {
+    setMessage(text);
+
+    setTimeout(() => {
+      setMessage("");
+    }, 2500);
+  }
+
   function handleCustomerChange(customer?: Customer) {
     SalesStore.setCustomer(customer);
 
     setCustomer(customer);
 
-    setCart(SalesStore.getCart());
+    refreshCart();
   }
 
   function tambahBarang(item: Barang) {
@@ -76,9 +90,48 @@ export default function PenjualanEnterprise() {
       total: item.hargaEcer,
     };
 
-    SalesStore.addCartItem(cartItem);
+    const result = SalesStore.addCartItem(cartItem, item.stok);
 
-    setCart(SalesStore.getCart());
+    if (result?.items.length === SalesStore.getCart()?.items.length) {
+      refreshCart();
+
+      return;
+    }
+
+    refreshCart();
+  }
+
+  function tambahQty(itemId: string) {
+    const item = activeCart?.items.find((item) => item.id === itemId);
+
+    const barangMaster = barang.find((b) => b.id === item?.barangId);
+
+    if (!barangMaster) return;
+
+    const before = item?.qty ?? 0;
+
+    SalesStore.increaseCartItem(itemId, barangMaster.stok);
+
+    const after =
+      SalesStore.getCart()?.items.find((i) => i.id === itemId)?.qty ?? 0;
+
+    if (before === after) {
+      showMessage("Stok barang tidak mencukupi");
+    }
+
+    refreshCart();
+  }
+
+  function kurangQty(id: string) {
+    SalesStore.decreaseCartItem(id);
+
+    refreshCart();
+  }
+
+  function hapusItem(id: string) {
+    SalesStore.removeCartItem(id);
+
+    refreshCart();
   }
 
   const activeCart = cart;
@@ -87,6 +140,19 @@ export default function PenjualanEnterprise() {
 
   return (
     <div className="space-y-6">
+      {message && (
+        <div
+          className="
+            rounded
+            border
+            p-3
+            text-sm
+          "
+        >
+          {message}
+        </div>
+      )}
+
       <div>
         <h1
           className="
@@ -146,28 +212,21 @@ export default function PenjualanEnterprise() {
             <div
               key={item.id}
               className="
-                  flex
-                  items-center
-                  justify-between
-                  border
-                  p-3
-                  rounded
-                "
+                flex
+                justify-between
+                border
+                p-3
+                rounded
+              "
             >
               <div>
-                <div
-                  className="
-                      font-medium
-                    "
-                >
-                  {item.nama}
-                </div>
+                <div className="font-medium">{item.nama}</div>
 
                 <div
                   className="
-                      text-sm
-                      text-gray-500
-                    "
+                    text-sm
+                    text-gray-500
+                  "
                 >
                   Rp {item.hargaEcer.toLocaleString()}
                 </div>
@@ -194,30 +253,55 @@ export default function PenjualanEnterprise() {
         {activeCart?.items.length === 0 ? (
           <p>Belum ada barang</p>
         ) : (
-          <div
-            className="
-              space-y-2
-            "
-          >
+          <div className="space-y-3">
             {activeCart?.items.map((item) => (
               <div
                 key={item.id}
                 className="
-                    flex
-                    justify-between
-                    border-b
-                    py-2
-                  "
+                  flex
+                  justify-between
+                  items-center
+                  border-b
+                  pb-3
+                "
               >
-                <span>
-                  {item.namaBarang}
+                <div>
+                  <div className="font-medium">{item.namaBarang}</div>
 
-                  {" x "}
+                  <div
+                    className="
+                      text-sm
+                      text-gray-500
+                    "
+                  >
+                    Rp {item.total.toLocaleString()}
+                  </div>
+                </div>
 
-                  {item.qty}
-                </span>
+                <div
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                  "
+                >
+                  <Button
+                    variant="secondary"
+                    onClick={() => kurangQty(item.id)}
+                  >
+                    -
+                  </Button>
 
-                <span>Rp {item.total.toLocaleString()}</span>
+                  <span>{item.qty}</span>
+
+                  <Button variant="primary" onClick={() => tambahQty(item.id)}>
+                    +
+                  </Button>
+
+                  <Button variant="danger" onClick={() => hapusItem(item.id)}>
+                    Hapus
+                  </Button>
+                </div>
               </div>
             ))}
           </div>

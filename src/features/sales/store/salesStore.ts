@@ -7,6 +7,15 @@ import {
   removeItem as cartRemoveItem,
 } from "../engine/cartEngine";
 
+import {
+  validateNewItemStock,
+  validateStockIncrease,
+} from "../engine/stockValidator";
+
+import { createInvoice } from "../engine/invoiceEngine";
+
+import { completeTransaction } from "../engine/transactionEngine";
+
 let activeCart: Cart | null = null;
 
 /**
@@ -82,15 +91,20 @@ function setCart(cart: Cart): Cart {
 
 /**
  * ============================================================
- * CART ITEM ENGINE ACTION
+ * CART ENGINE
  * ============================================================
  */
 
-/**
- * Tambah item ke cart
- */
-function addCartItem(item: CartItem): Cart | null {
+function addCartItem(item: CartItem, stock: number): Cart | null {
   if (!activeCart) return null;
+
+  const validation = validateNewItemStock(item.qty, stock);
+
+  if (!validation.success) {
+    console.warn(validation.message);
+
+    return activeCart;
+  }
 
   activeCart = cartAddItem(activeCart, item);
 
@@ -99,11 +113,16 @@ function addCartItem(item: CartItem): Cart | null {
   return activeCart;
 }
 
-/**
- * Tambah qty
- */
-function increaseCartItem(itemId: string): Cart | null {
+function increaseCartItem(itemId: string, stock: number): Cart | null {
   if (!activeCart) return null;
+
+  const validation = validateStockIncrease(activeCart, itemId, stock);
+
+  if (!validation.success) {
+    console.warn(validation.message);
+
+    return activeCart;
+  }
 
   activeCart = increaseQty(activeCart, itemId);
 
@@ -112,9 +131,6 @@ function increaseCartItem(itemId: string): Cart | null {
   return activeCart;
 }
 
-/**
- * Kurang qty
- */
 function decreaseCartItem(itemId: string): Cart | null {
   if (!activeCart) return null;
 
@@ -125,9 +141,6 @@ function decreaseCartItem(itemId: string): Cart | null {
   return activeCart;
 }
 
-/**
- * Hapus item
- */
 function removeCartItem(itemId: string): Cart | null {
   if (!activeCart) return null;
 
@@ -139,7 +152,7 @@ function removeCartItem(itemId: string): Cart | null {
 }
 
 /**
- * Set customer
+ * Customer
  */
 function setCustomer(customer?: Customer): Cart | null {
   if (!activeCart) return null;
@@ -152,7 +165,7 @@ function setCustomer(customer?: Customer): Cart | null {
 }
 
 /**
- * Set pembayaran
+ * Payment
  */
 function setPayment(payment: Payment): Cart | null {
   if (!activeCart) return null;
@@ -172,13 +185,11 @@ function recalculate() {
 
   activeCart.subtotal = activeCart.items.reduce(
     (sum, item) => sum + item.subtotal,
-
     0,
   );
 
   activeCart.itemDiscount = activeCart.items.reduce(
     (sum, item) => sum + item.discount,
-
     0,
   );
 
@@ -193,48 +204,27 @@ function recalculate() {
 }
 
 /**
- * Finalisasi transaksi
+ * ============================================================
+ * COMPLETE SALE
+ * ============================================================
  */
+
 function completeSale(): Invoice | null {
-  if (!activeCart || !activeCart.payment) return null;
+  if (!activeCart) return null;
 
-  const now = new Date().toISOString();
+  if (!activeCart.payment) return null;
 
-  const invoice: Invoice = {
-    id: generateId("INV"),
+  const invoice = createInvoice(activeCart);
 
-    number: activeCart.invoiceNumber,
+  const result = completeTransaction(invoice);
 
-    date: now,
-
-    cashierId: activeCart.cashierId,
-
-    cashierName: activeCart.cashierName,
-
-    customer: activeCart.customer,
-
-    items: [...activeCart.items],
-
-    subtotal: activeCart.subtotal,
-
-    itemDiscount: activeCart.itemDiscount,
-
-    transactionDiscount: activeCart.transactionDiscount,
-
-    tax: activeCart.tax,
-
-    serviceCharge: activeCart.serviceCharge,
-
-    grandTotal: activeCart.grandTotal,
-
-    payment: activeCart.payment,
-
-    notes: activeCart.notes,
-
-    createdAt: now,
-  };
+  if (!result.success) {
+    return null;
+  }
 
   activeCart.status = "completed";
+
+  clearCart();
 
   return invoice;
 }
@@ -245,6 +235,8 @@ function completeSale(): Invoice | null {
 function cancelSale() {
   if (activeCart) {
     activeCart.status = "cancelled";
+
+    activeCart.updatedAt = new Date().toISOString();
   }
 
   return activeCart;
