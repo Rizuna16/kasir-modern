@@ -22,15 +22,19 @@ import Satuan from "../pages/Satuan";
 import Supplier from "../pages/Supplier";
 import User from "../pages/User";
 
+import PenjualanEnterprise from "../features/sales/pages/PenjualanEnterprise";
+
 const AppRoutes = () => {
   return (
     <Routes>
       {/* Public */}
+
       <Route path="/login" element={<Login />} />
 
       <Route path="/403" element={<AccessDenied />} />
 
       {/* Protected */}
+
       <Route
         element={
           <ProtectedRoute>
@@ -101,11 +105,28 @@ const AppRoutes = () => {
           }
         />
 
+        {/* ============================
+            PENJUALAN V1
+           ============================ */}
+
         <Route
           path="/penjualan"
           element={
             <RoleRoute allowedRoles={PERMISSIONS.PENJUALAN}>
               <Penjualan />
+            </RoleRoute>
+          }
+        />
+
+        {/* ============================
+            PENJUALAN ENTERPRISE
+           ============================ */}
+
+        <Route
+          path="/penjualan-enterprise"
+          element={
+            <RoleRoute allowedRoles={PERMISSIONS.PENJUALAN}>
+              <PenjualanEnterprise />
             </RoleRoute>
           }
         />

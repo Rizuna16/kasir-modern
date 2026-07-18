@@ -50,6 +50,12 @@ export const NAVIGATION = [
   },
 
   {
+    label: "Penjualan Enterprise",
+    path: "/penjualan-enterprise",
+    permissions: PERMISSIONS.PENJUALAN,
+  },
+
+  {
     label: "Pembelian",
     path: "/pembelian",
     permissions: PERMISSIONS.PEMBELIAN,
