@@ -1,64 +1,212 @@
 /**
  * ============================================================
- * Enterprise Dashboard Domain
+ * Executive Intelligence Dashboard Types
  * ============================================================
  *
- * Dashboard bukan tempat menghitung data.
+ * Dashboard Operational
+ * +
+ * Executive Intelligence
  *
- * Dashboard hanya membaca hasil analitik
- * dari dashboardService.
- *
+ * ============================================================
+ */
+
+/**
+ * ============================================================
+ * Dashboard Summary
  * ============================================================
  */
 
 export interface DashboardSummary {
   totalRevenue: number;
 
+  /**
+   * Legacy / alias bisnis
+   */
+  totalPenjualan?: number;
+
+  /**
+   * Existing service field
+   */
   totalTransaction: number;
 
-  averageTransaction: number;
+  /**
+   * Indonesian alias
+   */
+  totalTransaksi?: number;
+
+  totalBarang?: number;
+
+  stokMenipis?: number;
 
   totalCustomer: number;
+
+  averageTransaction: number;
 }
 
-export interface SalesChartItem {
-  date: string;
+/**
+ * ============================================================
+ * Sales Chart
+ * ============================================================
+ */
+
+export interface SalesChartData {
+  date?: string;
+
+  label?: string;
 
   total: number;
 }
 
-export interface RecentInvoiceItem {
+/**
+ * ============================================================
+ * Recent Transaction
+ * ============================================================
+ */
+
+export interface RecentTransaction {
   id: string;
 
-  invoiceNumber: string;
+  invoice?: string;
 
-  customerName: string;
+  invoiceNumber?: string;
 
-  cashierName: string;
+  tanggal?: string;
+
+  date?: string;
+
+  customer?: string;
+
+  customerName?: string;
+
+  cashierName?: string;
 
   total: number;
 
-  status: string;
-
-  date: string;
+  status?: "LUNAS" | "BELUM LUNAS";
 }
 
-export interface TopProductItem {
-  productId: string;
+/**
+ * ============================================================
+ * Top Product
+ * ============================================================
+ */
 
-  productName: string;
+export interface TopProduct {
+  barangId?: string;
+
+  productId?: string;
+
+  namaBarang?: string;
+
+  productName?: string;
+
+  jumlahTerjual?: number;
 
   qty: number;
+
+  totalPenjualan?: number;
 
   revenue: number;
 }
 
-export interface StockAlertItem {
-  productId: string;
+/**
+ * ============================================================
+ * Stock Alert
+ * ============================================================
+ */
 
-  productName: string;
+export interface StockAlert {
+  barangId?: string;
 
-  stock: number;
+  productId?: string;
 
-  level: "critical" | "warning";
+  namaBarang?: string;
+
+  productName?: string;
+
+  stok?: number;
+
+  stock?: number;
+
+  minimumStok?: number;
+
+  level?: string;
 }
+
+/**
+ * ============================================================
+ * EXECUTIVE INTELLIGENCE
+ * ============================================================
+ */
+
+export interface ExecutiveSummary {
+  revenueHariIni: number;
+
+  totalTransaksiHariIni: number;
+
+  totalCustomerHariIni: number;
+
+  averageTransaction: number;
+}
+
+/**
+ * ============================================================
+ * Revenue Growth
+ * ============================================================
+ */
+
+export interface RevenueGrowth {
+  periode: string;
+
+  revenueSekarang: number;
+
+  revenueSebelumnya: number;
+
+  growthPercentage: number;
+}
+
+/**
+ * ============================================================
+ * Profit Analytics
+ * ============================================================
+ */
+
+export interface ProfitAnalytics {
+  totalRevenue: number;
+
+  totalModal: number;
+
+  totalProfit: number;
+
+  marginPercentage: number;
+}
+
+/**
+ * ============================================================
+ * Customer Insight
+ * ============================================================
+ */
+
+export interface CustomerInsight {
+  totalCustomer: number;
+
+  customerTerbaik?: string;
+
+  totalBelanjaTerbesar: number;
+
+  rataRataBelanjaCustomer: number;
+}
+
+/**
+ * ============================================================
+ * BACKWARD COMPATIBILITY ALIAS
+ * ============================================================
+ */
+
+export type SalesChartItem = SalesChartData;
+
+export type RecentInvoiceItem = RecentTransaction;
+
+export type TopProductItem = TopProduct;
+
+export type StockAlertItem = StockAlert;
