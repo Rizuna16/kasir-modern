@@ -1,23 +1,22 @@
 /**
  * ============================================================
- * Enterprise Dashboard
+ * Enterprise Executive Dashboard
  * Page : Dashboard
  * ============================================================
  *
  * Responsibility:
  *
- * - Menampilkan dashboard analytics
- * - Mengatur layout dashboard
+ * - Menampilkan operational dashboard
+ * - Menampilkan executive intelligence
+ * - Adapter data service ke UI component
  * - Trigger refresh data
- *
- * Data berasal dari:
- *
- * useDashboard()
  *
  * ============================================================
  */
 
 import { RefreshCw } from "lucide-react";
+
+import { useNavigate } from "react-router-dom";
 
 import StatCard from "../components/dashboard/StatCard";
 
@@ -29,6 +28,16 @@ import TopProducts from "../components/dashboard/TopProducts";
 
 import LowStock from "../components/dashboard/LowStock";
 
+import ExecutiveSummaryCard from "../components/dashboard/ExecutiveSummaryCard";
+
+import RevenueGrowthCard from "../components/dashboard/RevenueGrowthCard";
+
+import ProfitAnalyticsCard from "../components/dashboard/ProfitAnalyticsCard";
+
+import CustomerInsightCard from "../components/dashboard/CustomerInsightCard";
+
+import QuickActions from "../components/dashboard/QuickActions";
+
 import DashboardSkeleton from "../components/dashboard/DashboardSkeleton";
 
 import useDashboard from "../features/dashboard/hooks/useDashboard";
@@ -36,10 +45,20 @@ import useDashboard from "../features/dashboard/hooks/useDashboard";
 import { formatRupiah } from "../utils/currency";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+
   const {
     loading,
 
     statistik,
+
+    executiveSummary,
+
+    revenueGrowth,
+
+    profitAnalytics,
+
+    customerInsight,
 
     salesChart,
 
@@ -52,15 +71,45 @@ export default function Dashboard() {
     refresh,
   } = useDashboard();
 
-  /**
-   * ==========================================================
-   * Loading State
-   * ==========================================================
-   */
-
   if (loading || !statistik) {
     return <DashboardSkeleton />;
   }
+
+  /**
+   * ==========================================================
+   * DATA ADAPTER
+   * ==========================================================
+   */
+
+  const salesChartAdapter = salesChart.map((item) => ({
+    hari: item.label ?? item.date ?? "-",
+
+    penjualan: item.total,
+  }));
+
+  const recentTransactionAdapter = recentTransactions.map((item) => ({
+    id: item.id,
+
+    nomorNota: item.invoice ?? item.invoiceNumber ?? "-",
+
+    pelangganNama: item.customer ?? item.customerName ?? "Umum",
+
+    total: item.total,
+
+    tanggal: item.tanggal ?? item.date ?? "-",
+
+    status: item.status ?? "LUNAS",
+  }));
+
+  const topProductsAdapter = topProducts.map((item) => ({
+    barangId: item.barangId ?? item.productId ?? "-",
+
+    namaBarang: item.namaBarang ?? item.productName ?? "-",
+
+    qty: item.qty ?? item.jumlahTerjual ?? 0,
+
+    revenue: item.revenue ?? item.totalPenjualan ?? 0,
+  }));
 
   return (
     <div
@@ -93,7 +142,7 @@ export default function Dashboard() {
               dark:text-white
             "
           >
-            Dashboard
+            Executive Dashboard
           </h1>
 
           <p
@@ -103,7 +152,7 @@ export default function Dashboard() {
               dark:text-gray-400
             "
           >
-            Ringkasan aktivitas toko hari ini
+            Business intelligence overview
           </p>
         </div>
 
@@ -131,13 +180,7 @@ export default function Dashboard() {
 
             text-white
 
-            transition-all
-
-            duration-200
-
             hover:bg-blue-700
-
-            disabled:cursor-not-allowed
 
             disabled:opacity-50
           "
@@ -145,6 +188,7 @@ export default function Dashboard() {
           <RefreshCw
             className={`
               h-4
+
               w-4
 
               ${loading ? "animate-spin" : ""}
@@ -154,7 +198,29 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* KPI CARDS */}
+      {/* EXECUTIVE INTELLIGENCE */}
+
+      {executiveSummary && <ExecutiveSummaryCard data={executiveSummary} />}
+
+      <div
+        className="
+          grid
+
+          grid-cols-1
+
+          lg:grid-cols-2
+
+          gap-6
+        "
+      >
+        {revenueGrowth && <RevenueGrowthCard data={revenueGrowth} />}
+
+        {profitAnalytics && <ProfitAnalyticsCard data={profitAnalytics} />}
+      </div>
+
+      {customerInsight && <CustomerInsightCard data={customerInsight} />}
+
+      {/* KPI */}
 
       <div
         className="
@@ -170,43 +236,43 @@ export default function Dashboard() {
         "
       >
         <StatCard
-          title="Total Penjualan"
-          value={formatRupiah(statistik.totalPenjualan)}
+          title="Revenue"
+          value={formatRupiah(statistik.totalRevenue)}
           icon="💰"
           color="bg-green-100"
         />
 
         <StatCard
-          title="Transaksi Hari Ini"
-          value={statistik.transaksiHariIni}
+          title="Total Transaksi"
+          value={statistik.totalTransaction}
           icon="🧾"
           color="bg-blue-100"
         />
 
         <StatCard
-          title="Jumlah Barang"
-          value={statistik.totalBarang}
-          icon="📦"
+          title="Customer"
+          value={statistik.totalCustomer}
+          icon="👥"
           color="bg-purple-100"
         />
 
         <StatCard
-          title="Stok Menipis"
-          value={statistik.stokMenipis}
-          icon="⚠️"
-          color="bg-red-100"
+          title="Average Transaction"
+          value={formatRupiah(statistik.averageTransaction)}
+          icon="📊"
+          color="bg-orange-100"
         />
       </div>
 
       {/* SALES ANALYTICS */}
 
-      <SalesChart data={salesChart} />
+      <SalesChart data={salesChartAdapter} />
 
       {/* RECENT TRANSACTION */}
 
-      <RecentTransaction data={recentTransactions} />
+      <RecentTransaction data={recentTransactionAdapter} />
 
-      {/* PRODUCT + STOCK */}
+      {/* PRODUCT STOCK */}
 
       <div
         className="
@@ -219,10 +285,14 @@ export default function Dashboard() {
           gap-6
         "
       >
-        <TopProducts data={topProducts} />
+        <TopProducts data={topProductsAdapter} />
 
         <LowStock data={lowStock} />
       </div>
+
+      {/* QUICK ACTION */}
+
+      <QuickActions onNavigate={(path) => navigate(path)} />
     </div>
   );
 }

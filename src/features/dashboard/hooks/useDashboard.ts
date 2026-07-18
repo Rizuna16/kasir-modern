@@ -7,7 +7,8 @@
  * Responsibility:
  *
  * - Mengambil analytics dashboard
- * - Mengelola loading state
+ * - Executive Intelligence data
+ * - Loading state
  * - Manual refresh
  * - Auto refresh
  * - Storage synchronization
@@ -19,14 +20,25 @@ import { useCallback, useEffect, useState } from "react";
 
 import {
   getDashboardSummary,
+  getExecutiveSummary,
+  getRevenueGrowth,
+  getProfitAnalytics,
+  getCustomerInsight,
   getSalesChart,
-  getRecentTransactions,
-  getTopSellingProducts,
-  type DashboardSummary,
-  type SalesChartItem,
-  type RecentTransactionItem,
-  type TopProductItem,
-} from "../../sales/services/dashboardService";
+  getRecentInvoices,
+  getTopProducts,
+} from "../../../services/dashboardService";
+
+import type {
+  DashboardSummary,
+  ExecutiveSummary,
+  RevenueGrowth,
+  ProfitAnalytics,
+  CustomerInsight,
+  SalesChartItem,
+  RecentInvoiceItem,
+  TopProductItem,
+} from "../../../types/dashboard";
 
 import type { Barang } from "../../../types/barang";
 
@@ -37,17 +49,38 @@ const AUTO_REFRESH_INTERVAL = 30000;
 export default function useDashboard() {
   const [loading, setLoading] = useState(true);
 
+  /**
+   * Operational Dashboard
+   */
+
   const [statistik, setStatistik] = useState<DashboardSummary | null>(null);
 
   const [salesChart, setSalesChart] = useState<SalesChartItem[]>([]);
 
   const [recentTransactions, setRecentTransactions] = useState<
-    RecentTransactionItem[]
+    RecentInvoiceItem[]
   >([]);
 
   const [topProducts, setTopProducts] = useState<TopProductItem[]>([]);
 
   const [lowStock, setLowStock] = useState<Barang[]>([]);
+
+  /**
+   * Executive Intelligence
+   */
+
+  const [executiveSummary, setExecutiveSummary] =
+    useState<ExecutiveSummary | null>(null);
+
+  const [revenueGrowth, setRevenueGrowth] = useState<RevenueGrowth | null>(
+    null,
+  );
+
+  const [profitAnalytics, setProfitAnalytics] =
+    useState<ProfitAnalytics | null>(null);
+
+  const [customerInsight, setCustomerInsight] =
+    useState<CustomerInsight | null>(null);
 
   const loadDashboard = useCallback(() => {
     setLoading(true);
@@ -55,11 +88,19 @@ export default function useDashboard() {
     try {
       setStatistik(getDashboardSummary());
 
+      setExecutiveSummary(getExecutiveSummary());
+
+      setRevenueGrowth(getRevenueGrowth());
+
+      setProfitAnalytics(getProfitAnalytics());
+
+      setCustomerInsight(getCustomerInsight());
+
       setSalesChart(getSalesChart());
 
-      setRecentTransactions(getRecentTransactions());
+      setRecentTransactions(getRecentInvoices());
 
-      setTopProducts(getTopSellingProducts());
+      setTopProducts(getTopProducts());
 
       setLowStock(getBarang().filter((item) => item.stok <= item.minimalStok));
     } finally {
@@ -76,17 +117,13 @@ export default function useDashboard() {
   }, [loadDashboard]);
 
   /**
-   * Auto Refresh Engine
+   * Auto Refresh
    */
 
   useEffect(() => {
-    const timer = window.setInterval(
-      () => {
-        loadDashboard();
-      },
-
-      AUTO_REFRESH_INTERVAL,
-    );
+    const timer = window.setInterval(() => {
+      loadDashboard();
+    }, AUTO_REFRESH_INTERVAL);
 
     return () => {
       window.clearInterval(timer);
@@ -94,10 +131,7 @@ export default function useDashboard() {
   }, [loadDashboard]);
 
   /**
-   * Browser Storage Sync
-   *
-   * Update dashboard ketika
-   * localStorage berubah dari tab lain
+   * Storage Sync
    */
 
   useEffect(() => {
@@ -115,6 +149,10 @@ export default function useDashboard() {
   return {
     loading,
 
+    /**
+     * Operational
+     */
+
     statistik,
 
     salesChart,
@@ -124,6 +162,18 @@ export default function useDashboard() {
     topProducts,
 
     lowStock,
+
+    /**
+     * Executive
+     */
+
+    executiveSummary,
+
+    revenueGrowth,
+
+    profitAnalytics,
+
+    customerInsight,
 
     refresh: loadDashboard,
   };
