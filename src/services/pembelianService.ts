@@ -1,4 +1,10 @@
-import { updateStokBarang, kurangiStokBarang } from "./barangService";
+import {
+  getBarang,
+  updateStokBarang,
+  kurangiStokBarang,
+} from "./barangService";
+
+import { recordStockMovement } from "./stockMovementService";
 
 import type { Pembelian } from "../types/pembelian";
 
@@ -16,7 +22,7 @@ const getStorage = (): Pembelian[] => {
   }
 
   try {
-    return JSON.parse(data);
+    return JSON.parse(data) as Pembelian[];
   } catch {
     return [];
   }
@@ -37,9 +43,7 @@ export const getPembelian = (): Pembelian[] => {
 // Ambil berdasarkan ID
 
 export const getPembelianById = (id: string): Pembelian | undefined => {
-  const pembelian = getStorage();
-
-  return pembelian.find((item) => item.id === id);
+  return getStorage().find((item) => item.id === id);
 };
 
 // Tambah pembelian
@@ -65,8 +69,43 @@ export const addPembelian = (
 
   saveStorage(pembelian);
 
+  /*
+    Update stok barang
+    + catat stock movement
+  */
+
   newPembelian.detail.forEach((item) => {
-    updateStokBarang(item.barangId, item.qty);
+    const barangSebelum = getBarang().find(
+      (barang) => barang.id === item.barangId,
+    );
+
+    if (!barangSebelum) {
+      return;
+    }
+
+    const stokSebelum = barangSebelum.stok;
+
+    const barangSesudah = updateStokBarang(item.barangId, item.qty);
+
+    if (!barangSesudah) {
+      return;
+    }
+
+    recordStockMovement({
+      barangId: item.barangId,
+
+      tipe: "Pembelian",
+
+      qty: item.qty,
+
+      stokSebelum,
+
+      stokSesudah: barangSesudah.stok,
+
+      referensi: newPembelian.id,
+
+      keterangan: "Stok masuk dari pembelian",
+    });
   });
 
   return newPembelian;
@@ -87,6 +126,10 @@ export const updatePembelian = (
     return null;
   }
 
+  /*
+    Kembalikan stok lama
+  */
+
   pembelian[index].detail.forEach((item) => {
     kurangiStokBarang(item.barangId, item.qty);
   });
@@ -103,8 +146,43 @@ export const updatePembelian = (
     updatedAt: new Date().toISOString(),
   };
 
+  /*
+    Tambahkan stok baru
+    + catat movement
+  */
+
   pembelian[index].detail.forEach((item) => {
-    updateStokBarang(item.barangId, item.qty);
+    const barangSebelum = getBarang().find(
+      (barang) => barang.id === item.barangId,
+    );
+
+    if (!barangSebelum) {
+      return;
+    }
+
+    const stokSebelum = barangSebelum.stok;
+
+    const barangSesudah = updateStokBarang(item.barangId, item.qty);
+
+    if (!barangSesudah) {
+      return;
+    }
+
+    recordStockMovement({
+      barangId: item.barangId,
+
+      tipe: "Pembelian",
+
+      qty: item.qty,
+
+      stokSebelum,
+
+      stokSesudah: barangSesudah.stok,
+
+      referensi: id,
+
+      keterangan: "Update pembelian",
+    });
   });
 
   saveStorage(pembelian);
@@ -121,7 +199,37 @@ export const deletePembelian = (id: string): void => {
 
   if (transaksi) {
     transaksi.detail.forEach((item) => {
-      kurangiStokBarang(item.barangId, item.qty);
+      const barangSebelum = getBarang().find(
+        (barang) => barang.id === item.barangId,
+      );
+
+      if (!barangSebelum) {
+        return;
+      }
+
+      const stokSebelum = barangSebelum.stok;
+
+      const barangSesudah = kurangiStokBarang(item.barangId, item.qty);
+
+      if (!barangSesudah) {
+        return;
+      }
+
+      recordStockMovement({
+        barangId: item.barangId,
+
+        tipe: "Retur Pembelian",
+
+        qty: -item.qty,
+
+        stokSebelum,
+
+        stokSesudah: barangSesudah.stok,
+
+        referensi: id,
+
+        keterangan: "Hapus pembelian",
+      });
     });
   }
 

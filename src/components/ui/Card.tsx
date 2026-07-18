@@ -1,203 +1,143 @@
 import type { ReactNode } from "react";
 
 type Padding = "sm" | "md" | "lg";
-
 type Variant = "default" | "soft";
 
 interface CardProps {
   title?: string;
-
   subtitle?: string;
-
   children: ReactNode;
-
   action?: ReactNode;
-
   footer?: ReactNode;
-
   padding?: Padding;
-
   hover?: boolean;
-
   variant?: Variant;
-
   className?: string;
 }
 
+const paddingClasses: Record<Padding, string> = {
+  sm: "p-4",
+  md: "p-6",
+  lg: "p-8",
+};
+
+const headerPaddingClasses: Record<Padding, string> = {
+  sm: "px-4 py-3",
+  md: "px-6 py-4",
+  lg: "px-8 py-5",
+};
+
+const footerPaddingClasses: Record<Padding, string> = {
+  sm: "px-4 py-3",
+  md: "px-6 py-3",
+  lg: "px-8 py-4",
+};
+
+const variantClasses: Record<Variant, string> = {
+  default: `
+    bg-white
+    dark:bg-slate-900
+  `,
+
+  soft: `
+    bg-slate-50
+    dark:bg-slate-800
+  `,
+};
+
 export default function Card({
   title,
-
   subtitle,
-
   children,
-
   action,
-
   footer,
-
   padding = "md",
-
   hover = false,
-
   variant = "default",
-
   className = "",
 }: CardProps) {
-  const paddings = {
-    sm: "p-4",
-
-    md: "p-6",
-
-    lg: "p-8",
-  };
-
-  const variants = {
-    default: `
-        bg-white
-        dark:bg-slate-900
-      `,
-
-    soft: `
-        bg-gray-50
-        dark:bg-slate-800
-      `,
-  };
-
   return (
-    <div
+    <section
       className={`
+        overflow-hidden
 
         rounded-xl
 
-
         border
-
-        border-gray-200
-
+        border-slate-200
         dark:border-slate-700
-
-
-
-        ${variants[variant]}
-
-
 
         shadow-sm
 
-
         transition-all
-
         duration-200
 
+        ${
+          hover
+            ? `
+              hover:-translate-y-0.5
+              hover:shadow-md
+            `
+            : ""
+        }
 
-
-        ${hover ? "hover:shadow-md" : ""}
-
-
+        ${variantClasses[variant]}
 
         ${className}
-
       `}
     >
       {(title || subtitle || action) && (
-        <div
-          className="
-
+        <header
+          className={`
             flex
-
             items-center
-
             justify-between
-
-
+            gap-4
 
             border-b
-
-            border-gray-100
-
+            border-slate-200
             dark:border-slate-700
 
-
-
-            px-6
-
-            py-4
-
-          "
+            ${headerPaddingClasses[padding]}
+          `}
         >
-          <div>
+          <div className="min-w-0">
             {title && (
-              <h2
-                className="
-
-                  text-lg
-
-                  font-semibold
-
-                  text-gray-800
-
-                  dark:text-white
-
-                "
-              >
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                 {title}
               </h2>
             )}
 
             {subtitle && (
-              <p
-                className="
-
-                  mt-1
-
-                  text-sm
-
-                  text-gray-500
-
-                  dark:text-gray-400
-
-                "
-              >
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 {subtitle}
               </p>
             )}
           </div>
 
-          {action && <div>{action}</div>}
-        </div>
+          {action && <div className="shrink-0">{action}</div>}
+        </header>
       )}
 
-      <div className={paddings[padding]}>{children}</div>
+      <div className={paddingClasses[padding]}>{children}</div>
 
       {footer && (
-        <div
-          className="
-
+        <footer
+          className={`
             border-t
-
-            border-gray-100
-
+            border-slate-200
             dark:border-slate-700
 
-
-
-            px-6
-
-            py-3
-
-
-
             text-sm
+            text-slate-500
+            dark:text-slate-400
 
-            text-gray-500
-
-            dark:text-gray-400
-
-          "
+            ${footerPaddingClasses[padding]}
+          `}
         >
           {footer}
-        </div>
+        </footer>
       )}
-    </div>
+    </section>
   );
 }

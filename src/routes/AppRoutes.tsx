@@ -11,6 +11,7 @@ import AccessDenied from "../pages/AccessDenied";
 import Barang from "../pages/Barang";
 import Dashboard from "../pages/Dashboard";
 import Kategori from "../pages/Kategori";
+import KartuStok from "../pages/KartuStok";
 import LaporanPenjualan from "../pages/LaporanPenjualan";
 import Login from "../pages/Login";
 import Pelanggan from "../pages/Pelanggan";
@@ -123,6 +124,15 @@ const AppRoutes = () => {
           element={
             <RoleRoute allowedRoles={PERMISSIONS.LAPORAN}>
               <LaporanPenjualan />
+            </RoleRoute>
+          }
+        />
+
+        <Route
+          path="/kartu-stok"
+          element={
+            <RoleRoute allowedRoles={PERMISSIONS.KARTU_STOK}>
+              <KartuStok />
             </RoleRoute>
           }
         />

@@ -1,8 +1,14 @@
 import type { Barang } from "../types/barang";
 
+import type { StockMovementType } from "../types/stockMovement";
+
+import { recordStockMovement } from "./stockMovementService";
+
 const STORAGE_KEY = "barang";
 
-// Ambil data dari localStorage
+// ===============================
+// STORAGE HELPER
+// ===============================
 
 const getStorage = (): Barang[] => {
   const data = localStorage.getItem(STORAGE_KEY);
@@ -11,26 +17,28 @@ const getStorage = (): Barang[] => {
     return [];
   }
 
-  return JSON.parse(data);
+  try {
+    return JSON.parse(data) as Barang[];
+  } catch {
+    return [];
+  }
 };
-
-// Simpan data ke localStorage
 
 const saveStorage = (data: Barang[]): void => {
-  localStorage.setItem(
-    STORAGE_KEY,
-
-    JSON.stringify(data),
-  );
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 };
 
-// Ambil semua barang
+// ===============================
+// GET BARANG
+// ===============================
 
 export const getBarang = (): Barang[] => {
   return getStorage();
 };
 
-// Ambil barang berdasarkan id
+// ===============================
+// GET BY ID
+// ===============================
 
 export const getBarangById = (id: string): Barang | undefined => {
   const data = getStorage();
@@ -38,21 +46,25 @@ export const getBarangById = (id: string): Barang | undefined => {
   return data.find((item) => item.id === id);
 };
 
-// Tambah barang baru
+// ===============================
+// ADD BARANG
+// ===============================
 
 export const addBarang = (
   data: Omit<Barang, "id" | "createdAt" | "updatedAt">,
 ): Barang => {
   const barang = getStorage();
 
+  const now = new Date().toISOString();
+
   const newBarang: Barang = {
     id: crypto.randomUUID(),
 
     ...data,
 
-    createdAt: new Date().toISOString(),
+    createdAt: now,
 
-    updatedAt: new Date().toISOString(),
+    updatedAt: now,
   };
 
   barang.push(newBarang);
@@ -62,7 +74,9 @@ export const addBarang = (
   return newBarang;
 };
 
-// Update barang
+// ===============================
+// UPDATE BARANG
+// ===============================
 
 export const updateBarang = (
   id: string,
@@ -94,7 +108,9 @@ export const updateBarang = (
   return barang[index];
 };
 
-// Tambah stok barang
+// ===============================
+// UPDATE STOK MANUAL
+// ===============================
 
 export const updateStokBarang = (
   id: string,
@@ -122,40 +138,100 @@ export const updateStokBarang = (
   return barang[index];
 };
 
-// Kurangi stok barang
+// ===============================
+// KURANGI STOK
+// ===============================
 
 export const kurangiStokBarang = (
   id: string,
 
   jumlah: number,
 ): Barang | null => {
+  return updateStokBarang(id, -jumlah);
+};
+
+// ===============================
+// DELETE BARANG
+// ===============================
+
+export const deleteBarang = (id: string): void => {
   const barang = getStorage();
 
-  const index = barang.findIndex((item) => item.id === id);
+  const result = barang.filter((item) => item.id !== id);
+
+  saveStorage(result);
+};
+
+// ===============================
+// INVENTORY ENGINE
+// ===============================
+
+interface ApplyStockMovementParams {
+  barangId: string;
+
+  perubahan: number;
+
+  tipe: StockMovementType;
+
+  referensi?: string;
+
+  createdBy?: string;
+
+  keterangan?: string;
+}
+
+export const applyStockMovement = ({
+  barangId,
+
+  perubahan,
+
+  tipe,
+
+  referensi,
+
+  createdBy,
+
+  keterangan,
+}: ApplyStockMovementParams): Barang | null => {
+  const barang = getStorage();
+
+  const index = barang.findIndex((item) => item.id === barangId);
 
   if (index === -1) {
     return null;
   }
 
+  const stokSebelum = barang[index].stok;
+
+  const stokSesudah = stokSebelum + perubahan;
+
   barang[index] = {
     ...barang[index],
 
-    stok: barang[index].stok - jumlah,
+    stok: stokSesudah,
 
     updatedAt: new Date().toISOString(),
   };
 
   saveStorage(barang);
 
+  recordStockMovement({
+    barangId,
+
+    tipe,
+
+    qty: Math.abs(perubahan),
+
+    stokSebelum,
+
+    stokSesudah,
+
+    referensi,
+
+    createdBy,
+
+    keterangan,
+  });
+
   return barang[index];
-};
-
-// Hapus barang
-
-export const deleteBarang = (id: string): void => {
-  const barang = getStorage();
-
-  const newData = barang.filter((item) => item.id !== id);
-
-  saveStorage(newData);
 };
