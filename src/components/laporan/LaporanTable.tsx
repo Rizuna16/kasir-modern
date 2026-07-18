@@ -2,14 +2,14 @@ import { DataTable, Button, Badge } from "../ui";
 
 import { formatRupiah } from "../../utils/currency";
 
-import type { Penjualan } from "../../types/penjualan";
+import type { SalesReportItem } from "../../features/sales/services/reportService";
 
 interface Props {
-  data: Penjualan[];
+  data: SalesReportItem[];
 
-  onDetail: (item: Penjualan) => void;
+  onDetail: (item: SalesReportItem) => void;
 
-  onPrint?: (item: Penjualan) => void;
+  onPrint?: (item: SalesReportItem) => void;
 }
 
 export default function LaporanTable({

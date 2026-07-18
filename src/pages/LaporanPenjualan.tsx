@@ -6,13 +6,13 @@ import LaporanFilter from "../components/laporan/LaporanFilter";
 import LaporanStats from "../components/laporan/LaporanStats";
 import LaporanTable from "../components/laporan/LaporanTable";
 import DetailPenjualanModal from "../components/laporan/DetailPenjualanModal";
-import PrintPenjualan from "../components/laporan/PrintPenjualan";
+
 import ExportExcelButton from "../components/laporan/ExportExcelButton";
 import ExportPDFButton from "../components/laporan/ExportPDFButton";
 
-import useLaporan from "../hooks/useLaporan";
+import useLaporanEnterprise from "../features/sales/hooks/useLaporanEnterprise";
 
-import type { Penjualan } from "../types/penjualan";
+import type { SalesReportItem } from "../features/sales/services/reportService";
 
 const PRINT_DELAY = 300;
 
@@ -38,9 +38,11 @@ export default function LaporanPenjualan() {
 
     bukaDetail,
     tutupDetail,
-  } = useLaporan();
+  } = useLaporanEnterprise();
 
-  const [selectedPrint, setSelectedPrint] = useState<Penjualan | null>(null);
+  const [selectedPrint, setSelectedPrint] = useState<SalesReportItem | null>(
+    null,
+  );
 
   useEffect(() => {
     const handleAfterPrint = () => {
@@ -54,7 +56,7 @@ export default function LaporanPenjualan() {
     };
   }, []);
 
-  const bukaPrint = (item: Penjualan) => {
+  const bukaPrint = (item: SalesReportItem) => {
     setSelectedPrint(item);
 
     setTimeout(() => {
@@ -64,6 +66,8 @@ export default function LaporanPenjualan() {
 
   return (
     <div className="space-y-6">
+      {/* HEADER */}
+
       <div>
         <h1
           className="
@@ -84,9 +88,11 @@ export default function LaporanPenjualan() {
             dark:text-gray-400
           "
         >
-          Rekap transaksi penjualan.
+          Rekap transaksi Enterprise Sales Engine.
         </p>
       </div>
+
+      {/* FILTER */}
 
       <LaporanFilter
         tanggalAwal={tanggalAwal}
@@ -96,6 +102,8 @@ export default function LaporanPenjualan() {
         onCari={cariLaporan}
         onReset={resetLaporan}
       />
+
+      {/* EXPORT */}
 
       <Card>
         <div
@@ -111,17 +119,21 @@ export default function LaporanPenjualan() {
         </div>
       </Card>
 
+      {/* STAT */}
+
       <LaporanStats totalTransaksi={totalTransaksi} totalOmzet={totalOmzet} />
+
+      {/* TABLE */}
 
       <Card>
         {laporan.length === 0 ? (
           <div
             className="
-                py-10
-                text-center
-                text-gray-500
-                dark:text-gray-400
-              "
+              py-10
+              text-center
+              text-gray-500
+              dark:text-gray-400
+            "
           >
             Belum ada transaksi penjualan.
           </div>
@@ -134,15 +146,19 @@ export default function LaporanPenjualan() {
         )}
       </Card>
 
+      {/* DETAIL */}
+
       <DetailPenjualanModal
         isOpen={isDetailOpen}
         penjualan={selectedPenjualan}
         onClose={tutupDetail}
       />
 
+      {/* PRINT AREA */}
+
       {selectedPrint && (
         <div className="hidden print:block">
-          <PrintPenjualan penjualan={selectedPrint} />
+          {/* Print Enterprise nanti diarahkan ke Invoice */}
         </div>
       )}
     </div>

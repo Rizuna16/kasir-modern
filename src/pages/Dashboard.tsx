@@ -1,48 +1,171 @@
-import { useMemo } from "react";
+/**
+ * ============================================================
+ * Enterprise Dashboard
+ * Page : Dashboard
+ * ============================================================
+ *
+ * Responsibility:
+ *
+ * - Menampilkan dashboard analytics
+ * - Mengatur layout dashboard
+ * - Trigger refresh data
+ *
+ * Data berasal dari:
+ *
+ * useDashboard()
+ *
+ * ============================================================
+ */
+
+import { RefreshCw } from "lucide-react";
 
 import StatCard from "../components/dashboard/StatCard";
+
 import SalesChart from "../components/dashboard/SalesChart";
+
 import RecentTransaction from "../components/dashboard/RecentTransaction";
+
 import TopProducts from "../components/dashboard/TopProducts";
+
 import LowStock from "../components/dashboard/LowStock";
 
-import { getDashboardSummary } from "../features/sales/services/dashboardService";
+import DashboardSkeleton from "../components/dashboard/DashboardSkeleton";
+
+import useDashboard from "../features/dashboard/hooks/useDashboard";
 
 import { formatRupiah } from "../utils/currency";
 
 export default function Dashboard() {
-  const statistik = useMemo(() => getDashboardSummary(), []);
+  const {
+    loading,
+
+    statistik,
+
+    salesChart,
+
+    recentTransactions,
+
+    topProducts,
+
+    lowStock,
+
+    refresh,
+  } = useDashboard();
+
+  /**
+   * ==========================================================
+   * Loading State
+   * ==========================================================
+   */
+
+  if (loading || !statistik) {
+    return <DashboardSkeleton />;
+  }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1
-          className="
-            text-3xl
-            font-bold
-            text-gray-900
-            dark:text-white
-          "
-        >
-          Dashboard
-        </h1>
+    <div
+      className="
+        space-y-6
+      "
+    >
+      {/* HEADER */}
 
-        <p
+      <div
+        className="
+          flex
+
+          items-start
+
+          justify-between
+
+          gap-4
+        "
+      >
+        <div>
+          <h1
+            className="
+              text-3xl
+
+              font-bold
+
+              text-gray-900
+
+              dark:text-white
+            "
+          >
+            Dashboard
+          </h1>
+
+          <p
+            className="
+              text-gray-500
+
+              dark:text-gray-400
+            "
+          >
+            Ringkasan aktivitas toko hari ini
+          </p>
+        </div>
+
+        <button
+          onClick={refresh}
+          disabled={loading}
           className="
-            text-gray-500
-            dark:text-gray-400
+            flex
+
+            items-center
+
+            gap-2
+
+            rounded-xl
+
+            bg-blue-600
+
+            px-4
+
+            py-2
+
+            text-sm
+
+            font-semibold
+
+            text-white
+
+            transition-all
+
+            duration-200
+
+            hover:bg-blue-700
+
+            disabled:cursor-not-allowed
+
+            disabled:opacity-50
           "
         >
-          Ringkasan aktivitas toko hari ini
-        </p>
+          <RefreshCw
+            className={`
+              h-4
+              w-4
+
+              ${loading ? "animate-spin" : ""}
+            `}
+          />
+          Refresh
+        </button>
       </div>
+
+      {/* KPI CARDS */}
 
       <div
         className="
           grid
+
           grid-cols-1
+
           md:grid-cols-2
+
           xl:grid-cols-4
+
           gap-5
         "
       >
@@ -75,21 +198,30 @@ export default function Dashboard() {
         />
       </div>
 
-      <SalesChart />
+      {/* SALES ANALYTICS */}
 
-      <RecentTransaction />
+      <SalesChart data={salesChart} />
+
+      {/* RECENT TRANSACTION */}
+
+      <RecentTransaction data={recentTransactions} />
+
+      {/* PRODUCT + STOCK */}
 
       <div
         className="
           grid
+
           grid-cols-1
+
           lg:grid-cols-2
+
           gap-6
         "
       >
-        <TopProducts />
+        <TopProducts data={topProducts} />
 
-        <LowStock />
+        <LowStock data={lowStock} />
       </div>
     </div>
   );

@@ -2,12 +2,12 @@ import * as XLSX from "xlsx";
 
 import { Button } from "../ui";
 
-import type { Penjualan } from "../../types/penjualan";
+import type { SalesReportItem } from "../../features/sales/services/reportService";
 
 import { toastWarning } from "../../utils/toast";
 
 interface Props {
-  data: Penjualan[];
+  data: SalesReportItem[];
 }
 
 export default function ExportExcelButton({ data }: Props) {
@@ -18,33 +18,41 @@ export default function ExportExcelButton({ data }: Props) {
       return;
     }
 
-    const laporanSheet = data.map((item, index) => ({
-      No: index + 1,
+    const laporanSheet = data.map((item, index) => {
+      const invoice = item.invoice;
 
-      Tanggal: item.tanggal,
+      return {
+        No: index + 1,
 
-      "Nomor Nota": item.nomorNota,
+        Tanggal: invoice.date,
 
-      Pelanggan: item.pelangganNama,
+        "Nomor Nota": invoice.number,
 
-      Total: item.total,
+        Pelanggan: invoice.customer?.nama ?? "Walk In Customer",
 
-      Status: item.status,
-    }));
+        Total: invoice.grandTotal,
 
-    const detailSheet = data.flatMap((item) =>
-      item.detail.map((detail) => ({
-        "Nomor Nota": item.nomorNota,
+        Kasir: invoice.cashierName,
+
+        Status: invoice.payment.status,
+      };
+    });
+
+    const detailSheet = data.flatMap((item) => {
+      const invoice = item.invoice;
+
+      return invoice.items.map((detail) => ({
+        "Nomor Nota": invoice.number,
 
         Barang: detail.namaBarang,
 
         Qty: detail.qty,
 
-        Harga: detail.hargaJual,
+        Harga: detail.harga,
 
         Subtotal: detail.subtotal,
-      })),
-    );
+      }));
+    });
 
     const workbook = XLSX.utils.book_new();
 
@@ -60,7 +68,7 @@ export default function ExportExcelButton({ data }: Props) {
 
     XLSX.utils.book_append_sheet(workbook, worksheetDetail, "Detail Barang");
 
-    XLSX.writeFile(workbook, "laporan-penjualan.xlsx");
+    XLSX.writeFile(workbook, "laporan-penjualan-enterprise.xlsx");
   };
 
   return (

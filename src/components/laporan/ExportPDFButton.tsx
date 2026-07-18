@@ -3,13 +3,13 @@ import autoTable from "jspdf-autotable";
 
 import { Button } from "../ui";
 
-import type { Penjualan } from "../../types/penjualan";
+import type { SalesReportItem } from "../../features/sales/services/reportService";
 
 import { toastWarning } from "../../utils/toast";
 import { formatRupiah } from "../../utils/currency";
 
 interface Props {
-  data: Penjualan[];
+  data: SalesReportItem[];
 }
 
 export default function ExportPDFButton({ data }: Props) {
@@ -28,7 +28,7 @@ export default function ExportPDFButton({ data }: Props) {
 
     doc.setFontSize(12);
 
-    doc.text("Laporan Penjualan", 14, 23);
+    doc.text("Laporan Penjualan Enterprise", 14, 23);
 
     doc.setFontSize(10);
 
@@ -38,19 +38,23 @@ export default function ExportPDFButton({ data }: Props) {
       30,
     );
 
-    const tableData = data.map((item, index) => [
-      index + 1,
+    const tableData = data.map((item, index) => {
+      const invoice = item.invoice;
 
-      item.tanggal,
+      return [
+        index + 1,
 
-      item.nomorNota,
+        invoice.date,
 
-      item.pelangganNama,
+        invoice.number,
 
-      formatRupiah(item.total),
+        invoice.customer?.nama ?? "Walk In Customer",
 
-      item.status,
-    ]);
+        formatRupiah(invoice.grandTotal),
+
+        invoice.payment.status,
+      ];
+    });
 
     autoTable(doc, {
       startY: 38,
@@ -66,7 +70,10 @@ export default function ExportPDFButton({ data }: Props) {
 
     const totalTransaksi = data.length;
 
-    const totalOmzet = data.reduce((total, item) => total + item.total, 0);
+    const totalOmzet = data.reduce(
+      (total, item) => total + item.invoice.grandTotal,
+      0,
+    );
 
     const posisiY = (doc as any).lastAutoTable.finalY + 10;
 
@@ -74,7 +81,7 @@ export default function ExportPDFButton({ data }: Props) {
 
     doc.text(`Total Omzet : ${formatRupiah(totalOmzet)}`, 14, posisiY + 7);
 
-    doc.save("laporan-penjualan.pdf");
+    doc.save("laporan-penjualan-enterprise.pdf");
   };
 
   return (

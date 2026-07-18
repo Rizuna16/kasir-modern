@@ -1,4 +1,22 @@
-import { useEffect, useState } from "react";
+/**
+ * ============================================================
+ * Enterprise Dashboard
+ * Component : SalesChart
+ * ============================================================
+ *
+ * Responsibility:
+ *
+ * - Render grafik penjualan
+ * - Menerima data dari parent component
+ *
+ * Tidak bertanggung jawab:
+ *
+ * ❌ Mengambil data service
+ * ❌ Mengakses invoice
+ * ❌ Menghitung analytics
+ *
+ * ============================================================
+ */
 
 import {
   CartesianGrid,
@@ -10,20 +28,13 @@ import {
   YAxis,
 } from "recharts";
 
-import {
-  getSalesChart,
-  type SalesChartItem,
-} from "../../features/sales/services/dashboardService";
+import type { SalesChartItem } from "../../features/sales/services/dashboardService";
 
-export default function SalesChart() {
-  const [data, setData] = useState<SalesChartItem[]>([]);
+interface SalesChartProps {
+  data: SalesChartItem[];
+}
 
-  useEffect(() => {
-    const result = getSalesChart();
-
-    setData(result);
-  }, []);
-
+export default function SalesChart({ data }: SalesChartProps) {
   return (
     <div
       className="
@@ -31,10 +42,8 @@ export default function SalesChart() {
 
         border
         border-gray-100
-        dark:border-gray-700
 
         bg-white
-        dark:bg-gray-800
 
         p-6
 
@@ -44,9 +53,16 @@ export default function SalesChart() {
         duration-300
 
         hover:shadow-lg
+
+        dark:border-gray-700
+        dark:bg-gray-800
       "
     >
-      <div className="mb-6">
+      <div
+        className="
+          mb-6
+        "
+      >
         <h2
           className="
             text-xl
@@ -62,36 +78,60 @@ export default function SalesChart() {
         <p
           className="
             mt-1
+
             text-sm
 
             text-gray-500
             dark:text-gray-400
           "
         >
-          Performa penjualan selama 7 hari terakhir.
+          Performa penjualan berdasarkan transaksi invoice.
         </p>
       </div>
 
-      <div className="h-80">
+      <div
+        className="
+          h-80
+        "
+      >
         {data.length === 0 ? (
           <div
             className="
-              flex
-              h-full
-              flex-col
-              items-center
-              justify-center
-              gap-3
-            "
-          >
-            <div className="text-5xl">📈</div>
+                flex
+                h-full
+                flex-col
+                items-center
+                justify-center
 
-            <p className="font-semibold text-gray-700 dark:text-gray-200">
+                gap-3
+              "
+          >
+            <div
+              className="
+                  text-5xl
+                "
+            >
+              📈
+            </div>
+
+            <p
+              className="
+                  font-semibold
+                  text-gray-700
+                  dark:text-gray-200
+                "
+            >
               Belum ada data penjualan
             </p>
 
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Grafik akan muncul setelah transaksi pertama.
+            <p
+              className="
+                  text-sm
+                  text-gray-500
+                  dark:text-gray-400
+                "
+            >
+              Grafik muncul setelah transaksi pertama.
             </p>
           </div>
         ) : (
@@ -108,13 +148,10 @@ export default function SalesChart() {
               <YAxis stroke="#9CA3AF" />
 
               <Tooltip
-                contentStyle={{
-                  backgroundColor: "#1F2937",
-                  border: "1px solid #374151",
-                  borderRadius: "12px",
-                  padding: "10px",
-                  color: "#fff",
-                }}
+                formatter={(value) => [
+                  `Rp ${Number(value).toLocaleString("id-ID")}`,
+                  "Penjualan",
+                ]}
               />
 
               <Line
@@ -122,8 +159,12 @@ export default function SalesChart() {
                 dataKey="penjualan"
                 stroke="#2563EB"
                 strokeWidth={3}
-                dot={{ r: 4 }}
-                activeDot={{ r: 7 }}
+                dot={{
+                  r: 4,
+                }}
+                activeDot={{
+                  r: 7,
+                }}
                 isAnimationActive
                 animationDuration={900}
               />

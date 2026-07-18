@@ -9,12 +9,96 @@ import usePenjualan from "../hooks/usePenjualan";
 
 import type { Penjualan as PenjualanType } from "../types/penjualan";
 
+import type { Invoice } from "../features/sales/types";
+
 import { Button, Card } from "../components/ui";
 
 const PRINT_DELAY = 300;
 
+/**
+ * ============================================================
+ * LEGACY PENJUALAN -> ENTERPRISE INVOICE
+ * ============================================================
+ */
+
+function mapPenjualanToInvoice(data: PenjualanType): Invoice {
+  return {
+    id: data.id,
+
+    number: data.nomorNota,
+
+    date: data.tanggal,
+
+    cashierId: "",
+
+    cashierName: "Kasir",
+
+    customer: data.pelangganNama
+      ? {
+          id: String(data.pelangganId),
+
+          kode: `CUS-${data.pelangganId}`,
+
+          nama: data.pelangganNama,
+        }
+      : undefined,
+
+    items: data.detail.map((item) => ({
+      id: item.id,
+
+      barangId: item.barangId,
+
+      kodeBarang: "",
+
+      namaBarang: item.namaBarang,
+
+      harga: item.hargaJual,
+
+      qty: item.qty,
+
+      subtotal: item.subtotal,
+
+      discount: 0,
+
+      tax: 0,
+
+      total: item.subtotal,
+    })),
+
+    subtotal: data.total,
+
+    itemDiscount: 0,
+
+    transactionDiscount: 0,
+
+    tax: 0,
+
+    serviceCharge: 0,
+
+    grandTotal: data.total,
+
+    payment: {
+      method: "cash",
+
+      status: data.status === "LUNAS" ? "paid" : "pending",
+
+      paidAmount: data.total,
+
+      changeAmount: 0,
+    },
+
+    createdAt: data.createdAt,
+  };
+}
+
 export default function Penjualan() {
-  const { penjualan, loadPenjualan, hapusPenjualan } = usePenjualan();
+  const {
+    penjualan,
+
+    loadPenjualan,
+
+    hapusPenjualan,
+  } = usePenjualan();
 
   const [isTambahOpen, setIsTambahOpen] = useState(false);
 
@@ -23,9 +107,7 @@ export default function Penjualan() {
   const [selectedPenjualan, setSelectedPenjualan] =
     useState<PenjualanType | null>(null);
 
-  const [selectedPrint, setSelectedPrint] = useState<PenjualanType | null>(
-    null,
-  );
+  const [selectedPrint, setSelectedPrint] = useState<Invoice | null>(null);
 
   const handleDetail = (data: PenjualanType) => {
     setSelectedPenjualan(data);
@@ -34,7 +116,9 @@ export default function Penjualan() {
   };
 
   const handlePrint = (data: PenjualanType) => {
-    setSelectedPrint(data);
+    const invoice = mapPenjualanToInvoice(data);
+
+    setSelectedPrint(invoice);
 
     setTimeout(() => {
       window.print();
@@ -134,7 +218,7 @@ export default function Penjualan() {
 
       {selectedPrint && (
         <div className="hidden print:block">
-          <PrintPenjualan penjualan={selectedPrint} />
+          <PrintPenjualan invoice={selectedPrint} />
         </div>
       )}
     </div>

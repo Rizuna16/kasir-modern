@@ -1,19 +1,29 @@
-import { useEffect, useState } from "react";
+/**
+ * ============================================================
+ * Enterprise Dashboard
+ * Component : RecentTransaction
+ * ============================================================
+ *
+ * Responsibility:
+ *
+ * - Menampilkan transaksi terbaru
+ * - Menerima data dari parent component
+ *
+ * Tidak melakukan:
+ *
+ * ❌ Mengambil data service
+ * ❌ Mengakses invoice langsung
+ *
+ * ============================================================
+ */
 
-import {
-  getRecentTransactions,
-  type RecentTransactionItem,
-} from "../../features/sales/services/dashboardService";
+import type { RecentTransactionItem } from "../../features/sales/services/dashboardService";
 
-export default function RecentTransaction() {
-  const [transactions, setTransactions] = useState<RecentTransactionItem[]>([]);
+interface RecentTransactionProps {
+  data: RecentTransactionItem[];
+}
 
-  useEffect(() => {
-    const data = getRecentTransactions();
-
-    setTransactions(data);
-  }, []);
-
+export default function RecentTransaction({ data }: RecentTransactionProps) {
   return (
     <div
       className="
@@ -25,6 +35,7 @@ export default function RecentTransaction() {
         shadow-sm
         transition-all
         duration-200
+
         dark:border-gray-700
         dark:bg-gray-800
       "
@@ -35,84 +46,106 @@ export default function RecentTransaction() {
           text-lg
           font-bold
           text-gray-900
+
           dark:text-white
         "
       >
         Transaksi Terakhir
       </h2>
 
-      <div className="space-y-4">
-        {transactions.length === 0 ? (
+      <div
+        className="
+          space-y-4
+        "
+      >
+        {data.length === 0 ? (
           <p
             className="
-              text-sm
-              text-gray-500
-              dark:text-gray-400
-            "
+                text-sm
+                text-gray-500
+
+                dark:text-gray-400
+              "
           >
             Belum ada transaksi
           </p>
         ) : (
-          transactions.map((item) => (
+          data.map((item) => (
             <div
               key={item.id}
               className="
-                flex
-                items-center
-                justify-between
-                border-b
-                border-gray-200
-                pb-3
-                last:border-none
-                dark:border-gray-700
-              "
+                    flex
+                    items-center
+                    justify-between
+
+                    border-b
+                    border-gray-200
+
+                    pb-3
+
+                    last:border-none
+
+                    dark:border-gray-700
+                  "
             >
               <div>
                 <p
                   className="
-                    font-semibold
-                    text-gray-900
-                    dark:text-white
-                  "
+                        font-semibold
+
+                        text-gray-900
+
+                        dark:text-white
+                      "
                 >
                   {item.nomorNota}
                 </p>
 
                 <p
                   className="
-                    text-sm
-                    text-gray-500
-                    dark:text-gray-400
-                  "
+                        text-sm
+
+                        text-gray-500
+
+                        dark:text-gray-400
+                      "
                 >
                   {item.pelangganNama}
                 </p>
               </div>
 
-              <div className="text-right">
+              <div
+                className="
+                      text-right
+                    "
+              >
                 <p
                   className="
-                    font-semibold
-                    text-gray-900
-                    dark:text-white
-                  "
+                        font-semibold
+
+                        text-gray-900
+
+                        dark:text-white
+                      "
                 >
-                  Rp {item.total.toLocaleString()}
+                  Rp {item.total.toLocaleString("id-ID")}
                 </p>
 
                 <p
                   className={
                     item.status === "LUNAS"
                       ? `
-                        text-sm
-                        text-green-600
-                        dark:text-green-400
-                      `
+                          text-sm
+                          text-green-600
+
+                          dark:text-green-400
+                        `
                       : `
-                        text-sm
-                        text-red-600
-                        dark:text-red-400
-                      `
+                          text-sm
+                          text-red-600
+
+                          dark:text-red-400
+                        `
                   }
                 >
                   {item.status}

@@ -3,7 +3,7 @@ import LaporanStats from "../components/laporan/LaporanStats";
 import LaporanTable from "../components/laporan/LaporanTable";
 import DetailPenjualanModal from "../components/laporan/DetailPenjualanModal";
 
-import useLaporan from "../hooks/useLaporan";
+import useLaporanEnterprise from "../features/sales/hooks/useLaporanEnterprise";
 
 export default function Laporan() {
   const {
@@ -27,7 +27,7 @@ export default function Laporan() {
 
     bukaDetail,
     tutupDetail,
-  } = useLaporan();
+  } = useLaporanEnterprise();
 
   return (
     <div className="p-6">
@@ -36,7 +36,9 @@ export default function Laporan() {
       <div className="mb-5">
         <h1 className="text-2xl font-bold">Laporan Penjualan</h1>
 
-        <p className="text-sm text-gray-500">Rekap transaksi penjualan</p>
+        <p className="text-sm text-gray-500">
+          Rekap transaksi penjualan enterprise
+        </p>
       </div>
 
       {/* Filter */}
@@ -62,7 +64,7 @@ export default function Laporan() {
 
       <LaporanTable data={laporan} onDetail={bukaDetail} />
 
-      {/* Detail Modal */}
+      {/* Detail */}
 
       <DetailPenjualanModal
         isOpen={isDetailOpen}

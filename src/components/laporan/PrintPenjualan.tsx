@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import type { Penjualan } from "../../types/penjualan";
+import type { Invoice } from "../../features/sales/types";
 
 import {
   getPengaturan,
@@ -10,10 +10,10 @@ import {
 import { formatRupiah } from "../../utils/currency";
 
 interface Props {
-  penjualan: Penjualan;
+  invoice: Invoice;
 }
 
-export default function PrintPenjualan({ penjualan }: Props) {
+export default function PrintPenjualan({ invoice }: Props) {
   const [pengaturan, setPengaturan] = useState<PengaturanToko | null>(null);
 
   useEffect(() => {
@@ -49,29 +49,35 @@ export default function PrintPenjualan({ penjualan }: Props) {
         <p>Telp. {pengaturan.telepon || "-"}</p>
       </div>
 
-      {/* INFO TRANSAKSI */}
+      {/* INFO INVOICE */}
 
       <div className="mt-3 text-xs">
         <div className="flex justify-between">
           <span>No Nota</span>
 
-          <span>{penjualan.nomorNota}</span>
+          <span>{invoice.number}</span>
         </div>
 
         <div className="flex justify-between">
           <span>Tanggal</span>
 
-          <span>{penjualan.tanggal}</span>
+          <span>{invoice.date.slice(0, 10)}</span>
+        </div>
+
+        <div className="flex justify-between">
+          <span>Kasir</span>
+
+          <span>{invoice.cashierName}</span>
         </div>
 
         <div className="flex justify-between">
           <span>Pelanggan</span>
 
-          <span>{penjualan.pelangganNama || "-"}</span>
+          <span>{invoice.customer?.nama ?? "Walk-in"}</span>
         </div>
       </div>
 
-      {/* DETAIL BARANG */}
+      {/* DETAIL ITEM */}
 
       <table className="w-full mt-3 text-xs">
         <thead>
@@ -87,35 +93,133 @@ export default function PrintPenjualan({ penjualan }: Props) {
         </thead>
 
         <tbody>
-          {penjualan.detail.map((item) => (
+          {invoice.items.map((item) => (
             <tr key={item.id}>
               <td>{item.namaBarang}</td>
 
               <td className="text-center">{item.qty}</td>
 
-              <td className="text-right">{formatRupiah(item.hargaJual)}</td>
+              <td className="text-right">{formatRupiah(item.harga)}</td>
 
-              <td className="text-right">{formatRupiah(item.subtotal)}</td>
+              <td className="text-right">{formatRupiah(item.total)}</td>
             </tr>
           ))}
         </tbody>
 
         <tfoot>
           <tr className="border-t">
-            <td colSpan={3} className="pt-2 text-right font-bold">
+            <td
+              colSpan={3}
+              className="
+                pt-2
+                text-right
+                font-bold
+              "
+            >
+              SUBTOTAL
+            </td>
+
+            <td
+              className="
+                pt-2
+                text-right
+                font-bold
+              "
+            >
+              {formatRupiah(invoice.subtotal)}
+            </td>
+          </tr>
+
+          <tr>
+            <td
+              colSpan={3}
+              className="
+                text-right
+                font-bold
+              "
+            >
+              DISKON
+            </td>
+
+            <td className="text-right">
+              {formatRupiah(
+                invoice.items.reduce((total, item) => total + item.discount, 0),
+              )}
+            </td>
+          </tr>
+
+          <tr>
+            <td
+              colSpan={3}
+              className="
+                text-right
+                font-bold
+              "
+            >
+              PAJAK
+            </td>
+
+            <td className="text-right">{formatRupiah(invoice.tax)}</td>
+          </tr>
+
+          <tr className="border-t">
+            <td
+              colSpan={3}
+              className="
+                pt-2
+                text-right
+                font-bold
+              "
+            >
               TOTAL
             </td>
 
-            <td className="pt-2 text-right font-bold">
-              {formatRupiah(penjualan.total)}
+            <td
+              className="
+                pt-2
+                text-right
+                font-bold
+              "
+            >
+              {formatRupiah(invoice.grandTotal)}
             </td>
           </tr>
         </tfoot>
       </table>
 
+      {/* PAYMENT */}
+
+      <div className="mt-3 text-xs">
+        <div className="flex justify-between">
+          <span>Metode</span>
+
+          <span>{invoice.payment.method}</span>
+        </div>
+
+        <div className="flex justify-between">
+          <span>Bayar</span>
+
+          <span>{formatRupiah(invoice.payment.paidAmount)}</span>
+        </div>
+
+        <div className="flex justify-between">
+          <span>Kembali</span>
+
+          <span>{formatRupiah(invoice.payment.changeAmount)}</span>
+        </div>
+      </div>
+
       {/* FOOTER */}
 
-      <div className="mt-5 border-t pt-2 text-center text-xs">
+      <div
+        className="
+          mt-5
+          border-t
+          pt-2
+          text-center
+          text-xs
+        "
+      >
         <p>Terima kasih telah berbelanja</p>
 
         <p>Sampai jumpa kembali</p>

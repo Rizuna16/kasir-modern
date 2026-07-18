@@ -2,12 +2,12 @@ import { Modal, Card, Badge, DataTable } from "../ui";
 
 import { formatRupiah } from "../../utils/currency";
 
-import type { Penjualan } from "../../types/penjualan";
+import type { SalesReportItem } from "../../features/sales/services/reportService";
 
 interface Props {
   isOpen: boolean;
 
-  penjualan: Penjualan | null;
+  penjualan: SalesReportItem | null;
 
   onClose: () => void;
 }
@@ -23,9 +23,15 @@ export default function DetailPenjualanModal({
     return null;
   }
 
+  const invoice = penjualan.invoice;
+
+  const statusLunas = invoice.payment.status === "paid";
+
   return (
     <Modal isOpen={isOpen} title="Detail Penjualan" onClose={onClose}>
       <div className="space-y-5">
+        {/* INFO INVOICE */}
+
         <Card>
           <div
             className="
@@ -41,7 +47,7 @@ export default function DetailPenjualanModal({
               </p>
 
               <p className="font-semibold text-gray-800 dark:text-white">
-                {penjualan.nomorNota}
+                {invoice.number}
               </p>
             </div>
 
@@ -51,7 +57,7 @@ export default function DetailPenjualanModal({
               </p>
 
               <p className="font-semibold text-gray-800 dark:text-white">
-                {penjualan.tanggal}
+                {invoice.date.split("T")[0]}
               </p>
             </div>
 
@@ -61,7 +67,7 @@ export default function DetailPenjualanModal({
               </p>
 
               <p className="font-semibold text-gray-800 dark:text-white">
-                {penjualan.pelangganNama}
+                {invoice.customer?.nama ?? "Walk-in Customer"}
               </p>
             </div>
 
@@ -70,14 +76,14 @@ export default function DetailPenjualanModal({
                 Status
               </p>
 
-              <Badge
-                variant={penjualan.status === "LUNAS" ? "success" : "warning"}
-              >
-                {penjualan.status}
+              <Badge variant={statusLunas ? "success" : "warning"}>
+                {statusLunas ? "LUNAS" : "BELUM LUNAS"}
               </Badge>
             </div>
           </div>
         </Card>
+
+        {/* DETAIL ITEM */}
 
         <Card>
           <DataTable
@@ -88,7 +94,13 @@ export default function DetailPenjualanModal({
                 accessor: "namaBarang",
 
                 render: (item) => (
-                  <span className="font-medium text-gray-800 dark:text-white">
+                  <span
+                    className="
+                      font-medium
+                      text-gray-800
+                      dark:text-white
+                    "
+                  >
                     {item.namaBarang}
                   </span>
                 ),
@@ -103,9 +115,9 @@ export default function DetailPenjualanModal({
               {
                 header: "Harga",
 
-                accessor: "hargaJual",
+                accessor: "harga",
 
-                render: (item) => <span>{formatRupiah(item.hargaJual)}</span>,
+                render: (item) => <span>{formatRupiah(item.harga)}</span>,
               },
 
               {
@@ -120,10 +132,12 @@ export default function DetailPenjualanModal({
                 ),
               },
             ]}
-            data={penjualan.detail}
+            data={invoice.items}
             emptyMessage="Belum ada detail barang"
           />
         </Card>
+
+        {/* TOTAL */}
 
         <Card>
           <div
@@ -133,7 +147,13 @@ export default function DetailPenjualanModal({
               items-center
             "
           >
-            <span className="font-semibold text-gray-700 dark:text-gray-300">
+            <span
+              className="
+                font-semibold
+                text-gray-700
+                dark:text-gray-300
+              "
+            >
               Total
             </span>
 
@@ -144,7 +164,7 @@ export default function DetailPenjualanModal({
                 text-blue-600
               "
             >
-              {formatRupiah(penjualan.total)}
+              {formatRupiah(invoice.grandTotal)}
             </span>
           </div>
         </Card>

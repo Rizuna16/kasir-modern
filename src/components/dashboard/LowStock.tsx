@@ -1,18 +1,29 @@
-import { useEffect, useState } from "react";
-
-import { getBarang } from "../../services/barangService";
+/**
+ * ============================================================
+ * Enterprise Dashboard
+ * Component : LowStock
+ * ============================================================
+ *
+ * Responsibility:
+ *
+ * - Menampilkan barang dengan stok menipis
+ * - Menerima data dari parent component
+ *
+ * Tidak melakukan:
+ *
+ * ❌ Mengambil barang dari service
+ * ❌ Filtering stok
+ *
+ * ============================================================
+ */
 
 import type { Barang } from "../../types/barang";
 
-export default function LowStock() {
-  const [stocks, setStocks] = useState<Barang[]>([]);
+interface LowStockProps {
+  data: Barang[];
+}
 
-  useEffect(() => {
-    const data = getBarang();
-
-    setStocks(data.filter((item) => item.stok <= item.minimalStok));
-  }, []);
-
+export default function LowStock({ data }: LowStockProps) {
   return (
     <div
       className="
@@ -20,9 +31,11 @@ export default function LowStock() {
 
         border
         border-gray-100
+
         dark:border-gray-700
 
         bg-white
+
         dark:bg-gray-800
 
         p-6
@@ -35,13 +48,18 @@ export default function LowStock() {
         hover:shadow-lg
       "
     >
-      <div className="mb-6">
+      <div
+        className="
+          mb-6
+        "
+      >
         <h2
           className="
             text-xl
             font-bold
 
             text-gray-900
+
             dark:text-white
           "
         >
@@ -51,9 +69,11 @@ export default function LowStock() {
         <p
           className="
             mt-1
+
             text-sm
 
             text-gray-500
+
             dark:text-gray-400
           "
         >
@@ -61,75 +81,138 @@ export default function LowStock() {
         </p>
       </div>
 
-      {stocks.length === 0 ? (
+      {data.length === 0 ? (
         <div
           className="
-            flex
-            flex-col
-            items-center
-            justify-center
-            gap-3
+              flex
 
-            py-10
-          "
+              flex-col
+
+              items-center
+
+              justify-center
+
+              gap-3
+
+              py-10
+            "
         >
-          <div className="text-5xl">✅</div>
+          <div
+            className="
+                text-5xl
+              "
+          >
+            ✅
+          </div>
 
-          <p className="font-semibold text-gray-700 dark:text-gray-200">
+          <p
+            className="
+                font-semibold
+
+                text-gray-700
+
+                dark:text-gray-200
+              "
+          >
             Semua stok aman
           </p>
 
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p
+            className="
+                text-sm
+
+                text-gray-500
+
+                dark:text-gray-400
+              "
+          >
             Tidak ada barang yang perlu direstock.
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {stocks.map((item) => (
+        <div
+          className="
+              space-y-3
+            "
+        >
+          {data.map((item) => (
             <div
               key={item.id}
               className="
-                flex
-                items-center
-                justify-between
+                      flex
 
-                rounded-xl
+                      items-center
 
-                px-3
-                py-3
+                      justify-between
 
-                transition-colors
+                      rounded-xl
 
-                hover:bg-red-50
-                dark:hover:bg-red-900/20
-              "
+                      px-3
+
+                      py-3
+
+                      transition-colors
+
+                      hover:bg-red-50
+
+                      dark:hover:bg-red-900/20
+                    "
             >
-              <div className="flex items-center gap-3">
+              <div
+                className="
+                        flex
+
+                        items-center
+
+                        gap-3
+                      "
+              >
                 <div
                   className="
-                    flex
-                    h-9
-                    w-9
-                    items-center
-                    justify-center
+                          flex
 
-                    rounded-full
+                          h-9
 
-                    bg-red-100
-                    dark:bg-red-900/40
+                          w-9
 
-                    text-lg
-                  "
+                          items-center
+
+                          justify-center
+
+                          rounded-full
+
+                          bg-red-100
+
+                          dark:bg-red-900/40
+
+                          text-lg
+                        "
                 >
                   ⚠️
                 </div>
 
                 <div>
-                  <p className="font-medium text-gray-800 dark:text-gray-100">
+                  <p
+                    className="
+                            font-medium
+
+                            text-gray-800
+
+                            dark:text-gray-100
+                          "
+                  >
                     {item.nama}
                   </p>
 
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p
+                    className="
+                            text-sm
+
+                            text-gray-500
+
+                            dark:text-gray-400
+                          "
+                  >
                     Minimal stok: {item.minimalStok}
                   </p>
                 </div>
@@ -137,20 +220,24 @@ export default function LowStock() {
 
               <span
                 className="
-                  rounded-full
+                        rounded-full
 
-                  bg-red-100
-                  dark:bg-red-900/40
+                        bg-red-100
 
-                  px-3
-                  py-1
+                        dark:bg-red-900/40
 
-                  text-sm
-                  font-semibold
+                        px-3
 
-                  text-red-700
-                  dark:text-red-300
-                "
+                        py-1
+
+                        text-sm
+
+                        font-semibold
+
+                        text-red-700
+
+                        dark:text-red-300
+                      "
               >
                 {item.stok} pcs
               </span>
