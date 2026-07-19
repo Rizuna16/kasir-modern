@@ -11,22 +11,31 @@
  * - Adapter data service ke UI component
  * - Trigger refresh data
  *
+ * Performance:
+ *
+ * - Memoized data adapter
+ * - Prevent unnecessary child render
+ *
  * ============================================================
  */
 
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import DashboardSection from "../components/dashboard/DashboardSection";
 import StatCard from "../components/dashboard/StatCard";
+
 import SalesChart from "../components/dashboard/SalesChart";
 import RecentTransaction from "../components/dashboard/RecentTransaction";
 import TopProducts from "../components/dashboard/TopProducts";
 import LowStock from "../components/dashboard/LowStock";
+
 import ExecutiveSummaryCard from "../components/dashboard/ExecutiveSummaryCard";
 import RevenueGrowthCard from "../components/dashboard/RevenueGrowthCard";
 import ProfitAnalyticsCard from "../components/dashboard/ProfitAnalyticsCard";
 import CustomerInsightCard from "../components/dashboard/CustomerInsightCard";
+
 import QuickActions from "../components/dashboard/QuickActions";
 import DashboardSkeleton from "../components/dashboard/DashboardSkeleton";
 
@@ -39,15 +48,25 @@ export default function Dashboard() {
 
   const {
     loading,
+
     statistik,
+
     executiveSummary,
+
     revenueGrowth,
+
     profitAnalytics,
+
     customerInsight,
+
     salesChart,
+
     recentTransactions,
+
     topProducts,
+
     lowStock,
+
     refresh,
   } = useDashboard();
 
@@ -57,30 +76,54 @@ export default function Dashboard() {
 
   /**
    * ==========================================================
-   * DATA ADAPTER
+   * MEMOIZED DATA ADAPTER
    * ==========================================================
    */
 
-  const salesChartAdapter = salesChart.map((item) => ({
-    hari: item.label ?? item.date ?? "-",
-    penjualan: item.total,
-  }));
+  const salesChartAdapter = useMemo(
+    () =>
+      salesChart.map((item) => ({
+        hari: item.label ?? item.date ?? "-",
 
-  const recentTransactionAdapter = recentTransactions.map((item) => ({
-    id: item.id,
-    nomorNota: item.invoice ?? item.invoiceNumber ?? "-",
-    pelangganNama: item.customer ?? item.customerName ?? "Umum",
-    total: item.total,
-    tanggal: item.tanggal ?? item.date ?? "-",
-    status: item.status ?? "LUNAS",
-  }));
+        penjualan: item.total,
+      })),
 
-  const topProductsAdapter = topProducts.map((item) => ({
-    barangId: item.barangId ?? item.productId ?? "-",
-    namaBarang: item.namaBarang ?? item.productName ?? "-",
-    qty: item.qty ?? item.jumlahTerjual ?? 0,
-    revenue: item.revenue ?? item.totalPenjualan ?? 0,
-  }));
+    [salesChart],
+  );
+
+  const recentTransactionAdapter = useMemo(
+    () =>
+      recentTransactions.map((item) => ({
+        id: item.id,
+
+        nomorNota: item.invoice ?? item.invoiceNumber ?? "-",
+
+        pelangganNama: item.customer ?? item.customerName ?? "Umum",
+
+        total: item.total,
+
+        tanggal: item.tanggal ?? item.date ?? "-",
+
+        status: item.status ?? "LUNAS",
+      })),
+
+    [recentTransactions],
+  );
+
+  const topProductsAdapter = useMemo(
+    () =>
+      topProducts.map((item) => ({
+        barangId: item.barangId ?? item.productId ?? "-",
+
+        namaBarang: item.namaBarang ?? item.productName ?? "-",
+
+        qty: item.qty ?? item.jumlahTerjual ?? 0,
+
+        revenue: item.revenue ?? item.totalPenjualan ?? 0,
+      })),
+
+    [topProducts],
+  );
 
   return (
     <div className="space-y-8">

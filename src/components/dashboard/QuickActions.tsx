@@ -14,56 +14,44 @@ interface Props {
   onNavigate?: (path: string) => void;
 }
 
+const actions = [
+  {
+    title: "Transaksi Baru",
+    icon: "🛒",
+    path: "/penjualan",
+    color: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400",
+  },
+
+  {
+    title: "Tambah Barang",
+    icon: "📦",
+    path: "/barang",
+    color:
+      "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400",
+  },
+
+  {
+    title: "Laporan",
+    icon: "📊",
+    path: "/laporan",
+    color:
+      "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400",
+  },
+
+  {
+    title: "Pembelian",
+    icon: "🚚",
+    path: "/pembelian",
+    color:
+      "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400",
+  },
+];
+
 export default function QuickActions({ onNavigate }: Props) {
-  const actions = [
-    {
-      title: "Transaksi Baru",
-
-      icon: "🛒",
-
-      path: "/penjualan",
-
-      color: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400",
-    },
-
-    {
-      title: "Tambah Barang",
-
-      icon: "📦",
-
-      path: "/barang",
-
-      color:
-        "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400",
-    },
-
-    {
-      title: "Laporan",
-
-      icon: "📊",
-
-      path: "/laporan",
-
-      color:
-        "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400",
-    },
-
-    {
-      title: "Pembelian",
-
-      icon: "🚚",
-
-      path: "/pembelian",
-
-      color:
-        "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400",
-    },
-  ];
-
   return (
     <div
       className="
-        rounded-2xl
+        rounded-3xl
 
         border
         border-gray-100
@@ -72,16 +60,18 @@ export default function QuickActions({ onNavigate }: Props) {
         bg-white
         dark:bg-gray-800
 
-        p-6
+        p-5
+        lg:p-6
 
         shadow-sm
+
+        transition-all
+        duration-300
+
+        hover:shadow-lg
       "
     >
-      <div
-        className="
-          mb-6
-        "
-      >
+      <div className="mb-6">
         <p
           className="
             text-xs
@@ -115,22 +105,25 @@ export default function QuickActions({ onNavigate }: Props) {
         className="
           grid
 
-          grid-cols-2
+          grid-cols-1
 
           gap-4
 
-          md:grid-cols-4
+          sm:grid-cols-2
+
+          lg:grid-cols-4
         "
       >
         {actions.map((action) => (
           <button
             key={action.path}
             type="button"
+            aria-label={action.title}
             onClick={() => onNavigate?.(action.path)}
             className="
               group
 
-              rounded-xl
+              rounded-2xl
 
               border
               border-gray-100
@@ -140,31 +133,34 @@ export default function QuickActions({ onNavigate }: Props) {
               text-left
 
               transition-all
-
               duration-300
 
               hover:-translate-y-1
-
+              hover:border-blue-200
               hover:shadow-md
 
               dark:border-gray-700
+              dark:hover:border-blue-700
             "
           >
             <div
               className={`
                 flex
 
-                h-12
-
-                w-12
+                h-14
+                w-14
 
                 items-center
-
                 justify-center
 
-                rounded-xl
+                rounded-2xl
 
-                text-xl
+                text-2xl
+
+                transition-transform
+                duration-300
+
+                group-hover:scale-110
 
                 ${action.color}
               `}
@@ -174,7 +170,7 @@ export default function QuickActions({ onNavigate }: Props) {
 
             <p
               className="
-                mt-3
+                mt-4
 
                 text-sm
 

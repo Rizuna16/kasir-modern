@@ -10,6 +10,8 @@
  * ============================================================
  */
 
+import type { Barang } from "./barang";
+
 /**
  * ============================================================
  * Dashboard Summary
@@ -195,6 +197,47 @@ export interface CustomerInsight {
   totalBelanjaTerbesar: number;
 
   rataRataBelanjaCustomer: number;
+}
+
+/**
+ * ============================================================
+ * Dashboard State Container
+ * ============================================================
+ *
+ * Single state object untuk optimasi rendering React.
+ *
+ * Digunakan oleh:
+ *
+ * - useDashboard
+ * - Dashboard Page
+ *
+ * Benefit:
+ *
+ * - Satu update state
+ * - Render lebih stabil
+ * - Data dashboard atomic
+ *
+ * ============================================================
+ */
+
+export interface DashboardState {
+  statistik: DashboardSummary | null;
+
+  executiveSummary: ExecutiveSummary | null;
+
+  revenueGrowth: RevenueGrowth | null;
+
+  profitAnalytics: ProfitAnalytics | null;
+
+  customerInsight: CustomerInsight | null;
+
+  salesChart: SalesChartData[];
+
+  recentTransactions: RecentTransaction[];
+
+  topProducts: TopProduct[];
+
+  lowStock: Barang[];
 }
 
 /**

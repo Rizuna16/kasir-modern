@@ -15,11 +15,19 @@
  * ❌ Mengakses invoice
  * ❌ Menghitung analytics
  *
+ * Performance:
+ *
+ * ✅ React.memo optimized
+ * ✅ Stable formatter function
+ *
  * ============================================================
  */
 
+import { memo } from "react";
+
 import {
   CartesianGrid,
+  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -30,137 +38,202 @@ import {
 
 import type { SalesChartItem } from "../../features/sales/services/dashboardService";
 
+import EmptyState from "./EmptyState";
+
 interface SalesChartProps {
   data: SalesChartItem[];
 }
 
-export default function SalesChart({ data }: SalesChartProps) {
+function formatRupiah(value: number) {
+  return `Rp ${Number(value).toLocaleString("id-ID")}`;
+}
+
+function SalesChart({ data }: SalesChartProps) {
+  const hasData = data.length > 0;
+
   return (
     <div
       className="
-        rounded-2xl
+        group
+        overflow-hidden
+
+        rounded-3xl
 
         border
-        border-gray-100
+        border-gray-200
+        dark:border-gray-700
 
         bg-white
-
-        p-6
+        dark:bg-gray-800
 
         shadow-sm
 
         transition-all
         duration-300
 
-        hover:shadow-lg
+        hover:border-blue-200
+        hover:shadow-xl
 
-        dark:border-gray-700
-        dark:bg-gray-800
+        dark:hover:border-blue-700
       "
     >
       <div
         className="
-          mb-6
+          border-b
+          border-gray-100
+
+          px-6
+          py-5
+
+          dark:border-gray-700
         "
       >
-        <h2
+        <div
           className="
-            text-xl
-            font-bold
+            flex
+            flex-col
+            gap-3
 
-            text-gray-900
-            dark:text-white
+            lg:flex-row
+            lg:items-center
+            lg:justify-between
           "
         >
-          Grafik Penjualan
-        </h2>
+          <div>
+            <h2
+              className="
+                text-xl
+                font-bold
+                tracking-tight
 
-        <p
-          className="
-            mt-1
+                text-gray-900
 
-            text-sm
-
-            text-gray-500
-            dark:text-gray-400
-          "
-        >
-          Performa penjualan berdasarkan transaksi invoice.
-        </p>
-      </div>
-
-      <div
-        className="
-          h-80
-        "
-      >
-        {data.length === 0 ? (
-          <div
-            className="
-                flex
-                h-full
-                flex-col
-                items-center
-                justify-center
-
-                gap-3
+                dark:text-white
               "
-          >
-            <div
-              className="
-                  text-5xl
-                "
             >
-              📈
-            </div>
+              Sales Analytics
+            </h2>
 
             <p
               className="
-                  font-semibold
-                  text-gray-700
-                  dark:text-gray-200
-                "
-            >
-              Belum ada data penjualan
-            </p>
+                mt-1
 
-            <p
-              className="
-                  text-sm
-                  text-gray-500
-                  dark:text-gray-400
-                "
+                text-sm
+
+                text-gray-500
+
+                dark:text-gray-400
+              "
             >
-              Grafik muncul setelah transaksi pertama.
+              Visualisasi performa penjualan berdasarkan histori transaksi.
             </p>
           </div>
+
+          <div
+            className="
+              inline-flex
+              items-center
+              gap-2
+
+              rounded-full
+
+              bg-blue-50
+
+              px-3
+              py-1
+
+              text-xs
+              font-semibold
+
+              text-blue-700
+
+              dark:bg-blue-900/30
+
+              dark:text-blue-300
+            "
+          >
+            <span
+              className="
+                h-2
+                w-2
+                rounded-full
+
+                bg-blue-500
+              "
+            />
+            Revenue Trend
+          </div>
+        </div>
+      </div>
+
+      <div className="h-96 p-6">
+        {!hasData ? (
+          <EmptyState
+            icon="📈"
+            title="Belum ada data penjualan"
+            description="Grafik akan otomatis muncul setelah transaksi penjualan mulai tercatat pada sistem."
+            minHeight="min-h-full"
+          />
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
+            <LineChart
+              data={data}
+              margin={{
+                top: 10,
+                right: 20,
+                left: 10,
+                bottom: 10,
+              }}
+            >
               <CartesianGrid
                 stroke="#CBD5E1"
-                strokeDasharray="3 3"
-                opacity={0.25}
+                strokeDasharray="4 4"
+                opacity={0.3}
               />
 
-              <XAxis dataKey="hari" stroke="#9CA3AF" />
+              <XAxis
+                dataKey="hari"
+                stroke="#94A3B8"
+                tickLine={false}
+                axisLine={false}
+              />
 
-              <YAxis stroke="#9CA3AF" />
+              <YAxis
+                stroke="#94A3B8"
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => formatRupiah(Number(value))}
+              />
 
               <Tooltip
+                contentStyle={{
+                  borderRadius: 12,
+
+                  border: "1px solid #E5E7EB",
+
+                  boxShadow: "0 10px 25px rgba(0,0,0,.08)",
+                }}
                 formatter={(value) => [
-                  `Rp ${Number(value).toLocaleString("id-ID")}`,
+                  formatRupiah(Number(value)),
+
                   "Penjualan",
                 ]}
               />
 
+              <Legend />
+
               <Line
+                name="Penjualan"
                 type="monotone"
                 dataKey="penjualan"
                 stroke="#2563EB"
                 strokeWidth={3}
                 dot={{
                   r: 4,
+
+                  strokeWidth: 2,
+
+                  fill: "#2563EB",
                 }}
                 activeDot={{
                   r: 7,
@@ -175,3 +248,5 @@ export default function SalesChart({ data }: SalesChartProps) {
     </div>
   );
 }
+
+export default memo(SalesChart);

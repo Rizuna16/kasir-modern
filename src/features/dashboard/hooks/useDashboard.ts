@@ -10,7 +10,7 @@
  * - Executive Intelligence data
  * - Loading state
  * - Manual refresh
- * - Auto refresh
+ * - Silent background refresh
  * - Storage synchronization
  *
  * ============================================================
@@ -49,10 +49,6 @@ const AUTO_REFRESH_INTERVAL = 30000;
 export default function useDashboard() {
   const [loading, setLoading] = useState(true);
 
-  /**
-   * Operational Dashboard
-   */
-
   const [statistik, setStatistik] = useState<DashboardSummary | null>(null);
 
   const [salesChart, setSalesChart] = useState<SalesChartItem[]>([]);
@@ -64,10 +60,6 @@ export default function useDashboard() {
   const [topProducts, setTopProducts] = useState<TopProductItem[]>([]);
 
   const [lowStock, setLowStock] = useState<Barang[]>([]);
-
-  /**
-   * Executive Intelligence
-   */
 
   const [executiveSummary, setExecutiveSummary] =
     useState<ExecutiveSummary | null>(null);
@@ -82,10 +74,25 @@ export default function useDashboard() {
   const [customerInsight, setCustomerInsight] =
     useState<CustomerInsight | null>(null);
 
-  const loadDashboard = useCallback(() => {
-    setLoading(true);
+  /**
+   * ==========================================================
+   * LOAD DASHBOARD
+   *
+   * silent:
+   * true  = background refresh
+   * false = first load/manual
+   *
+   * ==========================================================
+   */
+
+  const loadDashboard = useCallback((silent = false) => {
+    if (!silent) {
+      setLoading(true);
+    }
 
     try {
+      const barang = getBarang();
+
       setStatistik(getDashboardSummary());
 
       setExecutiveSummary(getExecutiveSummary());
@@ -102,9 +109,13 @@ export default function useDashboard() {
 
       setTopProducts(getTopProducts());
 
-      setLowStock(getBarang().filter((item) => item.stok <= item.minimalStok));
+      setLowStock(barang.filter((item) => item.stok <= item.minimalStok));
+    } catch (error) {
+      console.error("Dashboard loading error:", error);
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -113,7 +124,7 @@ export default function useDashboard() {
    */
 
   useEffect(() => {
-    loadDashboard();
+    loadDashboard(false);
   }, [loadDashboard]);
 
   /**
@@ -122,7 +133,7 @@ export default function useDashboard() {
 
   useEffect(() => {
     const timer = window.setInterval(() => {
-      loadDashboard();
+      loadDashboard(true);
     }, AUTO_REFRESH_INTERVAL);
 
     return () => {
@@ -131,12 +142,12 @@ export default function useDashboard() {
   }, [loadDashboard]);
 
   /**
-   * Storage Sync
+   * Storage Synchronization
    */
 
   useEffect(() => {
     function handleStorage() {
-      loadDashboard();
+      loadDashboard(true);
     }
 
     window.addEventListener("storage", handleStorage);
@@ -149,10 +160,6 @@ export default function useDashboard() {
   return {
     loading,
 
-    /**
-     * Operational
-     */
-
     statistik,
 
     salesChart,
@@ -163,10 +170,6 @@ export default function useDashboard() {
 
     lowStock,
 
-    /**
-     * Executive
-     */
-
     executiveSummary,
 
     revenueGrowth,
@@ -175,6 +178,9 @@ export default function useDashboard() {
 
     customerInsight,
 
-    refresh: loadDashboard,
+    /**
+     * manual refresh
+     */
+    refresh: () => loadDashboard(false),
   };
 }

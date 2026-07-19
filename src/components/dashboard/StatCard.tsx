@@ -1,23 +1,58 @@
-import type { ReactNode } from "react";
+/**
+ * ============================================================
+ * Enterprise Dashboard
+ * Component : StatCard
+ * ============================================================
+ *
+ * Responsibility:
+ *
+ * - Menampilkan metric statistic
+ * - Menerima data dari parent component
+ *
+ * Tidak melakukan:
+ *
+ * ❌ Mengambil service
+ * ❌ Menghitung analytics
+ * ❌ Mengubah data bisnis
+ *
+ * Performance:
+ *
+ * ✅ React.memo optimized
+ *
+ * ============================================================
+ */
+
+import { memo, type ReactNode } from "react";
 
 interface Props {
   title: string;
+
   value: string | number;
+
   icon: ReactNode;
+
   color: string;
 
   subtitle?: string;
+
   trend?: string;
+
   trendPositive?: boolean;
 }
 
-export default function StatCard({
+function StatCard({
   title,
+
   value,
+
   icon,
+
   color,
+
   subtitle,
+
   trend,
+
   trendPositive = true,
 }: Props) {
   return (
@@ -46,12 +81,40 @@ export default function StatCard({
         hover:-translate-y-1
         hover:border-blue-200
         hover:shadow-xl
+
         dark:hover:border-blue-700
       "
     >
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 via-cyan-500 to-indigo-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div
+        className="
+          absolute
+          inset-x-0
+          top-0
 
-      <div className="flex items-start justify-between gap-5">
+          h-1
+
+          bg-gradient-to-r
+          from-blue-500
+          via-cyan-500
+          to-indigo-500
+
+          opacity-0
+
+          transition-opacity
+          duration-300
+
+          group-hover:opacity-100
+        "
+      />
+
+      <div
+        className="
+          flex
+          items-start
+          justify-between
+          gap-5
+        "
+      >
         <div className="min-w-0 flex-1">
           <p
             className="
@@ -61,6 +124,7 @@ export default function StatCard({
               tracking-[0.18em]
 
               text-gray-500
+
               dark:text-gray-400
             "
           >
@@ -74,10 +138,13 @@ export default function StatCard({
               break-words
 
               text-3xl
+
               font-bold
+
               tracking-tight
 
               text-gray-900
+
               dark:text-white
             "
           >
@@ -89,12 +156,13 @@ export default function StatCard({
               {subtitle && (
                 <p
                   className="
-                    text-sm
-                    leading-6
+                      text-sm
+                      leading-6
 
-                    text-gray-500
-                    dark:text-gray-400
-                  "
+                      text-gray-500
+
+                      dark:text-gray-400
+                    "
                 >
                   {subtitle}
                 </p>
@@ -102,11 +170,27 @@ export default function StatCard({
 
               {trend && (
                 <div
-                  className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
-                    trendPositive
-                      ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                      : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                  }`}
+                  className={`
+                      inline-flex
+
+                      items-center
+
+                      rounded-full
+
+                      px-3
+
+                      py-1
+
+                      text-xs
+
+                      font-semibold
+
+                      ${
+                        trendPositive
+                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                          : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                      }
+                    `}
                 >
                   {trendPositive ? "▲" : "▼"} {trend}
                 </div>
@@ -118,25 +202,39 @@ export default function StatCard({
         <div
           className={`
             flex
+
             h-16
+
             w-16
+
             shrink-0
+
             items-center
+
             justify-center
+
 
             rounded-2xl
 
+
             text-2xl
+
 
             shadow-md
 
+
             transition-all
+
             duration-300
 
+
             group-hover:scale-110
+
             group-hover:rotate-3
 
+
             ${color}
+
           `}
         >
           {icon}
@@ -145,3 +243,5 @@ export default function StatCard({
     </div>
   );
 }
+
+export default memo(StatCard);
