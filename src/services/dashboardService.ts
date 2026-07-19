@@ -1,13 +1,26 @@
 /**
  * ============================================================
- * Enterprise Dashboard Analytics Service
+ * Enterprise Dashboard Analytics Service V2
  * ============================================================
  *
- * Dashboard Analytics Layer
+ * Dashboard Intelligence Engine
  *
- * Operational Dashboard
- * +
- * Executive Intelligence Engine
+ * Responsibility:
+ *
+ * - Operational Analytics
+ * - Executive Intelligence
+ * - Business Metrics
+ * - Performance Calculation
+ *
+ * Architecture:
+ *
+ * UI
+ *  ↓
+ * Hook
+ *  ↓
+ * Dashboard Service
+ *  ↓
+ * Domain Services
  *
  * ============================================================
  */
@@ -23,38 +36,44 @@ import type {
   ProfitAnalytics,
   CustomerInsight,
 } from "../types/dashboard";
-
+import {
+  calculateDashboardSummary,
+  calculateExecutiveSummary,
+  calculateRevenueGrowth,
+  calculateProfitAnalytics,
+} from "./analyticsService";
 import { getPenjualan } from "./penjualanService";
 
 import { getBarang } from "./barangService";
 
 /**
  * ============================================================
- * Executive Summary Existing Dashboard
+ * INTERNAL DATA SNAPSHOT
+ * ============================================================
+ *
+ * Semua analytics memakai snapshot yang sama.
+ *
+ * Benefit:
+ *
+ * - Menghindari pembacaan service berulang
+ * - Lebih siap migrasi API
+ * - Performance lebih stabil
+ *
  * ============================================================
  */
 
-export function getDashboardSummary(): DashboardSummary {
-  const transaksi = getPenjualan();
-
-  const totalRevenue = transaksi.reduce((total, item) => total + item.total, 0);
-
-  const totalTransaction = transaksi.length;
-
-  const averageTransaction =
-    totalTransaction > 0 ? totalRevenue / totalTransaction : 0;
-
-  const customers = new Set(transaksi.map((item) => item.pelangganId));
-
+function getDashboardSnapshot() {
   return {
-    totalRevenue,
+    transaksi: getPenjualan(),
 
-    totalTransaction,
-
-    averageTransaction,
-
-    totalCustomer: customers.size,
+    barang: getBarang(),
   };
+}
+
+export function getDashboardSummary(): DashboardSummary {
+  const { transaksi } = getDashboardSnapshot();
+
+  return calculateDashboardSummary(transaksi);
 }
 
 /**
@@ -64,116 +83,34 @@ export function getDashboardSummary(): DashboardSummary {
  */
 
 export function getExecutiveSummary(): ExecutiveSummary {
-  const transaksi = getPenjualan();
+  const { transaksi } = getDashboardSnapshot();
 
-  const today = new Date().toISOString().split("T")[0];
-
-  const transaksiHariIni = transaksi.filter((item) =>
-    item.tanggal.startsWith(today),
-  );
-
-  const revenueHariIni = transaksiHariIni.reduce(
-    (total, item) => total + item.total,
-    0,
-  );
-
-  return {
-    revenueHariIni,
-
-    totalTransaksiHariIni: transaksiHariIni.length,
-
-    totalCustomerHariIni: new Set(
-      transaksiHariIni.map((item) => item.pelangganId),
-    ).size,
-
-    averageTransaction:
-      transaksiHariIni.length > 0
-        ? revenueHariIni / transaksiHariIni.length
-        : 0,
-  };
+  return calculateExecutiveSummary(transaksi);
 }
 
 /**
  * ============================================================
- * REVENUE GROWTH ENGINE
+ * REVENUE GROWTH
  * ============================================================
  */
 
 export function getRevenueGrowth(): RevenueGrowth {
-  const transaksi = getPenjualan();
+  const { transaksi } = getDashboardSnapshot();
 
-  const now = new Date();
-
-  const today = now.toISOString().split("T")[0];
-
-  const yesterday = new Date(now.getTime() - 86400000)
-    .toISOString()
-    .split("T")[0];
-
-  const revenueSekarang = transaksi
-    .filter((item) => item.tanggal.startsWith(today))
-    .reduce((total, item) => total + item.total, 0);
-
-  const revenueSebelumnya = transaksi
-    .filter((item) => item.tanggal.startsWith(yesterday))
-    .reduce((total, item) => total + item.total, 0);
-
-  const growthPercentage =
-    revenueSebelumnya > 0
-      ? ((revenueSekarang - revenueSebelumnya) / revenueSebelumnya) * 100
-      : 0;
-
-  return {
-    periode: "Hari Ini vs Kemarin",
-
-    revenueSekarang,
-
-    revenueSebelumnya,
-
-    growthPercentage,
-  };
+  return calculateRevenueGrowth(transaksi);
 }
 
 /**
  * ============================================================
- * PROFIT ANALYTICS ENGINE
+ * PROFIT ANALYTICS
  * ============================================================
  */
 
 export function getProfitAnalytics(): ProfitAnalytics {
-  const transaksi = getPenjualan();
+  const { transaksi, barang } = getDashboardSnapshot();
 
-  const barang = getBarang();
-
-  let totalRevenue = 0;
-
-  let totalModal = 0;
-
-  transaksi.forEach((penjualan) => {
-    totalRevenue += penjualan.total;
-
-    penjualan.detail.forEach((detail) => {
-      const produk = barang.find((item) => item.id === detail.barangId);
-
-      if (produk) {
-        totalModal += produk.hargaBeli * detail.qty;
-      }
-    });
-  });
-
-  const totalProfit = totalRevenue - totalModal;
-
-  return {
-    totalRevenue,
-
-    totalModal,
-
-    totalProfit,
-
-    marginPercentage: totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0,
-  };
+  return calculateProfitAnalytics(transaksi, barang);
 }
-
 /**
  * ============================================================
  * CUSTOMER INSIGHT ENGINE
@@ -181,27 +118,37 @@ export function getProfitAnalytics(): ProfitAnalytics {
  */
 
 export function getCustomerInsight(): CustomerInsight {
-  const transaksi = getPenjualan();
+  const { transaksi } = getDashboardSnapshot();
 
   const customerMap = new Map<string, number>();
 
   transaksi.forEach((item) => {
     const current = customerMap.get(item.pelangganNama) ?? 0;
 
-    customerMap.set(item.pelangganNama, current + item.total);
+    customerMap.set(
+      item.pelangganNama,
+
+      current + item.total,
+    );
   });
 
   let customerTerbaik = "";
 
   let totalBelanjaTerbesar = 0;
 
-  customerMap.forEach((total, customer) => {
+  customerMap.forEach((total, nama) => {
     if (total > totalBelanjaTerbesar) {
       totalBelanjaTerbesar = total;
 
-      customerTerbaik = customer;
+      customerTerbaik = nama;
     }
   });
+
+  const totalRevenue = transaksi.reduce(
+    (total, item) => total + item.total,
+
+    0,
+  );
 
   return {
     totalCustomer: customerMap.size,
@@ -211,51 +158,65 @@ export function getCustomerInsight(): CustomerInsight {
     totalBelanjaTerbesar,
 
     rataRataBelanjaCustomer:
-      customerMap.size > 0
-        ? transaksi.reduce((total, item) => total + item.total, 0) /
-          customerMap.size
-        : 0,
+      customerMap.size > 0 ? totalRevenue / customerMap.size : 0,
   };
 }
 
 /**
  * ============================================================
- * SALES CHART
+ * SALES CHART ENGINE
  * ============================================================
  */
 
 export function getSalesChart(): SalesChartItem[] {
-  const transaksi = getPenjualan();
+  const { transaksi } = getDashboardSnapshot();
 
-  const map = new Map<string, number>();
+  const salesMap = new Map<string, number>();
 
   transaksi.forEach((item) => {
-    const current = map.get(item.tanggal) ?? 0;
+    const date = item.tanggal.split("T")[0];
 
-    map.set(item.tanggal, current + item.total);
+    const current = salesMap.get(date) ?? 0;
+
+    salesMap.set(
+      date,
+
+      current + item.total,
+    );
   });
 
-  return Array.from(map.entries()).map(([date, total]) => ({
-    date,
-    total,
-  }));
+  return Array.from(salesMap.entries())
+
+    .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime())
+
+    .map(([date, total]) => ({
+      date,
+
+      label: date,
+
+      total,
+    }));
 }
 
 /**
  * ============================================================
- * RECENT TRANSACTION
+ * RECENT TRANSACTION ENGINE
  * ============================================================
  */
 
 export function getRecentInvoices(): RecentInvoiceItem[] {
-  const transaksi = getPenjualan();
+  const { transaksi } = getDashboardSnapshot();
 
   return transaksi
+
     .slice()
+
     .sort(
       (a, b) => new Date(b.tanggal).getTime() - new Date(a.tanggal).getTime(),
     )
+
     .slice(0, 5)
+
     .map((item) => ({
       id: item.id,
 
@@ -275,59 +236,79 @@ export function getRecentInvoices(): RecentInvoiceItem[] {
 
 /**
  * ============================================================
- * TOP PRODUCT
+ * TOP PRODUCT ENGINE
  * ============================================================
  */
 
 export function getTopProducts(): TopProductItem[] {
-  const transaksi = getPenjualan();
+  const { transaksi } = getDashboardSnapshot();
 
-  const products = new Map<string, TopProductItem>();
+  const productMap = new Map<string, TopProductItem>();
 
   transaksi.forEach((penjualan) => {
-    penjualan.detail.forEach((item) => {
-      const existing = products.get(item.barangId);
+    penjualan.detail.forEach((detail) => {
+      const existing = productMap.get(detail.barangId);
 
       if (existing) {
-        existing.qty += item.qty;
+        existing.qty += detail.qty;
 
-        existing.revenue += item.subtotal;
+        existing.revenue += detail.subtotal;
       } else {
-        products.set(item.barangId, {
-          productId: item.barangId,
+        productMap.set(
+          detail.barangId,
 
-          productName: item.namaBarang,
+          {
+            barangId: detail.barangId,
 
-          qty: item.qty,
+            namaBarang: detail.namaBarang,
 
-          revenue: item.subtotal,
-        });
+            productId: detail.barangId,
+
+            productName: detail.namaBarang,
+
+            qty: detail.qty,
+
+            revenue: detail.subtotal,
+          },
+        );
       }
     });
   });
 
-  return Array.from(products.values())
+  return Array.from(productMap.values())
+
     .sort((a, b) => b.qty - a.qty)
+
     .slice(0, 5);
 }
 
 /**
  * ============================================================
- * STOCK ALERT
+ * STOCK ALERT ENGINE
  * ============================================================
  */
 
 export function getStockAlerts(): StockAlertItem[] {
-  const barang = getBarang();
+  const { barang } = getDashboardSnapshot();
 
   return barang
-    .filter((item) => item.stok <= 20)
+
+    .filter((item) => item.stok <= item.minimalStok)
+
     .map((item) => ({
+      barangId: item.id,
+
       productId: item.id,
+
+      namaBarang: item.nama,
 
       productName: item.nama,
 
+      stok: item.stok,
+
       stock: item.stok,
+
+      minimumStok: item.minimalStok,
 
       level: item.stok <= 5 ? "critical" : "warning",
     }));

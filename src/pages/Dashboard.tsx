@@ -13,13 +13,14 @@
  *
  * Performance:
  *
- * - Memoized data adapter
+ * - Memoized adapter
+ * - Stable navigation callback
  * - Prevent unnecessary child render
  *
  * ============================================================
  */
 
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import DashboardHeader from "../components/dashboard/DashboardHeader";
@@ -70,13 +71,22 @@ export default function Dashboard() {
     refresh,
   } = useDashboard();
 
-  if (loading || !statistik) {
-    return <DashboardSkeleton />;
-  }
+  /**
+   * ==========================================================
+   * STABLE NAVIGATION
+   * ==========================================================
+   */
+
+  const handleNavigate = useCallback(
+    (path: string) => {
+      navigate(path);
+    },
+    [navigate],
+  );
 
   /**
    * ==========================================================
-   * MEMOIZED DATA ADAPTER
+   * DATA ADAPTER
    * ==========================================================
    */
 
@@ -87,7 +97,6 @@ export default function Dashboard() {
 
         penjualan: item.total,
       })),
-
     [salesChart],
   );
 
@@ -106,7 +115,6 @@ export default function Dashboard() {
 
         status: item.status ?? "LUNAS",
       })),
-
     [recentTransactions],
   );
 
@@ -121,9 +129,18 @@ export default function Dashboard() {
 
         revenue: item.revenue ?? item.totalPenjualan ?? 0,
       })),
-
     [topProducts],
   );
+
+  /**
+   * ==========================================================
+   * LOADING STATE
+   * ==========================================================
+   */
+
+  if (loading || !statistik) {
+    return <DashboardSkeleton />;
+  }
 
   return (
     <div className="space-y-8">
@@ -131,7 +148,10 @@ export default function Dashboard() {
 
       <DashboardSection
         title="Executive Intelligence"
-        description="Ringkasan performa bisnis, pertumbuhan pendapatan, profitabilitas, dan customer."
+        description="
+        Ringkasan performa bisnis, pertumbuhan pendapatan,
+        profitabilitas, dan customer.
+        "
       >
         {executiveSummary && <ExecutiveSummaryCard data={executiveSummary} />}
 
@@ -146,15 +166,27 @@ export default function Dashboard() {
 
       <DashboardSection
         title="Business Performance"
-        description="Indikator utama yang menggambarkan kondisi bisnis saat ini."
+        description="
+        Indikator utama yang menggambarkan kondisi bisnis saat ini.
+        "
       >
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div
+          className="
+          grid
+          grid-cols-1
+          gap-5
+          md:grid-cols-2
+          xl:grid-cols-4
+          "
+        >
           <StatCard
             title="Revenue"
             value={formatRupiah(statistik.totalRevenue)}
             icon="💰"
             color="bg-green-100"
-            subtitle="Total pendapatan seluruh transaksi"
+            subtitle="
+            Total pendapatan seluruh transaksi
+            "
           />
 
           <StatCard
@@ -162,7 +194,9 @@ export default function Dashboard() {
             value={statistik.totalTransaction}
             icon="🧾"
             color="bg-blue-100"
-            subtitle="Jumlah transaksi yang berhasil"
+            subtitle="
+            Jumlah transaksi yang berhasil
+            "
           />
 
           <StatCard
@@ -170,7 +204,9 @@ export default function Dashboard() {
             value={statistik.totalCustomer}
             icon="👥"
             color="bg-purple-100"
-            subtitle="Customer yang telah bertransaksi"
+            subtitle="
+            Customer yang telah bertransaksi
+            "
           />
 
           <StatCard
@@ -178,25 +214,40 @@ export default function Dashboard() {
             value={formatRupiah(statistik.averageTransaction)}
             icon="📊"
             color="bg-orange-100"
-            subtitle="Rata-rata nilai setiap transaksi"
+            subtitle="
+            Rata-rata nilai setiap transaksi
+            "
           />
         </div>
       </DashboardSection>
 
       <DashboardSection
         title="Sales Analytics"
-        description="Visualisasi performa penjualan berdasarkan histori transaksi."
+        description="
+        Visualisasi performa penjualan berdasarkan histori transaksi.
+        "
       >
         <SalesChart data={salesChartAdapter} />
       </DashboardSection>
 
       <DashboardSection
         title="Operational Overview"
-        description="Pantau transaksi terbaru, produk terlaris, dan kondisi stok barang."
+        description="
+        Pantau transaksi terbaru, produk terlaris,
+        dan kondisi stok barang.
+        "
       >
         <RecentTransaction data={recentTransactionAdapter} />
 
-        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div
+          className="
+          mt-6
+          grid
+          grid-cols-1
+          gap-6
+          lg:grid-cols-2
+          "
+        >
           <TopProducts data={topProductsAdapter} />
 
           <LowStock data={lowStock} />
@@ -205,9 +256,11 @@ export default function Dashboard() {
 
       <DashboardSection
         title="Quick Actions"
-        description="Akses cepat ke menu operasional yang paling sering digunakan."
+        description="
+        Akses cepat ke menu operasional yang paling sering digunakan.
+        "
       >
-        <QuickActions onNavigate={(path) => navigate(path)} />
+        <QuickActions onNavigate={handleNavigate} />
       </DashboardSection>
     </div>
   );

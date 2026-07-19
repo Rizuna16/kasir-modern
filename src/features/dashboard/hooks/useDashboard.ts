@@ -6,12 +6,22 @@
  *
  * Responsibility:
  *
- * - Mengambil analytics dashboard
+ * - Dashboard analytics orchestration
  * - Executive Intelligence data
- * - Loading state
+ * - Loading state management
  * - Manual refresh
  * - Silent background refresh
  * - Storage synchronization
+ *
+ * Architecture:
+ *
+ * Component
+ *      |
+ *      v
+ * useDashboard
+ *      |
+ *      v
+ * Dashboard Services
  *
  * ============================================================
  */
@@ -29,6 +39,8 @@ import {
   getTopProducts,
 } from "../../../services/dashboardService";
 
+import { getBarang } from "../../../services/barangService";
+
 import type {
   DashboardSummary,
   ExecutiveSummary,
@@ -42,12 +54,14 @@ import type {
 
 import type { Barang } from "../../../types/barang";
 
-import { getBarang } from "../../../services/barangService";
-
 const AUTO_REFRESH_INTERVAL = 30000;
 
 export default function useDashboard() {
   const [loading, setLoading] = useState(true);
+
+  /**
+   * Operational Dashboard
+   */
 
   const [statistik, setStatistik] = useState<DashboardSummary | null>(null);
 
@@ -60,6 +74,10 @@ export default function useDashboard() {
   const [topProducts, setTopProducts] = useState<TopProductItem[]>([]);
 
   const [lowStock, setLowStock] = useState<Barang[]>([]);
+
+  /**
+   * Executive Intelligence
+   */
 
   const [executiveSummary, setExecutiveSummary] =
     useState<ExecutiveSummary | null>(null);
@@ -75,14 +93,19 @@ export default function useDashboard() {
     useState<CustomerInsight | null>(null);
 
   /**
-   * ==========================================================
-   * LOAD DASHBOARD
+   * =========================================================
+   * LOAD DASHBOARD DATA
    *
    * silent:
-   * true  = background refresh
-   * false = first load/manual
    *
-   * ==========================================================
+   * false
+   * - initial loading
+   * - manual refresh
+   *
+   * true
+   * - background refresh
+   *
+   * =========================================================
    */
 
   const loadDashboard = useCallback((silent = false) => {
@@ -111,13 +134,21 @@ export default function useDashboard() {
 
       setLowStock(barang.filter((item) => item.stok <= item.minimalStok));
     } catch (error) {
-      console.error("Dashboard loading error:", error);
+      console.error("Dashboard analytics error:", error);
     } finally {
       if (!silent) {
         setLoading(false);
       }
     }
   }, []);
+
+  /**
+   * Manual refresh
+   */
+
+  const refresh = useCallback(() => {
+    loadDashboard(false);
+  }, [loadDashboard]);
 
   /**
    * Initial Load
@@ -128,7 +159,7 @@ export default function useDashboard() {
   }, [loadDashboard]);
 
   /**
-   * Auto Refresh
+   * Background Auto Refresh
    */
 
   useEffect(() => {
@@ -146,9 +177,9 @@ export default function useDashboard() {
    */
 
   useEffect(() => {
-    function handleStorage() {
+    const handleStorage = () => {
       loadDashboard(true);
-    }
+    };
 
     window.addEventListener("storage", handleStorage);
 
@@ -160,6 +191,10 @@ export default function useDashboard() {
   return {
     loading,
 
+    /**
+     * Operational
+     */
+
     statistik,
 
     salesChart,
@@ -170,6 +205,10 @@ export default function useDashboard() {
 
     lowStock,
 
+    /**
+     * Executive
+     */
+
     executiveSummary,
 
     revenueGrowth,
@@ -179,8 +218,9 @@ export default function useDashboard() {
     customerInsight,
 
     /**
-     * manual refresh
+     * Actions
      */
-    refresh: () => loadDashboard(false),
+
+    refresh,
   };
 }
