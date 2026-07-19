@@ -1,11 +1,25 @@
+import type { ReactNode } from "react";
+
 interface Props {
   title: string;
   value: string | number;
-  icon: string;
+  icon: ReactNode;
   color: string;
+
+  subtitle?: string;
+  trend?: string;
+  trendPositive?: boolean;
 }
 
-export default function StatCard({ title, value, icon, color }: Props) {
+export default function StatCard({
+  title,
+  value,
+  icon,
+  color,
+  subtitle,
+  trend,
+  trendPositive = true,
+}: Props) {
   return (
     <div
       className="
@@ -31,7 +45,7 @@ export default function StatCard({ title, value, icon, color }: Props) {
         hover:shadow-lg
       "
     >
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <p
             className="
@@ -61,6 +75,33 @@ export default function StatCard({ title, value, icon, color }: Props) {
           >
             {value}
           </h2>
+
+          {(subtitle || trend) && (
+            <div className="mt-4 space-y-1">
+              {subtitle && (
+                <p
+                  className="
+                    text-sm
+
+                    text-gray-500
+                    dark:text-gray-400
+                  "
+                >
+                  {subtitle}
+                </p>
+              )}
+
+              {trend && (
+                <p
+                  className={`text-sm font-semibold ${
+                    trendPositive ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  {trend}
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         <div
