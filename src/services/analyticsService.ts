@@ -24,6 +24,8 @@ import type {
   ExecutiveSummary,
   RevenueGrowth,
   ProfitAnalytics,
+  CustomerInsight,
+  SalesChartItem,
 } from "../types/dashboard";
 
 export function calculateDashboardSummary(
@@ -127,4 +129,56 @@ export function calculateProfitAnalytics(
     totalProfit,
     marginPercentage: totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0,
   };
+}
+
+export function calculateCustomerInsight(
+  transaksi: Penjualan[],
+): CustomerInsight {
+  const customerMap = new Map<string, number>();
+
+  transaksi.forEach((item) => {
+    const current = customerMap.get(item.pelangganNama) ?? 0;
+
+    customerMap.set(item.pelangganNama, current + item.total);
+  });
+
+  let customerTerbaik = "";
+  let totalBelanjaTerbesar = 0;
+
+  customerMap.forEach((total, nama) => {
+    if (total > totalBelanjaTerbesar) {
+      totalBelanjaTerbesar = total;
+      customerTerbaik = nama;
+    }
+  });
+
+  const totalRevenue = transaksi.reduce((total, item) => total + item.total, 0);
+
+  return {
+    totalCustomer: customerMap.size,
+    customerTerbaik,
+    totalBelanjaTerbesar,
+    rataRataBelanjaCustomer:
+      customerMap.size > 0 ? totalRevenue / customerMap.size : 0,
+  };
+}
+
+export function calculateSalesChart(transaksi: Penjualan[]): SalesChartItem[] {
+  const salesMap = new Map<string, number>();
+
+  transaksi.forEach((item) => {
+    const date = item.tanggal.split("T")[0];
+
+    const current = salesMap.get(date) ?? 0;
+
+    salesMap.set(date, current + item.total);
+  });
+
+  return Array.from(salesMap.entries())
+    .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime())
+    .map(([date, total]) => ({
+      date,
+      label: date,
+      total,
+    }));
 }
