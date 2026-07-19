@@ -24,11 +24,13 @@ export default function StatCard({
     <div
       className="
         group
+        relative
+        overflow-hidden
 
-        rounded-2xl
+        rounded-3xl
 
         border
-        border-gray-100
+        border-gray-200
         dark:border-gray-700
 
         bg-white
@@ -42,17 +44,21 @@ export default function StatCard({
         duration-300
 
         hover:-translate-y-1
-        hover:shadow-lg
+        hover:border-blue-200
+        hover:shadow-xl
+        dark:hover:border-blue-700
       "
     >
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 via-cyan-500 to-indigo-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+      <div className="flex items-start justify-between gap-5">
+        <div className="min-w-0 flex-1">
           <p
             className="
               text-xs
               font-semibold
               uppercase
-              tracking-wider
+              tracking-[0.18em]
 
               text-gray-500
               dark:text-gray-400
@@ -65,9 +71,11 @@ export default function StatCard({
             className="
               mt-3
 
-              text-3xl
+              break-words
 
+              text-3xl
               font-bold
+              tracking-tight
 
               text-gray-900
               dark:text-white
@@ -77,11 +85,12 @@ export default function StatCard({
           </h2>
 
           {(subtitle || trend) && (
-            <div className="mt-4 space-y-1">
+            <div className="mt-5 space-y-2">
               {subtitle && (
                 <p
                   className="
                     text-sm
+                    leading-6
 
                     text-gray-500
                     dark:text-gray-400
@@ -92,13 +101,15 @@ export default function StatCard({
               )}
 
               {trend && (
-                <p
-                  className={`text-sm font-semibold ${
-                    trendPositive ? "text-green-600" : "text-red-600"
+                <div
+                  className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                    trendPositive
+                      ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                      : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                   }`}
                 >
-                  {trend}
-                </p>
+                  {trendPositive ? "▲" : "▼"} {trend}
+                </div>
               )}
             </div>
           )}
@@ -107,8 +118,9 @@ export default function StatCard({
         <div
           className={`
             flex
-            h-14
-            w-14
+            h-16
+            w-16
+            shrink-0
             items-center
             justify-center
 
@@ -116,12 +128,13 @@ export default function StatCard({
 
             text-2xl
 
-            shadow-sm
+            shadow-md
 
-            transition-transform
+            transition-all
             duration-300
 
             group-hover:scale-110
+            group-hover:rotate-3
 
             ${color}
           `}
