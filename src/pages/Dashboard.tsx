@@ -37,10 +37,11 @@ import TopProducts from "../components/dashboard/TopProducts";
 import LowStock from "../components/dashboard/LowStock";
 
 import InventorySummaryCard from "../components/dashboard/inventory/InventorySummaryCard";
+import InventoryHealthCard from "../components/dashboard/inventory/InventoryHealthCard";
+import InventoryScoreCard from "../components/dashboard/inventory/InventoryScoreCard";
 import LowStockAlert from "../components/dashboard/inventory/LowStockAlert";
 import FastMovingTable from "../components/dashboard/inventory/FastMovingTable";
 import SlowMovingTable from "../components/dashboard/inventory/SlowMovingTable";
-import InventoryHealthCard from "../components/dashboard/inventory/InventoryHealthCard";
 
 import ExecutiveSummaryCard from "../components/dashboard/ExecutiveSummaryCard";
 import RevenueGrowthCard from "../components/dashboard/RevenueGrowthCard";
@@ -109,6 +110,7 @@ export default function Dashboard() {
 
         penjualan: item.total,
       })),
+
     [salesChart],
   );
 
@@ -127,6 +129,7 @@ export default function Dashboard() {
 
         status: item.status ?? "LUNAS",
       })),
+
     [recentTransactions],
   );
 
@@ -141,6 +144,7 @@ export default function Dashboard() {
 
         revenue: item.revenue ?? item.totalPenjualan ?? 0,
       })),
+
     [topProducts],
   );
 
@@ -166,7 +170,7 @@ export default function Dashboard() {
         title="Executive Intelligence"
         description="
         Ringkasan performa bisnis,
-        pertumbuhan revenue,
+        revenue,
         profit,
         dan customer insight.
         "
@@ -264,15 +268,25 @@ export default function Dashboard() {
           title="Inventory Intelligence"
           description="
           Analisa kesehatan stok,
+          inventory score,
           fast moving,
           slow moving,
           dan alert inventory.
           "
         >
-          <InventorySummaryCard summary={inventory} />
+          <div
+            className="
+            grid
+            grid-cols-1
+            gap-6
+            lg:grid-cols-3
+            "
+          >
+            <InventorySummaryCard summary={inventory} />
 
-          <div className="mt-6">
             <InventoryHealthCard data={inventory.inventoryHealth} />
+
+            <InventoryScoreCard data={inventory.inventoryScore} />
           </div>
 
           <div className="mt-6">
