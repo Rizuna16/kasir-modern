@@ -8,6 +8,7 @@
  *
  * - Dashboard analytics orchestration
  * - Executive Intelligence data
+ * - Inventory Intelligence data
  * - Loading state management
  * - Manual refresh
  * - Silent background refresh
@@ -39,6 +40,8 @@ import {
   getTopProducts,
 } from "../../../services/dashboardService";
 
+import { getInventorySummary } from "../../../services/inventoryAnalyticsService";
+
 import { getBarang } from "../../../services/barangService";
 
 import type {
@@ -52,6 +55,8 @@ import type {
   TopProductItem,
 } from "../../../types/dashboard";
 
+import type { InventorySummary } from "../../../types/inventoryAnalytics";
+
 import type { Barang } from "../../../types/barang";
 
 const AUTO_REFRESH_INTERVAL = 30000;
@@ -60,7 +65,9 @@ export default function useDashboard() {
   const [loading, setLoading] = useState(true);
 
   /**
+   * =========================================================
    * Operational Dashboard
+   * =========================================================
    */
 
   const [statistik, setStatistik] = useState<DashboardSummary | null>(null);
@@ -76,7 +83,17 @@ export default function useDashboard() {
   const [lowStock, setLowStock] = useState<Barang[]>([]);
 
   /**
+   * =========================================================
+   * Inventory Intelligence
+   * =========================================================
+   */
+
+  const [inventory, setInventory] = useState<InventorySummary | null>(null);
+
+  /**
+   * =========================================================
    * Executive Intelligence
+   * =========================================================
    */
 
   const [executiveSummary, setExecutiveSummary] =
@@ -95,16 +112,6 @@ export default function useDashboard() {
   /**
    * =========================================================
    * LOAD DASHBOARD DATA
-   *
-   * silent:
-   *
-   * false
-   * - initial loading
-   * - manual refresh
-   *
-   * true
-   * - background refresh
-   *
    * =========================================================
    */
 
@@ -133,6 +140,12 @@ export default function useDashboard() {
       setTopProducts(getTopProducts());
 
       setLowStock(barang.filter((item) => item.stok <= item.minimalStok));
+
+      /**
+       * Inventory Intelligence
+       */
+
+      setInventory(getInventorySummary());
     } catch (error) {
       console.error("Dashboard analytics error:", error);
     } finally {
@@ -204,6 +217,12 @@ export default function useDashboard() {
     topProducts,
 
     lowStock,
+
+    /**
+     * Inventory Intelligence
+     */
+
+    inventory,
 
     /**
      * Executive

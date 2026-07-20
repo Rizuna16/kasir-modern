@@ -6,16 +6,20 @@
  *
  * Responsibility:
  *
- * - Menampilkan operational dashboard
- * - Menampilkan executive intelligence
- * - Adapter data service ke UI component
- * - Trigger refresh data
+ * - Operational dashboard
+ * - Executive intelligence
+ * - Inventory intelligence
+ * - Business analytics
  *
- * Performance:
+ * Architecture:
  *
- * - Memoized adapter
- * - Stable navigation callback
- * - Prevent unnecessary child render
+ * UI
+ *  |
+ *  v
+ * useDashboard
+ *  |
+ *  v
+ * Dashboard Services
  *
  * ============================================================
  */
@@ -31,6 +35,12 @@ import SalesChart from "../components/dashboard/SalesChart";
 import RecentTransaction from "../components/dashboard/RecentTransaction";
 import TopProducts from "../components/dashboard/TopProducts";
 import LowStock from "../components/dashboard/LowStock";
+
+import InventorySummaryCard from "../components/dashboard/inventory/InventorySummaryCard";
+import LowStockAlert from "../components/dashboard/inventory/LowStockAlert";
+import FastMovingTable from "../components/dashboard/inventory/FastMovingTable";
+import SlowMovingTable from "../components/dashboard/inventory/SlowMovingTable";
+import InventoryHealthCard from "../components/dashboard/inventory/InventoryHealthCard";
 
 import ExecutiveSummaryCard from "../components/dashboard/ExecutiveSummaryCard";
 import RevenueGrowthCard from "../components/dashboard/RevenueGrowthCard";
@@ -51,6 +61,8 @@ export default function Dashboard() {
     loading,
 
     statistik,
+
+    inventory,
 
     executiveSummary,
 
@@ -73,7 +85,7 @@ export default function Dashboard() {
 
   /**
    * ==========================================================
-   * STABLE NAVIGATION
+   * NAVIGATION
    * ==========================================================
    */
 
@@ -146,16 +158,29 @@ export default function Dashboard() {
     <div className="space-y-8">
       <DashboardHeader loading={loading} onRefresh={refresh} />
 
+      {/* =====================================================
+          EXECUTIVE INTELLIGENCE
+      ===================================================== */}
+
       <DashboardSection
         title="Executive Intelligence"
         description="
-        Ringkasan performa bisnis, pertumbuhan pendapatan,
-        profitabilitas, dan customer.
+        Ringkasan performa bisnis,
+        pertumbuhan revenue,
+        profit,
+        dan customer insight.
         "
       >
         {executiveSummary && <ExecutiveSummaryCard data={executiveSummary} />}
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div
+          className="
+          grid
+          grid-cols-1
+          gap-6
+          lg:grid-cols-2
+          "
+        >
           {revenueGrowth && <RevenueGrowthCard data={revenueGrowth} />}
 
           {profitAnalytics && <ProfitAnalyticsCard data={profitAnalytics} />}
@@ -164,10 +189,14 @@ export default function Dashboard() {
         {customerInsight && <CustomerInsightCard data={customerInsight} />}
       </DashboardSection>
 
+      {/* =====================================================
+          BUSINESS PERFORMANCE
+      ===================================================== */}
+
       <DashboardSection
         title="Business Performance"
         description="
-        Indikator utama yang menggambarkan kondisi bisnis saat ini.
+        KPI utama operasional bisnis.
         "
       >
         <div
@@ -184,19 +213,15 @@ export default function Dashboard() {
             value={formatRupiah(statistik.totalRevenue)}
             icon="💰"
             color="bg-green-100"
-            subtitle="
-            Total pendapatan seluruh transaksi
-            "
+            subtitle="Total pendapatan"
           />
 
           <StatCard
-            title="Total Transaksi"
+            title="Transaksi"
             value={statistik.totalTransaction}
             icon="🧾"
             color="bg-blue-100"
-            subtitle="
-            Jumlah transaksi yang berhasil
-            "
+            subtitle="Jumlah transaksi"
           />
 
           <StatCard
@@ -204,9 +229,7 @@ export default function Dashboard() {
             value={statistik.totalCustomer}
             icon="👥"
             color="bg-purple-100"
-            subtitle="
-            Customer yang telah bertransaksi
-            "
+            subtitle="Customer aktif"
           />
 
           <StatCard
@@ -214,27 +237,72 @@ export default function Dashboard() {
             value={formatRupiah(statistik.averageTransaction)}
             icon="📊"
             color="bg-orange-100"
-            subtitle="
-            Rata-rata nilai setiap transaksi
-            "
+            subtitle="Rata-rata transaksi"
           />
         </div>
       </DashboardSection>
 
+      {/* =====================================================
+          SALES ANALYTICS
+      ===================================================== */}
+
       <DashboardSection
         title="Sales Analytics"
         description="
-        Visualisasi performa penjualan berdasarkan histori transaksi.
+        Visualisasi trend penjualan.
         "
       >
         <SalesChart data={salesChartAdapter} />
       </DashboardSection>
 
+      {/* =====================================================
+          INVENTORY INTELLIGENCE
+      ===================================================== */}
+
+      {inventory && (
+        <DashboardSection
+          title="Inventory Intelligence"
+          description="
+          Analisa kesehatan stok,
+          fast moving,
+          slow moving,
+          dan alert inventory.
+          "
+        >
+          <InventorySummaryCard summary={inventory} />
+
+          <div className="mt-6">
+            <InventoryHealthCard data={inventory.inventoryHealth} />
+          </div>
+
+          <div className="mt-6">
+            <LowStockAlert data={inventory.lowStockProducts} />
+          </div>
+
+          <div
+            className="
+            mt-6
+            grid
+            grid-cols-1
+            gap-6
+            lg:grid-cols-2
+            "
+          >
+            <FastMovingTable data={inventory.fastMovingProducts} />
+
+            <SlowMovingTable data={inventory.slowMovingProducts} />
+          </div>
+        </DashboardSection>
+      )}
+
+      {/* =====================================================
+          OPERATIONAL OVERVIEW
+      ===================================================== */}
+
       <DashboardSection
         title="Operational Overview"
         description="
-        Pantau transaksi terbaru, produk terlaris,
-        dan kondisi stok barang.
+        Monitoring transaksi dan stok harian.
         "
       >
         <RecentTransaction data={recentTransactionAdapter} />
@@ -254,10 +322,14 @@ export default function Dashboard() {
         </div>
       </DashboardSection>
 
+      {/* =====================================================
+          QUICK ACTION
+      ===================================================== */}
+
       <DashboardSection
         title="Quick Actions"
         description="
-        Akses cepat ke menu operasional yang paling sering digunakan.
+        Akses cepat menu operasional.
         "
       >
         <QuickActions onNavigate={handleNavigate} />
