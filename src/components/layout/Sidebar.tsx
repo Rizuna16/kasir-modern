@@ -28,12 +28,9 @@ export default function Sidebar({ isOpen, onClose, collapsed }: SidebarProps) {
   CHECK ACTIVE GROUP
 
   Contoh:
-
   /barang
 
-  maka:
-
-  Master Data = active
+  Master Data aktif
 
   =====================================
   */
@@ -45,14 +42,6 @@ export default function Sidebar({ isOpen, onClose, collapsed }: SidebarProps) {
   /*
   =====================================
   AUTO EXPAND ACTIVE GROUP
-
-  Contoh:
-
-  /barang
-
-  otomatis buka:
-
-  Master Data
 
   =====================================
   */
@@ -78,10 +67,13 @@ export default function Sidebar({ isOpen, onClose, collapsed }: SidebarProps) {
   return (
     <>
       {/* Mobile Overlay */}
+
       <div
         onClick={onClose}
         className={`
+
           fixed
+
           inset-0
 
           z-40
@@ -89,69 +81,118 @@ export default function Sidebar({ isOpen, onClose, collapsed }: SidebarProps) {
           bg-black/50
 
           transition-opacity
+
           duration-300
 
+
           lg:hidden
+
 
           ${
             isOpen
               ? "opacity-100 visible"
               : "pointer-events-none invisible opacity-0"
           }
+
         `}
       />
 
       {/* Sidebar */}
+
       <aside
         className={`
+
           fixed
+
           left-0
+
           top-0
+
 
           z-50
 
+
           flex
+
           h-screen
+
           ${collapsed ? "w-20" : "w-64"}
+
+
           flex-col
 
+
           border-r
+
           border-blue-500/20
 
+
+
           bg-gradient-to-b
+
           from-blue-600
+
           to-blue-700
 
-          p-5
+
+
+          p-4
+
+
 
           shadow-xl
 
-          transition-transform
+
+
+          transition-all
+
           duration-300
 
+
+
           dark:border-gray-700
+
           dark:from-gray-900
+
           dark:to-gray-800
+
+
 
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
 
+
+
           lg:static
+
           lg:translate-x-0
+
         `}
       >
-        {/* Branding */}
+        {/* Header */}
+
         <SidebarHeader collapsed={collapsed} />
 
         {/* Navigation */}
+
         <nav
           className="
+
             flex-1
 
-            space-y-3
+            min-h-0
+
+
+            space-y-2
+
 
             overflow-y-auto
 
+
+            overflow-x-hidden
+
+
             pr-1
+
           "
         >
           {NAVIGATION.map((section) => {
@@ -164,21 +205,21 @@ export default function Sidebar({ isOpen, onClose, collapsed }: SidebarProps) {
             }
 
             /*
-              =====================================
-              SINGLE MENU
+            =====================================
+            SINGLE MENU
 
-              Dashboard
+            Dashboard
 
-              =====================================
-              */
+            =====================================
+            */
 
             if (!section.collapsible) {
               return (
                 <section key={section.id}>
                   <div
                     className="
-                        space-y-1
-                      "
+                      space-y-1
+                    "
                   >
                     {menus.map((menu) => (
                       <div key={menu.path} onClick={onClose}>
@@ -195,16 +236,11 @@ export default function Sidebar({ isOpen, onClose, collapsed }: SidebarProps) {
             }
 
             /*
-              =====================================
-              COLLAPSIBLE GROUP
+            =====================================
+            COLLAPSIBLE GROUP
 
-              Master Data
-              Transaksi
-              Laporan
-              Pengaturan
-
-              =====================================
-              */
+            =====================================
+            */
 
             return (
               <SidebarGroup
@@ -231,7 +267,8 @@ export default function Sidebar({ isOpen, onClose, collapsed }: SidebarProps) {
           })}
         </nav>
 
-        {/* User Profile */}
+        {/* Footer */}
+
         <SidebarFooter />
       </aside>
     </>

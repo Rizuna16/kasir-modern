@@ -34,19 +34,44 @@ export default function DataTable<T>({
         rounded-xl
 
         border
+
         border-gray-200
-        dark:border-slate-700
 
         bg-white
-        dark:bg-slate-900
 
         shadow-sm
+
+
+        dark:border-slate-700
+
+        dark:bg-slate-900
       "
     >
-      <table className="min-w-full">
+      <table
+        className="
+          min-w-full
+
+          divide-y
+
+          divide-gray-100
+
+          dark:divide-slate-800
+        "
+      >
+        {/* Header */}
+
         <thead
           className="
+            sticky
+
+            top-0
+
+            z-10
+
+
             bg-gray-50
+
+
             dark:bg-slate-800
           "
         >
@@ -55,30 +80,45 @@ export default function DataTable<T>({
               <th
                 key={`${String(column.accessor)}-${index}`}
                 className={`
-                  px-5
-                  py-3
+                    px-5
 
-                  text-left
+                    py-3
 
-                  text-xs
 
-                  font-semibold
+                    whitespace-nowrap
 
-                  uppercase
 
-                  tracking-wide
+                    text-left
 
-                  text-gray-600
-                  dark:text-gray-300
 
-                  ${column.className ?? ""}
-                `}
+                    text-xs
+
+
+                    font-semibold
+
+
+                    uppercase
+
+
+                    tracking-wide
+
+
+                    text-gray-600
+
+
+                    dark:text-gray-300
+
+
+                    ${column.className ?? ""}
+                  `}
               >
                 {column.header}
               </th>
             ))}
           </tr>
         </thead>
+
+        {/* Body */}
 
         <tbody>
           {loading ? (
@@ -91,32 +131,44 @@ export default function DataTable<T>({
                   text-center
 
                   text-gray-500
+
                   dark:text-gray-400
                 "
               >
                 <div
                   className="
                     flex
+
                     flex-col
+
                     items-center
+
                     gap-3
                   "
                 >
                   <div
                     className="
                       h-8
+
                       w-8
+
 
                       animate-spin
 
+
                       rounded-full
+
 
                       border-4
 
+
                       border-gray-200
-                      dark:border-slate-600
+
 
                       border-t-blue-600
+
+
+                      dark:border-slate-600
                     "
                   />
 
@@ -137,18 +189,28 @@ export default function DataTable<T>({
                 <div
                   className="
                     flex
+
                     flex-col
+
                     items-center
+
                     gap-2
                   "
                 >
-                  <div className="text-4xl">📦</div>
+                  <div
+                    className="
+                      text-4xl
+                    "
+                  >
+                    📦
+                  </div>
 
                   <p
                     className="
                       font-semibold
 
                       text-gray-700
+
                       dark:text-gray-200
                     "
                   >
@@ -160,6 +222,7 @@ export default function DataTable<T>({
                       text-sm
 
                       text-gray-400
+
                       dark:text-gray-500
                     "
                   >
@@ -173,37 +236,54 @@ export default function DataTable<T>({
               <tr
                 key={rowIndex}
                 className="
-                  border-t
+                    border-t
 
-                  border-gray-100
-                  dark:border-slate-800
+                    border-gray-100
 
-                  transition
 
-                  hover:bg-gray-50
-                  dark:hover:bg-slate-800
-                "
+                    transition-colors
+
+
+                    duration-150
+
+
+                    hover:bg-blue-50
+
+
+                    dark:border-slate-800
+
+
+                    dark:hover:bg-slate-800/70
+                  "
               >
                 {columns.map((column, columnIndex) => (
                   <td
                     key={`${String(column.accessor)}-${columnIndex}`}
                     className={`
-                      px-5
-                      py-3
+                          px-5
 
-                      text-sm
+                          py-3
 
-                      ${column.className ?? ""}
-                    `}
+
+                          text-sm
+
+
+                          align-middle
+
+
+                          ${column.className ?? ""}
+                        `}
                   >
                     {column.render ? (
                       column.render(row, rowIndex)
                     ) : (
                       <span
                         className="
-                          text-gray-700
-                          dark:text-gray-200
-                        "
+                              text-gray-700
+
+
+                              dark:text-gray-200
+                            "
                       >
                         {String(row[column.accessor] ?? "")}
                       </span>
