@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 
-import { Button, Card, Pagination, SearchBox } from "../components/ui";
+import {
+  Button,
+  Card,
+  PageHeader,
+  Pagination,
+  SearchBox,
+} from "../components/ui";
 
 import PelangganTable from "../components/pelanggan/PelangganTable";
 import PelangganTambahModal from "../components/pelanggan/PelangganTambahModal";
@@ -62,7 +68,9 @@ export default function PelangganPage() {
   }, [search, setPage]);
 
   const handleTambah = () => {
-    setForm(initialPelangganForm);
+    setForm({
+      ...initialPelangganForm,
+    });
 
     setIsTambahOpen(true);
   };
@@ -110,38 +118,25 @@ export default function PelangganPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1
-          className="
-            text-3xl
-            font-bold
-            text-gray-900
-            dark:text-white
-          "
-        >
-          Data Pelanggan
-        </h1>
-
-        <p
-          className="
-            text-gray-500
-            dark:text-gray-400
-          "
-        >
-          Kelola data pelanggan
-        </p>
-      </div>
+    <div
+      className="
+        space-y-6
+      "
+    >
+      <PageHeader
+        title="Data Pelanggan"
+        subtitle="Kelola data pelanggan."
+        action={
+          <Button variant="primary" onClick={handleTambah}>
+            Tambah Pelanggan
+          </Button>
+        }
+      />
 
       <Card>
         <div
           className="
-            flex
-            flex-col
-            gap-4
-            md:flex-row
-            md:items-center
-            md:justify-between
+            space-y-5
           "
         >
           <SearchBox
@@ -150,31 +145,12 @@ export default function PelangganPage() {
             placeholder="Cari pelanggan..."
           />
 
-          <Button variant="primary" onClick={handleTambah}>
-            + Tambah Pelanggan
-          </Button>
-        </div>
-      </Card>
-
-      <Card>
-        {paginatedData.length === 0 ? (
-          <div
-            className="
-                py-10
-                text-center
-                text-gray-500
-                dark:text-gray-400
-              "
-          >
-            Belum ada data pelanggan.
-          </div>
-        ) : (
           <PelangganTable
             data={paginatedData}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />
-        )}
+        </div>
       </Card>
 
       <Pagination
@@ -194,7 +170,9 @@ export default function PelangganPage() {
           const berhasil = tambahPelanggan(form);
 
           if (berhasil) {
-            setForm(initialPelangganForm);
+            setForm({
+              ...initialPelangganForm,
+            });
 
             setIsTambahOpen(false);
           }
@@ -215,11 +193,7 @@ export default function PelangganPage() {
             return;
           }
 
-          editPelanggan(
-            selectedPelanggan.id,
-
-            form,
-          );
+          editPelanggan(selectedPelanggan.id, form);
 
           setIsEditOpen(false);
 

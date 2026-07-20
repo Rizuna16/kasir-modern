@@ -1,16 +1,12 @@
-import {
-  getBarang,
-  updateStokBarang,
-  kurangiStokBarang,
-} from "./barangService";
-
-import { recordStockMovement } from "./stockMovementService";
+import { applyStockMovement } from "./barangService";
 
 import type { Pembelian } from "../types/pembelian";
 
 const STORAGE_KEY = "pembelian";
 
-// Ambil data storage
+// =====================================================
+// STORAGE
+// =====================================================
 
 const getStorage = (): Pembelian[] => {
   const data = localStorage.getItem(STORAGE_KEY);
@@ -28,25 +24,29 @@ const getStorage = (): Pembelian[] => {
   }
 };
 
-// Simpan storage
-
 const saveStorage = (data: Pembelian[]): void => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 };
 
-// Ambil semua pembelian
+// =====================================================
+// GET ALL
+// =====================================================
 
 export const getPembelian = (): Pembelian[] => {
   return getStorage();
 };
 
-// Ambil berdasarkan ID
+// =====================================================
+// GET BY ID
+// =====================================================
 
 export const getPembelianById = (id: string): Pembelian | undefined => {
   return getStorage().find((item) => item.id === id);
 };
 
-// Tambah pembelian
+// =====================================================
+// ADD PEMBELIAN
+// =====================================================
 
 export const addPembelian = (
   data: Omit<Pembelian, "id" | "createdAt" | "updatedAt">,
@@ -70,37 +70,18 @@ export const addPembelian = (
   saveStorage(pembelian);
 
   /*
-    Update stok barang
-    + catat stock movement
+    INVENTORY ENGINE
+
+    Pembelian = stok masuk
   */
 
   newPembelian.detail.forEach((item) => {
-    const barangSebelum = getBarang().find(
-      (barang) => barang.id === item.barangId,
-    );
-
-    if (!barangSebelum) {
-      return;
-    }
-
-    const stokSebelum = barangSebelum.stok;
-
-    const barangSesudah = updateStokBarang(item.barangId, item.qty);
-
-    if (!barangSesudah) {
-      return;
-    }
-
-    recordStockMovement({
+    applyStockMovement({
       barangId: item.barangId,
 
+      perubahan: item.qty,
+
       tipe: "Pembelian",
-
-      qty: item.qty,
-
-      stokSebelum,
-
-      stokSesudah: barangSesudah.stok,
 
       referensi: newPembelian.id,
 
@@ -111,7 +92,9 @@ export const addPembelian = (
   return newPembelian;
 };
 
-// Update pembelian
+// =====================================================
+// UPDATE PEMBELIAN
+// =====================================================
 
 export const updatePembelian = (
   id: string,
@@ -127,11 +110,21 @@ export const updatePembelian = (
   }
 
   /*
-    Kembalikan stok lama
-  */
+   ROLLBACK STOK LAMA
+ */
 
   pembelian[index].detail.forEach((item) => {
-    kurangiStokBarang(item.barangId, item.qty);
+    applyStockMovement({
+      barangId: item.barangId,
+
+      perubahan: -item.qty,
+
+      tipe: "Retur Pembelian",
+
+      referensi: id,
+
+      keterangan: "Rollback update pembelian",
+    });
   });
 
   pembelian[index] = {
@@ -147,37 +140,16 @@ export const updatePembelian = (
   };
 
   /*
-    Tambahkan stok baru
-    + catat movement
-  */
+   APPLY STOK BARU
+ */
 
   pembelian[index].detail.forEach((item) => {
-    const barangSebelum = getBarang().find(
-      (barang) => barang.id === item.barangId,
-    );
-
-    if (!barangSebelum) {
-      return;
-    }
-
-    const stokSebelum = barangSebelum.stok;
-
-    const barangSesudah = updateStokBarang(item.barangId, item.qty);
-
-    if (!barangSesudah) {
-      return;
-    }
-
-    recordStockMovement({
+    applyStockMovement({
       barangId: item.barangId,
 
+      perubahan: item.qty,
+
       tipe: "Pembelian",
-
-      qty: item.qty,
-
-      stokSebelum,
-
-      stokSesudah: barangSesudah.stok,
 
       referensi: id,
 
@@ -190,7 +162,9 @@ export const updatePembelian = (
   return pembelian[index];
 };
 
-// Hapus pembelian
+// =====================================================
+// DELETE PEMBELIAN
+// =====================================================
 
 export const deletePembelian = (id: string): void => {
   const pembelian = getStorage();
@@ -199,32 +173,12 @@ export const deletePembelian = (id: string): void => {
 
   if (transaksi) {
     transaksi.detail.forEach((item) => {
-      const barangSebelum = getBarang().find(
-        (barang) => barang.id === item.barangId,
-      );
-
-      if (!barangSebelum) {
-        return;
-      }
-
-      const stokSebelum = barangSebelum.stok;
-
-      const barangSesudah = kurangiStokBarang(item.barangId, item.qty);
-
-      if (!barangSesudah) {
-        return;
-      }
-
-      recordStockMovement({
+      applyStockMovement({
         barangId: item.barangId,
 
+        perubahan: -item.qty,
+
         tipe: "Retur Pembelian",
-
-        qty: -item.qty,
-
-        stokSebelum,
-
-        stokSesudah: barangSesudah.stok,
 
         referensi: id,
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Card } from "../components/ui";
+import { Card, EmptyState, PageHeader } from "../components/ui";
 
 import KartuStokFilter from "../components/kartu-stok/KartuStokFilter";
 import KartuStokTable from "../components/kartu-stok/KartuStokTable";
@@ -75,7 +75,12 @@ export default function KartuStok() {
 
   return (
     <div className="space-y-6">
-      <Card title="Kartu Stok" subtitle="Riwayat pergerakan stok barang">
+      <PageHeader
+        title="Kartu Stok"
+        subtitle="Riwayat pergerakan stok barang"
+      />
+
+      <Card>
         <KartuStokFilter
           barangId={barangId}
           tipe={tipe}
@@ -91,7 +96,17 @@ export default function KartuStok() {
         />
       </Card>
 
-      <KartuStokTable data={data} loading={loading} />
+      <Card>
+        {data.length === 0 && !loading ? (
+          <EmptyState
+            icon="📦"
+            title="Belum Ada Riwayat Stok"
+            description="Belum terdapat pergerakan stok barang."
+          />
+        ) : (
+          <KartuStokTable data={data} loading={loading} />
+        )}
+      </Card>
     </div>
   );
 }

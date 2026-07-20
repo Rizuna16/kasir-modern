@@ -4,8 +4,11 @@ const STORAGE_KEY = "stock-movements";
 
 export interface StockMovementFilter {
   barangId?: string;
+
   tipe?: StockMovementType;
+
   startDate?: string;
+
   endDate?: string;
 }
 
@@ -32,6 +35,9 @@ function saveAll(data: StockMovement[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+/**
+ * Ambil seluruh histori pergerakan stok
+ */
 export function getStockMovements(
   filter?: StockMovementFilter,
 ): StockMovement[] {
@@ -64,12 +70,33 @@ export function getStockMovements(
   );
 }
 
+/**
+ * Histori stok berdasarkan barang
+ */
 export function getStockMovementByBarang(barangId: string): StockMovement[] {
   return getStockMovements({
     barangId,
   });
 }
 
+/**
+ * Ambil stok terakhir barang
+ */
+export function getLastStock(barangId: string): number {
+  const movements = getStockMovementByBarang(barangId);
+
+  if (movements.length === 0) {
+    return 0;
+  }
+
+  const latest = movements[0];
+
+  return latest.stokSesudah;
+}
+
+/**
+ * Catat pergerakan stok baru
+ */
 export function recordStockMovement(
   movement: RecordStockMovementInput,
 ): StockMovement {
@@ -94,6 +121,12 @@ export function recordStockMovement(
   return newMovement;
 }
 
+/**
+ * Legacy support
+ *
+ * Jangan dipakai untuk transaksi baru.
+ * Dipertahankan agar kode lama tidak rusak.
+ */
 export function addStockMovement(movement: StockMovement): StockMovement {
   const data = getAll();
 
@@ -104,12 +137,38 @@ export function addStockMovement(movement: StockMovement): StockMovement {
   return movement;
 }
 
+/**
+ * Hapus histori stok
+ */
 export function deleteStockMovement(id: string): void {
   const data = getAll().filter((item) => item.id !== id);
 
   saveAll(data);
 }
 
+/**
+ * Bersihkan semua histori stok
+ */
 export function clearStockMovements(): void {
   saveAll([]);
+}
+
+/**
+ * Statistik stok dasar
+ * Persiapan dashboard
+ */
+export function getStockSummary() {
+  const data = getAll();
+
+  return {
+    totalMovement: data.length,
+
+    totalMasuk: data
+      .filter((item) => item.qty > 0)
+      .reduce((total, item) => total + item.qty, 0),
+
+    totalKeluar: data
+      .filter((item) => item.qty < 0)
+      .reduce((total, item) => total + Math.abs(item.qty), 0),
+  };
 }

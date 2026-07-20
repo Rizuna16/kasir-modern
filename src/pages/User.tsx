@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Button, Card, ConfirmDialog } from "../components/ui";
+import { Button, Card, ConfirmDialog, PageHeader } from "../components/ui";
 
 import UserTable from "../components/user/UserTable";
 import UserTambahModal from "../components/user/UserTambahModal";
@@ -44,57 +44,28 @@ export default function UserPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1
-          className="
-            text-3xl
-            font-bold
-            text-gray-900
-            dark:text-white
-          "
-        >
-          Master User
-        </h1>
-
-        <p
-          className="
-            text-gray-500
-            dark:text-gray-400
-          "
-        >
-          Kelola pengguna dan hak akses sistem
-        </p>
-      </div>
-
-      <Card>
-        <div
-          className="
-            flex
-            justify-end
-          "
-        >
-          <Button variant="primary" onClick={() => setIsTambahOpen(true)}>
-            + Tambah User
-          </Button>
-        </div>
-      </Card>
-
-      <Card>
-        {user.length === 0 ? (
-          <div
-            className="
-                py-10
-                text-center
-                text-gray-500
-                dark:text-gray-400
-              "
+    <div
+      className="
+        space-y-6
+      "
+    >
+      <PageHeader
+        title="Master User"
+        subtitle="Kelola pengguna dan hak akses sistem."
+        action={
+          <Button
+            variant="primary"
+            onClick={() => {
+              setIsTambahOpen(true);
+            }}
           >
-            Belum ada data user.
-          </div>
-        ) : (
-          <UserTable data={user} onEdit={handleEdit} onDelete={handleDelete} />
-        )}
+            Tambah User
+          </Button>
+        }
+      />
+
+      <Card>
+        <UserTable data={user} onEdit={handleEdit} onDelete={handleDelete} />
       </Card>
 
       <UserTambahModal

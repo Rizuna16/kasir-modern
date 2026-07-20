@@ -11,15 +11,9 @@ import type { Penjualan as PenjualanType } from "../types/penjualan";
 
 import type { Invoice } from "../features/sales/types";
 
-import { Button, Card } from "../components/ui";
+import { Button, Card, PageHeader } from "../components/ui";
 
 const PRINT_DELAY = 300;
-
-/**
- * ============================================================
- * LEGACY PENJUALAN -> ENTERPRISE INVOICE
- * ============================================================
- */
 
 function mapPenjualanToInvoice(data: PenjualanType): Invoice {
   return {
@@ -138,67 +132,40 @@ export default function Penjualan() {
   }, []);
 
   return (
-    <div className="space-y-6">
-      <div
-        className="
-          flex
-          items-center
-          justify-between
-        "
-      >
-        <div>
-          <h1
-            className="
-              text-3xl
-              font-bold
-              text-gray-900
-              dark:text-white
-            "
+    <div
+      className="
+        space-y-6
+      "
+    >
+      <PageHeader
+        title="Transaksi Penjualan"
+        subtitle="Kelola transaksi penjualan barang"
+        action={
+          <Button
+            variant="primary"
+            onClick={() => {
+              setIsTambahOpen(true);
+            }}
           >
-            Transaksi Penjualan
-          </h1>
-
-          <p
-            className="
-              text-sm
-              text-gray-500
-              dark:text-gray-400
-            "
-          >
-            Kelola transaksi penjualan barang
-          </p>
-        </div>
-
-        <Button variant="primary" onClick={() => setIsTambahOpen(true)}>
-          Tambah Penjualan
-        </Button>
-      </div>
+            Tambah Penjualan
+          </Button>
+        }
+      />
 
       <Card>
-        {penjualan.length === 0 ? (
-          <div
-            className="
-                py-10
-                text-center
-                text-gray-500
-                dark:text-gray-400
-              "
-          >
-            Belum ada transaksi penjualan.
-          </div>
-        ) : (
-          <PenjualanTable
-            data={penjualan}
-            onDelete={hapusPenjualan}
-            onDetail={handleDetail}
-            onPrint={handlePrint}
-          />
-        )}
+        <PenjualanTable
+          data={penjualan}
+          onDelete={hapusPenjualan}
+          onDetail={handleDetail}
+          onPrint={handlePrint}
+        />
       </Card>
 
       <PenjualanModal
         isOpen={isTambahOpen}
-        onClose={() => setIsTambahOpen(false)}
+        onClose={() => {
+          setIsTambahOpen(false);
+        }}
         onSave={() => {
           setIsTambahOpen(false);
 
@@ -217,7 +184,12 @@ export default function Penjualan() {
       />
 
       {selectedPrint && (
-        <div className="hidden print:block">
+        <div
+          className="
+            hidden
+            print:block
+          "
+        >
           <PrintPenjualan invoice={selectedPrint} />
         </div>
       )}

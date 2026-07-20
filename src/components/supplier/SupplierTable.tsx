@@ -12,7 +12,9 @@ interface SupplierTableProps {
 
 export default function SupplierTable({
   data,
+
   onEdit,
+
   onDelete,
 }: SupplierTableProps) {
   const columns = [

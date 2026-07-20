@@ -12,7 +12,7 @@ import SupplierTambahModal from "../components/supplier/SupplierTambahModal";
 import SupplierEditModal from "../components/supplier/SupplierEditModal";
 import SupplierDeleteDialog from "../components/supplier/SupplierDeleteDialog";
 
-import { Card, Pagination } from "../components/ui";
+import { Button, Card, PageHeader, Pagination } from "../components/ui";
 
 export default function Supplier() {
   const {
@@ -143,53 +143,30 @@ export default function Supplier() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1
-          className="
-            text-3xl
-            font-bold
-            text-gray-900
-            dark:text-white
-          "
-        >
-          Data Supplier
-        </h1>
-
-        <p
-          className="
-            text-gray-500
-            dark:text-gray-400
-          "
-        >
-          Kelola data supplier toko
-        </p>
-      </div>
-
-      <SupplierToolbar
-        search={search}
-        setSearch={setSearch}
-        onTambah={bukaTambah}
+      <PageHeader
+        title="Data Supplier"
+        subtitle="Kelola data supplier toko."
+        action={
+          <Button variant="primary" onClick={bukaTambah}>
+            Tambah Supplier
+          </Button>
+        }
       />
 
       <Card>
-        {paginatedSupplier.length === 0 ? (
-          <div
-            className="
-                py-10
-                text-center
-                text-gray-500
-                dark:text-gray-400
-              "
-          >
-            Belum ada data supplier.
-          </div>
-        ) : (
+        <div
+          className="
+            space-y-5
+          "
+        >
+          <SupplierToolbar search={search} setSearch={setSearch} />
+
           <SupplierTable
             data={paginatedSupplier}
             onEdit={handleEdit}
             onDelete={bukaDelete}
           />
-        )}
+        </div>
       </Card>
 
       <Pagination

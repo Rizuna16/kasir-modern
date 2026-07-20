@@ -1,8 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { toast } from "sonner";
 
-import { Card, ConfirmDialog, Pagination } from "../components/ui";
+import {
+  Button,
+  Card,
+  ConfirmDialog,
+  PageHeader,
+  Pagination,
+} from "../components/ui";
 
 import KategoriTable from "../components/kategori/KategoriTable";
 import KategoriModal from "../components/kategori/KategoriModal";
@@ -15,13 +21,13 @@ import {
   updateKategori,
 } from "../services/kategoriService";
 
-import type { Kategori } from "../types/kategori";
+import type { Kategori as KategoriType } from "../types/kategori";
 
 import useSearch from "../hooks/useSearch";
 import usePagination from "../hooks/usePagination";
 
 export default function Kategori() {
-  const [kategori, setKategori] = useState<Kategori[]>(getKategori());
+  const [kategori, setKategori] = useState<KategoriType[]>(getKategori());
 
   const { search, setSearch, filteredData } = useSearch(kategori, "nama");
 
@@ -43,6 +49,22 @@ export default function Kategori() {
 
     deskripsi: "",
   });
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, setPage]);
+
+  const handleTambah = () => {
+    setForm({
+      nama: "",
+
+      deskripsi: "",
+    });
+
+    setEditId(null);
+
+    setOpenModal(true);
+  };
 
   const handleSave = () => {
     if (form.nama.trim() === "") {
@@ -92,80 +114,44 @@ export default function Kategori() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1
-          className="
-            text-3xl
-            font-bold
-            text-gray-900
-            dark:text-white
-          "
-        >
-          Data Kategori
-        </h1>
-
-        <p
-          className="
-            text-gray-500
-            dark:text-gray-400
-          "
-        >
-          Kelola kategori barang
-        </p>
-      </div>
+      <PageHeader
+        title="Data Kategori"
+        subtitle="Kelola kategori barang."
+        action={
+          <Button variant="primary" onClick={handleTambah}>
+            Tambah Kategori
+          </Button>
+        }
+      />
 
       <Card>
-        {paginatedData.length === 0 ? (
-          <div
-            className="
-                py-10
-                text-center
-                text-gray-500
-                dark:text-gray-400
-              "
-          >
-            Belum ada data kategori.
-          </div>
-        ) : (
-          <KategoriTable
-            data={paginatedData}
-            search={search}
-            setSearch={setSearch}
-            onTambah={() => {
-              setForm({
-                nama: "",
+        <KategoriTable
+          data={paginatedData}
+          search={search}
+          setSearch={setSearch}
+          onEdit={(id) => {
+            const data = getKategoriById(id);
 
-                deskripsi: "",
-              });
+            if (!data) {
+              return;
+            }
 
-              setEditId(null);
+            setForm({
+              nama: data.nama,
 
-              setOpenModal(true);
-            }}
-            onEdit={(id) => {
-              const data = getKategoriById(id);
+              deskripsi: data.deskripsi,
+            });
 
-              if (!data) {
-                return;
-              }
+            setEditId(id);
 
-              setForm({
-                nama: data.nama,
+            setOpenModal(true);
+          }}
+          onDelete={(id) => {
+            setSelectedId(id);
 
-                deskripsi: data.deskripsi,
-              });
-
-              setEditId(id);
-
-              setOpenModal(true);
-            }}
-            onDelete={(id) => {
-              setSelectedId(id);
-
-              setOpenDelete(true);
-            }}
-          />
-        )}
+            setOpenDelete(true);
+          }}
+        />
       </Card>
 
       <Pagination
@@ -179,7 +165,9 @@ export default function Kategori() {
         title={editId !== null ? "Edit Kategori" : "Tambah Kategori"}
         form={form}
         setForm={setForm}
-        onClose={() => setOpenModal(false)}
+        onClose={() => {
+          setOpenModal(false);
+        }}
         onSave={handleSave}
       />
 
@@ -187,7 +175,9 @@ export default function Kategori() {
         isOpen={openDelete}
         title="Hapus Kategori"
         message="Apakah Anda yakin ingin menghapus kategori ini?"
-        onCancel={() => setOpenDelete(false)}
+        onCancel={() => {
+          setOpenDelete(false);
+        }}
         onConfirm={handleDelete}
       />
     </div>

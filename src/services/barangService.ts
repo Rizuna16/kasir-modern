@@ -6,9 +6,9 @@ import { recordStockMovement } from "./stockMovementService";
 
 const STORAGE_KEY = "barang";
 
-// ===============================
-// STORAGE HELPER
-// ===============================
+// =====================================================
+// STORAGE
+// =====================================================
 
 const getStorage = (): Barang[] => {
   const data = localStorage.getItem(STORAGE_KEY);
@@ -24,31 +24,25 @@ const getStorage = (): Barang[] => {
   }
 };
 
-const saveStorage = (data: Barang[]): void => {
+const saveStorage = (data: Barang[]) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 };
 
-// ===============================
-// GET BARANG
-// ===============================
+// =====================================================
+// GET
+// =====================================================
 
 export const getBarang = (): Barang[] => {
   return getStorage();
 };
 
-// ===============================
-// GET BY ID
-// ===============================
-
 export const getBarangById = (id: string): Barang | undefined => {
-  const data = getStorage();
-
-  return data.find((item) => item.id === id);
+  return getStorage().find((item) => item.id === id);
 };
 
-// ===============================
-// ADD BARANG
-// ===============================
+// =====================================================
+// ADD
+// =====================================================
 
 export const addBarang = (
   data: Omit<Barang, "id" | "createdAt" | "updatedAt">,
@@ -74,9 +68,9 @@ export const addBarang = (
   return newBarang;
 };
 
-// ===============================
-// UPDATE BARANG
-// ===============================
+// =====================================================
+// UPDATE DATA BARANG
+// =====================================================
 
 export const updateBarang = (
   id: string,
@@ -98,8 +92,6 @@ export const updateBarang = (
 
     id,
 
-    createdAt: barang[index].createdAt,
-
     updatedAt: new Date().toISOString(),
   };
 
@@ -108,63 +100,9 @@ export const updateBarang = (
   return barang[index];
 };
 
-// ===============================
-// UPDATE STOK MANUAL
-// ===============================
-
-export const updateStokBarang = (
-  id: string,
-
-  jumlah: number,
-): Barang | null => {
-  const barang = getStorage();
-
-  const index = barang.findIndex((item) => item.id === id);
-
-  if (index === -1) {
-    return null;
-  }
-
-  barang[index] = {
-    ...barang[index],
-
-    stok: barang[index].stok + jumlah,
-
-    updatedAt: new Date().toISOString(),
-  };
-
-  saveStorage(barang);
-
-  return barang[index];
-};
-
-// ===============================
-// KURANGI STOK
-// ===============================
-
-export const kurangiStokBarang = (
-  id: string,
-
-  jumlah: number,
-): Barang | null => {
-  return updateStokBarang(id, -jumlah);
-};
-
-// ===============================
-// DELETE BARANG
-// ===============================
-
-export const deleteBarang = (id: string): void => {
-  const barang = getStorage();
-
-  const result = barang.filter((item) => item.id !== id);
-
-  saveStorage(result);
-};
-
-// ===============================
-// INVENTORY ENGINE
-// ===============================
+// =====================================================
+// ENTERPRISE STOCK ENGINE
+// =====================================================
 
 interface ApplyStockMovementParams {
   barangId: string;
@@ -205,6 +143,10 @@ export const applyStockMovement = ({
 
   const stokSesudah = stokSebelum + perubahan;
 
+  if (stokSesudah < 0) {
+    return null;
+  }
+
   barang[index] = {
     ...barang[index],
 
@@ -234,4 +176,14 @@ export const applyStockMovement = ({
   });
 
   return barang[index];
+};
+
+// =====================================================
+// DELETE
+// =====================================================
+
+export const deleteBarang = (id: string) => {
+  const barang = getStorage();
+
+  saveStorage(barang.filter((item) => item.id !== id));
 };

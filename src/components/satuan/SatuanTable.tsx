@@ -9,8 +9,6 @@ interface SatuanTableProps {
 
   setSearch: (value: string) => void;
 
-  onTambah: () => void;
-
   onEdit: (id: number) => void;
 
   onDelete: (id: number) => void;
@@ -18,10 +16,13 @@ interface SatuanTableProps {
 
 export default function SatuanTable({
   data,
+
   search,
+
   setSearch,
-  onTambah,
+
   onEdit,
+
   onDelete,
 }: SatuanTableProps) {
   const columns = [
@@ -47,7 +48,13 @@ export default function SatuanTable({
       className: "text-center w-44",
 
       render: (item: Satuan) => (
-        <div className="flex justify-center gap-2">
+        <div
+          className="
+            flex
+            justify-center
+            gap-2
+          "
+        >
           <Button
             variant="ghost"
             size="sm"
@@ -85,52 +92,14 @@ export default function SatuanTable({
   return (
     <div
       className="
-        rounded-xl
-
-        border
-        border-gray-200
-        dark:border-gray-700
-
-        bg-white
-        dark:bg-gray-800
-
-        p-6
-
-        shadow-sm
-
-        transition-all
-        duration-200
+        space-y-5
       "
     >
-      {/* Toolbar */}
-
-      <div
-        className="
-          mb-6
-
-          flex
-          flex-col
-          gap-4
-
-          md:flex-row
-          md:items-center
-          md:justify-between
-        "
-      >
-        <div className="w-full md:max-w-sm">
-          <SearchBox
-            value={search}
-            onChange={setSearch}
-            placeholder="Cari satuan..."
-          />
-        </div>
-
-        <Button variant="primary" onClick={onTambah}>
-          + Tambah Satuan
-        </Button>
-      </div>
-
-      {/* Table */}
+      <SearchBox
+        value={search}
+        onChange={setSearch}
+        placeholder="Cari satuan..."
+      />
 
       <DataTable
         columns={columns}

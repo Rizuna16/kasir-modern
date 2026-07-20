@@ -33,7 +33,14 @@ export default function BarangTable({
       accessor: "kode" as keyof Barang,
 
       render: (item: Barang) => (
-        <span className="font-mono font-semibold text-gray-700 dark:text-gray-200">
+        <span
+          className="
+            font-mono
+            font-semibold
+            text-gray-700
+            dark:text-gray-200
+          "
+        >
           {item.kode}
         </span>
       ),
@@ -44,7 +51,14 @@ export default function BarangTable({
       accessor: "barcode" as keyof Barang,
 
       render: (item: Barang) => (
-        <span className="font-mono text-sm text-gray-500 dark:text-gray-400">
+        <span
+          className="
+            font-mono
+            text-sm
+            text-gray-500
+            dark:text-gray-400
+          "
+        >
           {item.barcode || "-"}
         </span>
       ),
@@ -56,11 +70,23 @@ export default function BarangTable({
 
       render: (item: Barang) => (
         <div>
-          <p className="font-semibold text-gray-900 dark:text-white">
+          <p
+            className="
+              font-semibold
+              text-gray-900
+              dark:text-white
+            "
+          >
             {item.nama}
           </p>
 
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p
+            className="
+              text-xs
+              text-gray-500
+              dark:text-gray-400
+            "
+          >
             {item.kode}
           </p>
         </div>
@@ -119,15 +145,16 @@ export default function BarangTable({
       header: "Supplier",
       accessor: "supplierId" as keyof Barang,
 
-      render: (item: Barang) => {
-        const supplier = getNamaSupplier(item.supplierId);
-
-        return (
-          <span className="text-gray-700 dark:text-gray-300">
-            {supplier || "-"}
-          </span>
-        );
-      },
+      render: (item: Barang) => (
+        <span
+          className="
+            text-gray-700
+            dark:text-gray-300
+          "
+        >
+          {getNamaSupplier(item.supplierId) || "-"}
+        </span>
+      ),
     },
 
     {
@@ -267,7 +294,13 @@ export default function BarangTable({
       className: "text-center w-52",
 
       render: (item: Barang) => (
-        <div className="flex justify-center gap-2">
+        <div
+          className="
+            flex
+            justify-center
+            gap-2
+          "
+        >
           <Button size="sm" variant="outline" onClick={() => onEdit(item)}>
             Edit
           </Button>
@@ -281,32 +314,10 @@ export default function BarangTable({
   ];
 
   return (
-    <div
-      className="
-        rounded-2xl
-
-        border
-        border-gray-200
-        dark:border-gray-700
-
-        bg-white
-        dark:bg-gray-800
-
-        p-6
-
-        shadow-sm
-
-        transition-all
-        duration-300
-
-        hover:shadow-md
-      "
-    >
-      <DataTable
-        columns={columns}
-        data={data}
-        emptyMessage="Belum ada data barang"
-      />
-    </div>
+    <DataTable
+      columns={columns}
+      data={data}
+      emptyMessage="Belum ada data barang"
+    />
   );
 }

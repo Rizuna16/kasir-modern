@@ -1,26 +1,32 @@
-import { Button, Card, Input, Select } from "../ui";
+import { Button, Input, Select } from "../ui";
 
 interface Option {
   value: string;
+
   label: string;
 }
 
 interface KartuStokFilterProps {
   barangId: string;
+
   tipe: string;
 
   tanggalAwal: string;
+
   tanggalAkhir: string;
 
   barangOptions: Option[];
 
   onBarangChange: (value: string) => void;
+
   onTipeChange: (value: string) => void;
 
   onTanggalAwalChange: (value: string) => void;
+
   onTanggalAkhirChange: (value: string) => void;
 
   onFilter: () => void;
+
   onReset: () => void;
 }
 
@@ -29,34 +35,42 @@ const tipeOptions: Option[] = [
     value: "",
     label: "Semua Tipe",
   },
+
   {
     value: "Pembelian",
     label: "Pembelian",
   },
+
   {
     value: "Penjualan",
     label: "Penjualan",
   },
+
   {
     value: "Retur Pembelian",
     label: "Retur Pembelian",
   },
+
   {
     value: "Retur Penjualan",
     label: "Retur Penjualan",
   },
+
   {
     value: "Penyesuaian",
     label: "Penyesuaian",
   },
+
   {
     value: "Stock Opname",
     label: "Stock Opname",
   },
+
   {
     value: "Transfer Masuk",
     label: "Transfer Masuk",
   },
+
   {
     value: "Transfer Keluar",
     label: "Transfer Keluar",
@@ -65,28 +79,42 @@ const tipeOptions: Option[] = [
 
 export default function KartuStokFilter({
   barangId,
+
   tipe,
 
   tanggalAwal,
+
   tanggalAkhir,
 
   barangOptions,
 
   onBarangChange,
+
   onTipeChange,
 
   onTanggalAwalChange,
+
   onTanggalAkhirChange,
 
   onFilter,
+
   onReset,
 }: KartuStokFilterProps) {
   return (
-    <Card
-      title="Filter Kartu Stok"
-      subtitle="Pilih filter riwayat pergerakan stok"
+    <div
+      className="
+        space-y-4
+      "
     >
-      <div className="grid gap-4 md:grid-cols-5">
+      <div
+        className="
+          grid
+
+          gap-4
+
+          md:grid-cols-5
+        "
+      >
         <Select
           label="Barang"
           value={barangId}
@@ -95,6 +123,7 @@ export default function KartuStokFilter({
               value: "",
               label: "Semua Barang",
             },
+
             ...barangOptions,
           ]}
           onChange={onBarangChange}
@@ -121,7 +150,15 @@ export default function KartuStokFilter({
           onChange={(e) => onTanggalAkhirChange(e.target.value)}
         />
 
-        <div className="flex items-end gap-2">
+        <div
+          className="
+            flex
+
+            items-end
+
+            gap-2
+          "
+        >
           <Button variant="secondary" fullWidth onClick={onReset}>
             Reset
           </Button>
@@ -131,6 +168,6 @@ export default function KartuStokFilter({
           </Button>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

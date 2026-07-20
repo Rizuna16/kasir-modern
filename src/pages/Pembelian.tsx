@@ -8,7 +8,7 @@ import usePembelian from "../hooks/usePembelian";
 
 import type { Pembelian as PembelianType } from "../types/pembelian";
 
-import { Button, Card } from "../components/ui";
+import { Button, Card, PageHeader } from "../components/ui";
 
 export default function Pembelian() {
   const { pembelian, loadData } = usePembelian();
@@ -27,62 +27,35 @@ export default function Pembelian() {
   };
 
   return (
-    <div className="space-y-6">
-      <div
-        className="
-          flex
-          items-center
-          justify-between
-        "
-      >
-        <div>
-          <h1
-            className="
-              text-3xl
-              font-bold
-              text-gray-900
-              dark:text-white
-            "
+    <div
+      className="
+        space-y-6
+      "
+    >
+      <PageHeader
+        title="Transaksi Pembelian"
+        subtitle="Kelola transaksi pembelian barang"
+        action={
+          <Button
+            variant="primary"
+            onClick={() => {
+              setIsTambahOpen(true);
+            }}
           >
-            Transaksi Pembelian
-          </h1>
-
-          <p
-            className="
-              text-sm
-              text-gray-500
-              dark:text-gray-400
-            "
-          >
-            Kelola transaksi pembelian barang
-          </p>
-        </div>
-
-        <Button variant="primary" onClick={() => setIsTambahOpen(true)}>
-          Tambah Pembelian
-        </Button>
-      </div>
+            Tambah Pembelian
+          </Button>
+        }
+      />
 
       <Card>
-        {pembelian.length === 0 ? (
-          <div
-            className="
-                py-10
-                text-center
-                text-gray-500
-                dark:text-gray-400
-              "
-          >
-            Belum ada transaksi pembelian.
-          </div>
-        ) : (
-          <PembelianTable data={pembelian} onDetail={handleDetail} />
-        )}
+        <PembelianTable data={pembelian} onDetail={handleDetail} />
       </Card>
 
       <PembelianModal
         isOpen={isTambahOpen}
-        onClose={() => setIsTambahOpen(false)}
+        onClose={() => {
+          setIsTambahOpen(false);
+        }}
         onSave={() => {
           setIsTambahOpen(false);
 

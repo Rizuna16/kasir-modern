@@ -5,7 +5,7 @@ import BarangTambahModal from "../components/barang/BarangTambahModal";
 import BarangEditModal from "../components/barang/BarangEditModal";
 import BarangDeleteDialog from "../components/barang/BarangDeleteDialog";
 
-import { Button, Card } from "../components/ui";
+import { Button, Card, PageHeader, EmptyState } from "../components/ui";
 
 import {
   getBarang,
@@ -122,66 +122,32 @@ export default function BarangPage() {
 
   return (
     <div className="space-y-6">
-      <div
-        className="
-          flex
-          flex-col
-          gap-4
-          md:flex-row
-          md:items-center
-          md:justify-between
-        "
-      >
-        <div>
-          <h1
-            className="
-              text-3xl
-              font-bold
-              text-gray-900
-              dark:text-white
-            "
+      <PageHeader
+        title="Master Barang"
+        subtitle="Kelola data barang, stok, dan harga penjualan."
+        action={
+          <Button
+            variant="primary"
+            onClick={() => {
+              setForm({
+                ...initialBarangForm,
+              });
+
+              setIsTambahOpen(true);
+            }}
           >
-            Master Barang
-          </h1>
-
-          <p
-            className="
-              mt-1
-              text-sm
-              text-gray-500
-              dark:text-gray-400
-            "
-          >
-            Kelola data barang, stok, dan harga penjualan.
-          </p>
-        </div>
-
-        <Button
-          variant="primary"
-          onClick={() => {
-            setForm({
-              ...initialBarangForm,
-            });
-
-            setIsTambahOpen(true);
-          }}
-        >
-          Tambah Barang
-        </Button>
-      </div>
+            Tambah Barang
+          </Button>
+        }
+      />
 
       <Card>
         {barang.length === 0 ? (
-          <div
-            className="
-                py-10
-                text-center
-                text-gray-500
-                dark:text-gray-400
-              "
-          >
-            Belum ada data barang.
-          </div>
+          <EmptyState
+            icon="📦"
+            title="Belum ada data barang"
+            description="Tambahkan barang baru untuk mulai mengelola stok."
+          />
         ) : (
           <BarangTable
             data={barang}
