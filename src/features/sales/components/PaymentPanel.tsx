@@ -17,12 +17,14 @@ interface Props {
 export default function PaymentPanel({ total, onSuccess }: Props) {
   const [method, setMethod] = useState<PaymentMethod>(PAYMENT_METHOD.CASH);
 
-  const [paidAmount, setPaidAmount] = useState<number>(0);
+  const [paidAmount, setPaidAmount] = useState(0);
 
   const [message, setMessage] = useState("");
 
   const change = useMemo(() => {
-    if (paidAmount < total) return 0;
+    if (paidAmount < total) {
+      return 0;
+    }
 
     return paidAmount - total;
   }, [paidAmount, total]);
@@ -36,13 +38,7 @@ export default function PaymentPanel({ total, onSuccess }: Props) {
       return;
     }
 
-    const payment = createPayment(
-      method,
-
-      total,
-
-      paidAmount,
-    );
+    const payment = createPayment(method, total, paidAmount);
 
     SalesStore.setPayment(payment);
 

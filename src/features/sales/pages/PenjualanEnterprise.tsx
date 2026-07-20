@@ -1,16 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { Button, Card, Input } from "../../../components/ui";
+import { Card } from "../../../components/ui";
 
 import { getBarang } from "../../../services/barangService";
 
 import type { Barang } from "../../../types/barang";
 
-import SalesStore from "../store/salesStore";
-
 import type { CartItem, Customer } from "../types";
 
+import SalesStore from "../store/salesStore";
+
+import ProductSearch from "../components/ProductSearch";
+import ProductList from "../components/ProductList";
 import CustomerSelector from "../components/CustomerSelector";
+import CartTable from "../components/CartTable";
+import CartSummary from "../components/CartSummary";
+import PaymentPanel from "../components/PaymentPanel";
+import CheckoutPanel from "../components/CheckoutPanel";
 
 export default function PenjualanEnterprise() {
   const [barang, setBarang] = useState<Barang[]>([]);
@@ -23,12 +29,8 @@ export default function PenjualanEnterprise() {
     SalesStore.getCart()?.customer,
   );
 
-  const [message, setMessage] = useState("");
-
   useEffect(() => {
-    const data = getBarang();
-
-    setBarang(data);
+    setBarang(getBarang());
 
     if (!SalesStore.getCart()) {
       SalesStore.startSale("USER-001", "Kasir");
@@ -49,14 +51,6 @@ export default function PenjualanEnterprise() {
 
   function refreshCart() {
     setCart(SalesStore.getCart());
-  }
-
-  function showMessage(text: string) {
-    setMessage(text);
-
-    setTimeout(() => {
-      setMessage("");
-    }, 2500);
   }
 
   function handleCustomerChange(customer?: Customer) {
@@ -90,69 +84,59 @@ export default function PenjualanEnterprise() {
       total: item.hargaEcer,
     };
 
-    const result = SalesStore.addCartItem(cartItem, item.stok);
-
-    if (result?.items.length === SalesStore.getCart()?.items.length) {
-      refreshCart();
-
-      return;
-    }
+    SalesStore.addCartItem(cartItem, item.stok);
 
     refreshCart();
   }
 
   function tambahQty(itemId: string) {
-    const item = activeCart?.items.find((item) => item.id === itemId);
+    const currentCart = SalesStore.getCart();
 
-    const barangMaster = barang.find((b) => b.id === item?.barangId);
+    const cartItem = currentCart?.items.find(
+      (cartItem) => cartItem.id === itemId,
+    );
 
-    if (!barangMaster) return;
+    const barangMaster = barang.find(
+      (barangItem) => barangItem.id === cartItem?.barangId,
+    );
 
-    const before = item?.qty ?? 0;
+    if (!barangMaster) {
+      return;
+    }
 
     SalesStore.increaseCartItem(itemId, barangMaster.stok);
 
-    const after =
-      SalesStore.getCart()?.items.find((i) => i.id === itemId)?.qty ?? 0;
+    refreshCart();
+  }
 
-    if (before === after) {
-      showMessage("Stok barang tidak mencukupi");
-    }
+  function kurangQty(itemId: string) {
+    SalesStore.decreaseCartItem(itemId);
 
     refreshCart();
   }
 
-  function kurangQty(id: string) {
-    SalesStore.decreaseCartItem(id);
+  function hapusItem(itemId: string) {
+    SalesStore.removeCartItem(itemId);
 
     refreshCart();
   }
 
-  function hapusItem(id: string) {
-    SalesStore.removeCartItem(id);
+  function handleCheckoutSuccess() {
+    SalesStore.startSale("USER-001", "Kasir");
 
     refreshCart();
+
+    setCustomer(undefined);
   }
 
   const activeCart = cart;
 
-  const total = activeCart?.grandTotal ?? 0;
-
   return (
-    <div className="space-y-6">
-      {message && (
-        <div
-          className="
-            rounded
-            border
-            p-3
-            text-sm
-          "
-        >
-          {message}
-        </div>
-      )}
-
+    <div
+      className="
+        space-y-6
+      "
+    >
       <div>
         <h1
           className="
@@ -173,150 +157,62 @@ export default function PenjualanEnterprise() {
         </p>
       </div>
 
-      <Card>
-        <h2
-          className="
-            mb-4
-            font-semibold
-          "
-        >
-          Customer
-        </h2>
-
-        <CustomerSelector value={customer} onChange={handleCustomerChange} />
-      </Card>
-
-      <Card>
-        <h2
-          className="
-            mb-4
-            font-semibold
-          "
-        >
-          Cari Barang
-        </h2>
-
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Cari barang..."
-        />
-
+      <div
+        className="
+          grid
+          gap-6
+          lg:grid-cols-3
+        "
+      >
         <div
           className="
-            mt-4
-            space-y-2
+            space-y-6
+            lg:col-span-2
           "
         >
-          {filteredBarang.map((item) => (
-            <div
-              key={item.id}
+          <Card>
+            <h2
               className="
-                flex
-                justify-between
-                border
-                p-3
-                rounded
+                mb-4
+                font-semibold
               "
             >
-              <div>
-                <div className="font-medium">{item.nama}</div>
+              Customer
+            </h2>
 
-                <div
-                  className="
-                    text-sm
-                    text-gray-500
-                  "
-                >
-                  Rp {item.hargaEcer.toLocaleString()}
-                </div>
-              </div>
+            <CustomerSelector
+              value={customer}
+              onChange={handleCustomerChange}
+            />
+          </Card>
 
-              <Button variant="primary" onClick={() => tambahBarang(item)}>
-                Tambah
-              </Button>
-            </div>
-          ))}
+          <ProductSearch value={search} onChange={setSearch} />
+
+          <ProductList products={filteredBarang} onAdd={tambahBarang} />
+
+          <CartTable
+            items={activeCart?.items ?? []}
+            onIncrease={tambahQty}
+            onDecrease={kurangQty}
+            onRemove={hapusItem}
+          />
         </div>
-      </Card>
-
-      <Card>
-        <h2
-          className="
-            mb-4
-            font-semibold
-          "
-        >
-          Keranjang
-        </h2>
-
-        {activeCart?.items.length === 0 ? (
-          <p>Belum ada barang</p>
-        ) : (
-          <div className="space-y-3">
-            {activeCart?.items.map((item) => (
-              <div
-                key={item.id}
-                className="
-                  flex
-                  justify-between
-                  items-center
-                  border-b
-                  pb-3
-                "
-              >
-                <div>
-                  <div className="font-medium">{item.namaBarang}</div>
-
-                  <div
-                    className="
-                      text-sm
-                      text-gray-500
-                    "
-                  >
-                    Rp {item.total.toLocaleString()}
-                  </div>
-                </div>
-
-                <div
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                  "
-                >
-                  <Button
-                    variant="secondary"
-                    onClick={() => kurangQty(item.id)}
-                  >
-                    -
-                  </Button>
-
-                  <span>{item.qty}</span>
-
-                  <Button variant="primary" onClick={() => tambahQty(item.id)}>
-                    +
-                  </Button>
-
-                  <Button variant="danger" onClick={() => hapusItem(item.id)}>
-                    Hapus
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
 
         <div
           className="
-            mt-6
-            text-right
-            font-bold
+            space-y-6
           "
         >
-          Total: Rp {total.toLocaleString()}
+          <CartSummary cart={activeCart} />
+
+          <PaymentPanel
+            total={activeCart?.grandTotal ?? 0}
+            onSuccess={refreshCart}
+          />
+
+          <CheckoutPanel onSuccess={handleCheckoutSuccess} />
         </div>
-      </Card>
+      </div>
     </div>
   );
 }
