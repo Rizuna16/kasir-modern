@@ -1,12 +1,15 @@
-export default function SidebarHeader() {
+interface SidebarHeaderProps {
+  collapsed: boolean;
+}
+
+export default function SidebarHeader({ collapsed }: SidebarHeaderProps) {
   return (
     <div
-      className="
+      className={`
         mb-6
 
         flex
         items-center
-        gap-3
 
         rounded-2xl
 
@@ -15,13 +18,25 @@ export default function SidebarHeader() {
         p-3
 
         backdrop-blur-sm
-      "
+
+        transition-all
+
+        duration-300
+
+        ${collapsed ? "justify-center" : "gap-3"}
+      `}
     >
+      {/* Logo */}
+
       <div
         className="
           flex
+
           h-10
           w-10
+
+          shrink-0
+
           items-center
           justify-center
 
@@ -37,28 +52,41 @@ export default function SidebarHeader() {
         🏪
       </div>
 
-      <div>
-        <h1
-          className="
-            text-sm
-            font-bold
+      {/* Brand Text */}
 
-            text-white
+      {!collapsed && (
+        <div
+          className="
+            overflow-hidden
           "
         >
-          Kasir Modern
-        </h1>
+          <h1
+            className="
+              whitespace-nowrap
 
-        <p
-          className="
-            text-xs
+              text-sm
 
-            text-blue-100
-          "
-        >
-          Enterprise POS
-        </p>
-      </div>
+              font-bold
+
+              text-white
+            "
+          >
+            Kasir Modern
+          </h1>
+
+          <p
+            className="
+              whitespace-nowrap
+
+              text-xs
+
+              text-blue-100
+            "
+          >
+            Enterprise POS
+          </p>
+        </div>
+      )}
     </div>
   );
 }

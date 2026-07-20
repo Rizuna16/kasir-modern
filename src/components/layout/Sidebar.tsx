@@ -13,14 +13,34 @@ import { useAuth } from "../../context/AuthContext";
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  collapsed: boolean;
 }
 
-export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+export default function Sidebar({ isOpen, onClose, collapsed }: SidebarProps) {
   const { user } = useAuth();
 
   const location = useLocation();
 
   const [openGroup, setOpenGroup] = useState<string | null>(null);
+
+  /*
+  =====================================
+  CHECK ACTIVE GROUP
+
+  Contoh:
+
+  /barang
+
+  maka:
+
+  Master Data = active
+
+  =====================================
+  */
+
+  function isGroupActive(section: (typeof NAVIGATION)[number]) {
+    return section.items.some((item) => item.path === location.pathname);
+  }
 
   /*
   =====================================
@@ -30,7 +50,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   /barang
 
-  otomatis membuka:
+  otomatis buka:
 
   Master Data
 
@@ -92,7 +112,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           flex
           h-screen
-          w-64
+          ${collapsed ? "w-20" : "w-64"}
           flex-col
 
           border-r
@@ -120,9 +140,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         `}
       >
         {/* Branding */}
-        <SidebarHeader />
+        <SidebarHeader collapsed={collapsed} />
 
-        {/* Menu Area */}
+        {/* Navigation */}
         <nav
           className="
             flex-1
@@ -162,7 +182,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                   >
                     {menus.map((menu) => (
                       <div key={menu.path} onClick={onClose}>
-                        <SidebarItem to={menu.path} label={menu.label} />
+                        <SidebarItem
+                          to={menu.path}
+                          label={menu.label}
+                          collapsed={collapsed}
+                        />
                       </div>
                     ))}
                   </div>
@@ -188,12 +212,18 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 id={section.id}
                 title={section.title}
                 icon={NAVIGATION_ICONS[section.icon]}
+                active={isGroupActive(section)}
+                collapsed={collapsed}
                 isOpen={openGroup === section.id}
                 onToggle={() => toggleGroup(section.id)}
               >
                 {menus.map((menu) => (
                   <div key={menu.path} onClick={onClose}>
-                    <SidebarItem to={menu.path} label={menu.label} />
+                    <SidebarItem
+                      to={menu.path}
+                      label={menu.label}
+                      collapsed={collapsed}
+                    />
                   </div>
                 ))}
               </SidebarGroup>

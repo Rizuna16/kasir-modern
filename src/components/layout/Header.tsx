@@ -4,9 +4,14 @@ import { ThemeToggle } from "../ui";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
+
+  onToggleCollapse: () => void;
 }
 
-export default function Header({ onToggleSidebar }: HeaderProps) {
+export default function Header({
+  onToggleSidebar,
+  onToggleCollapse,
+}: HeaderProps) {
   const { user, logout } = useAuth();
 
   return (
@@ -29,14 +34,24 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
       "
     >
       {/* Left */}
-      <div className="flex items-center gap-3">
-        {/* Hamburger */}
+
+      <div
+        className="
+          flex
+          items-center
+          gap-3
+        "
+      >
+        {/* Mobile Hamburger */}
+
         <button
           onClick={onToggleSidebar}
           className="
             flex
+
             h-10
             w-10
+
             items-center
             justify-center
 
@@ -53,7 +68,14 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-gray-700 dark:text-white"
+            className="
+              h-6
+              w-6
+
+              text-gray-700
+
+              dark:text-white
+            "
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -67,12 +89,66 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
           </svg>
         </button>
 
+        {/* Desktop Collapse Button */}
+
+        <button
+          onClick={onToggleCollapse}
+          className="
+            hidden
+
+            h-10
+            w-10
+
+            items-center
+            justify-center
+
+            rounded-lg
+
+            transition-colors
+
+            hover:bg-gray-100
+
+            lg:flex
+
+            dark:hover:bg-gray-700
+          "
+          title="Toggle Sidebar"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="
+              h-5
+              w-5
+
+              text-gray-700
+
+              dark:text-white
+            "
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="
+                M4 6h16
+                M4 12h10
+                M4 18h16
+              "
+            />
+          </svg>
+        </button>
+
         {/* Search */}
+
         <input
           type="text"
           placeholder="Cari barang..."
           className="
             hidden
+
             w-72
 
             rounded-lg
@@ -93,22 +169,55 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
             lg:block
 
             dark:border-gray-600
+
             dark:bg-gray-700
+
             dark:text-white
           "
         />
       </div>
 
       {/* Right */}
-      <div className="flex items-center gap-4">
+
+      <div
+        className="
+          flex
+          items-center
+          gap-4
+        "
+      >
         <ThemeToggle />
 
-        <div className="hidden text-right sm:block">
-          <p className="font-semibold text-gray-800 dark:text-white">
+        <div
+          className="
+            hidden
+
+            text-right
+
+            sm:block
+          "
+        >
+          <p
+            className="
+              font-semibold
+
+              text-gray-800
+
+              dark:text-white
+            "
+          >
             {user?.nama ?? "User"}
           </p>
 
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p
+            className="
+              text-sm
+
+              text-gray-500
+
+              dark:text-gray-400
+            "
+          >
             {user?.role ?? "Guest"}
           </p>
         </div>
@@ -124,6 +233,7 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
             py-2
 
             text-sm
+
             font-medium
 
             text-white

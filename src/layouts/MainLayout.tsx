@@ -8,12 +8,31 @@ import Breadcrumb from "../components/layout/Breadcrumb";
 export default function MainLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  /*
+  =====================================
+  DESKTOP SIDEBAR COLLAPSE
+
+  false:
+  w-64
+
+  true:
+  w-20
+
+  =====================================
+  */
+
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
   const closeSidebar = () => {
     setIsSidebarOpen(false);
+  };
+
+  const toggleSidebarCollapse = () => {
+    setIsSidebarCollapsed((prev) => !prev);
   };
 
   return (
@@ -28,9 +47,15 @@ export default function MainLayout() {
       "
     >
       {/* Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onClose={closeSidebar}
+        collapsed={isSidebarCollapsed}
+      />
 
       {/* Main Area */}
+
       <div
         className="
           flex
@@ -41,9 +66,14 @@ export default function MainLayout() {
         "
       >
         {/* Header */}
-        <Header onToggleSidebar={toggleSidebar} />
+
+        <Header
+          onToggleSidebar={toggleSidebar}
+          onToggleCollapse={toggleSidebarCollapse}
+        />
 
         {/* Content */}
+
         <main
           className="
             flex-1
@@ -55,7 +85,11 @@ export default function MainLayout() {
         >
           <Breadcrumb />
 
-          <div className="mt-4">
+          <div
+            className="
+              mt-4
+            "
+          >
             <Outlet />
           </div>
         </main>
