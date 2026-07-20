@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 export interface Column<T> {
   header: string;
 
-  accessor: keyof T;
+  accessor?: keyof T;
 
   render?: (row: T, index: number) => ReactNode;
 
@@ -68,9 +68,7 @@ export default function DataTable<T>({
 
             z-10
 
-
             bg-gray-50
-
 
             dark:bg-slate-800
           "
@@ -78,36 +76,27 @@ export default function DataTable<T>({
           <tr>
             {columns.map((column, index) => (
               <th
-                key={`${String(column.accessor)}-${index}`}
+                key={`${column.header}-${index}`}
                 className={`
                     px-5
 
                     py-3
 
-
                     whitespace-nowrap
-
 
                     text-left
 
-
                     text-xs
-
 
                     font-semibold
 
-
                     uppercase
-
 
                     tracking-wide
 
-
                     text-gray-600
 
-
                     dark:text-gray-300
-
 
                     ${column.className ?? ""}
                   `}
@@ -152,21 +141,15 @@ export default function DataTable<T>({
 
                       w-8
 
-
                       animate-spin
-
 
                       rounded-full
 
-
                       border-4
-
 
                       border-gray-200
 
-
                       border-t-blue-600
-
 
                       dark:border-slate-600
                     "
@@ -197,13 +180,7 @@ export default function DataTable<T>({
                     gap-2
                   "
                 >
-                  <div
-                    className="
-                      text-4xl
-                    "
-                  >
-                    📦
-                  </div>
+                  <div className="text-4xl">📦</div>
 
                   <p
                     className="
@@ -240,36 +217,28 @@ export default function DataTable<T>({
 
                     border-gray-100
 
-
                     transition-colors
-
 
                     duration-150
 
-
                     hover:bg-blue-50
 
-
                     dark:border-slate-800
-
 
                     dark:hover:bg-slate-800/70
                   "
               >
                 {columns.map((column, columnIndex) => (
                   <td
-                    key={`${String(column.accessor)}-${columnIndex}`}
+                    key={`${column.header}-${columnIndex}`}
                     className={`
                           px-5
 
                           py-3
 
-
                           text-sm
 
-
                           align-middle
-
 
                           ${column.className ?? ""}
                         `}
@@ -281,11 +250,12 @@ export default function DataTable<T>({
                         className="
                               text-gray-700
 
-
                               dark:text-gray-200
                             "
                       >
-                        {String(row[column.accessor] ?? "")}
+                        {column.accessor
+                          ? String(row[column.accessor] ?? "")
+                          : null}
                       </span>
                     )}
                   </td>
