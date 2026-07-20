@@ -1,130 +1,209 @@
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+
 import SidebarItem from "./SidebarItem";
+import SidebarGroup from "./SidebarGroup";
+import SidebarHeader from "./SidebarHeader";
+import SidebarFooter from "./SidebarFooter";
 
-import { useAuth } from "../../context/AuthContext";
 import { NAVIGATION } from "../../config/navigation";
+import { NAVIGATION_ICONS } from "../../config/navigationIcons";
+import { useAuth } from "../../context/AuthContext";
 
-interface MenuSection {
-  title: string;
-  menus: string[];
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-const MENU_SECTIONS: MenuSection[] = [
-  {
-    title: "Dashboard",
-    menus: ["Dashboard"],
-  },
-  {
-    title: "Master Data",
-    menus: [
-      "Produk",
-      "Kategori",
-      "Satuan",
-      "Supplier",
-      "Pelanggan",
-      "Pengguna",
-    ],
-  },
-  {
-    title: "Transaksi",
-    menus: ["Penjualan", "Pembelian"],
-  },
-  {
-    title: "Laporan",
-    menus: ["Laporan Penjualan", "Kartu Stok"],
-  },
-  {
-    title: "Pengaturan",
-    menus: ["Pengaturan"],
-  },
-];
-
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { user } = useAuth();
+
+  const location = useLocation();
+
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
+
+  /*
+  =====================================
+  AUTO EXPAND ACTIVE GROUP
+
+  Contoh:
+
+  /barang
+
+  otomatis membuka:
+
+  Master Data
+
+  =====================================
+  */
+
+  useEffect(() => {
+    const activeGroup = NAVIGATION.find((section) =>
+      section.items.some((item) => item.path === location.pathname),
+    );
+
+    if (activeGroup && activeGroup.collapsible) {
+      setOpenGroup(activeGroup.id);
+    }
+  }, [location.pathname]);
 
   if (!user) {
     return null;
   }
 
-  const menus = NAVIGATION.filter((menu) =>
-    menu.permissions.includes(user.role),
-  );
+  function toggleGroup(id: string) {
+    setOpenGroup((current) => (current === id ? null : id));
+  }
 
   return (
-    <aside
-      className="
-        flex
-        h-screen
-        w-64
-        flex-col
+    <>
+      {/* Mobile Overlay */}
+      <div
+        onClick={onClose}
+        className={`
+          fixed
+          inset-0
 
-        border-r
-        border-blue-500/20
+          z-40
 
-        bg-gradient-to-b
-        from-blue-600
-        to-blue-700
+          bg-black/50
 
-        p-5
+          transition-opacity
+          duration-300
 
-        shadow-xl
+          lg:hidden
 
-        transition-colors
-        duration-300
-
-        dark:border-gray-700
-        dark:from-gray-900
-        dark:to-gray-800
-      "
-    >
-      <nav
-        className="
-          flex-1
-          space-y-6
-          overflow-y-auto
-        "
-      >
-        {MENU_SECTIONS.map((section) => {
-          const sectionMenus = menus.filter((menu) =>
-            section.menus.includes(menu.label),
-          );
-
-          if (sectionMenus.length === 0) {
-            return null;
+          ${
+            isOpen
+              ? "opacity-100 visible"
+              : "pointer-events-none invisible opacity-0"
           }
+        `}
+      />
 
-          return (
-            <div key={section.title}>
-              <div
-                className="
-                  mb-2
-                  px-3
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed
+          left-0
+          top-0
 
-                  text-[11px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.18em]
+          z-50
 
-                  text-blue-100/70
+          flex
+          h-screen
+          w-64
+          flex-col
 
-                  dark:text-gray-400
-                "
+          border-r
+          border-blue-500/20
+
+          bg-gradient-to-b
+          from-blue-600
+          to-blue-700
+
+          p-5
+
+          shadow-xl
+
+          transition-transform
+          duration-300
+
+          dark:border-gray-700
+          dark:from-gray-900
+          dark:to-gray-800
+
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+
+          lg:static
+          lg:translate-x-0
+        `}
+      >
+        {/* Branding */}
+        <SidebarHeader />
+
+        {/* Menu Area */}
+        <nav
+          className="
+            flex-1
+
+            space-y-3
+
+            overflow-y-auto
+
+            pr-1
+          "
+        >
+          {NAVIGATION.map((section) => {
+            const menus = section.items.filter((menu) =>
+              menu.permissions.includes(user.role),
+            );
+
+            if (menus.length === 0) {
+              return null;
+            }
+
+            /*
+              =====================================
+              SINGLE MENU
+
+              Dashboard
+
+              =====================================
+              */
+
+            if (!section.collapsible) {
+              return (
+                <section key={section.id}>
+                  <div
+                    className="
+                        space-y-1
+                      "
+                  >
+                    {menus.map((menu) => (
+                      <div key={menu.path} onClick={onClose}>
+                        <SidebarItem to={menu.path} label={menu.label} />
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              );
+            }
+
+            /*
+              =====================================
+              COLLAPSIBLE GROUP
+
+              Master Data
+              Transaksi
+              Laporan
+              Pengaturan
+
+              =====================================
+              */
+
+            return (
+              <SidebarGroup
+                key={section.id}
+                id={section.id}
+                title={section.title}
+                icon={NAVIGATION_ICONS[section.icon]}
+                isOpen={openGroup === section.id}
+                onToggle={() => toggleGroup(section.id)}
               >
-                {section.title}
-              </div>
-
-              <div className="space-y-1">
-                {sectionMenus.map((menu) => (
-                  <SidebarItem
-                    key={menu.path}
-                    to={menu.path}
-                    label={menu.label}
-                  />
+                {menus.map((menu) => (
+                  <div key={menu.path} onClick={onClose}>
+                    <SidebarItem to={menu.path} label={menu.label} />
+                  </div>
                 ))}
-              </div>
-            </div>
-          );
-        })}
-      </nav>
-    </aside>
+              </SidebarGroup>
+            );
+          })}
+        </nav>
+
+        {/* User Profile */}
+        <SidebarFooter />
+      </aside>
+    </>
   );
 }

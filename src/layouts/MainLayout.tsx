@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import Sidebar from "../components/layout/Sidebar";
@@ -5,6 +6,16 @@ import Header from "../components/layout/Header";
 import Breadcrumb from "../components/layout/Breadcrumb";
 
 export default function MainLayout() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
   return (
     <div
       className="
@@ -17,7 +28,7 @@ export default function MainLayout() {
       "
     >
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
       {/* Main Area */}
       <div
@@ -30,7 +41,7 @@ export default function MainLayout() {
         "
       >
         {/* Header */}
-        <Header />
+        <Header onToggleSidebar={toggleSidebar} />
 
         {/* Content */}
         <main
@@ -44,11 +55,7 @@ export default function MainLayout() {
         >
           <Breadcrumb />
 
-          <div
-            className="
-              mt-4
-            "
-          >
+          <div className="mt-4">
             <Outlet />
           </div>
         </main>
